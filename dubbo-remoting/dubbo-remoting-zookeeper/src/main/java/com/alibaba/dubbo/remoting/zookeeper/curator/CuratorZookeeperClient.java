@@ -19,6 +19,7 @@ import com.alibaba.dubbo.common.URL;
 import com.alibaba.dubbo.remoting.zookeeper.ChildListener;
 import com.alibaba.dubbo.remoting.zookeeper.StateListener;
 import com.alibaba.dubbo.remoting.zookeeper.support.AbstractZookeeperClient;
+import org.apache.zookeeper.Watcher;
 
 public class CuratorZookeeperClient extends
 		AbstractZookeeperClient<CuratorWatcher> {
@@ -114,7 +115,7 @@ public class CuratorZookeeperClient extends
 		}
 
 		public void process(WatchedEvent event) throws Exception {
-			if (listener != null) {
+			if (event.getType() == Watcher.Event.EventType.NodeChildrenChanged && listener != null) {
 				listener.childChanged(event.getPath(), client.getChildren()
 						.usingWatcher(this).forPath(event.getPath()));
 			}
