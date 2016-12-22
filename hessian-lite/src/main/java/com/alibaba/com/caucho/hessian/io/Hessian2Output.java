@@ -130,9 +130,8 @@ public class Hessian2Output
     int length = args != null ? args.length : 0;
     
     startCall(method, length);
-    
-    for (int i = 0; i < args.length; i++)
-      writeObject(args[i]);
+
+    for (Object arg : args) writeObject(arg);
     
     completeCall();
   }

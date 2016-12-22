@@ -93,7 +93,7 @@ public class DubboProtocol extends AbstractProtocol {
                 if (Boolean.TRUE.toString().equals(inv.getAttachments().get(IS_CALLBACK_SERVICE_INVOKE))){
                     String methodsStr = invoker.getUrl().getParameters().get("methods");
                     boolean hasMethod = false;
-                    if (methodsStr == null || methodsStr.indexOf(",") == -1){
+                    if (methodsStr == null || !methodsStr.contains(",")){
                         hasMethod = inv.getMethodName().equals(methodsStr);
                     } else {
                         String[] methods = methodsStr.split(",");
