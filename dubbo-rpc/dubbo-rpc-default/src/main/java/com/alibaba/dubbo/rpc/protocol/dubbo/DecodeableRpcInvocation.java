@@ -16,19 +16,11 @@
 
 package com.alibaba.dubbo.rpc.protocol.dubbo;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.alibaba.dubbo.common.Constants;
 import com.alibaba.dubbo.common.logger.Logger;
 import com.alibaba.dubbo.common.logger.LoggerFactory;
 import com.alibaba.dubbo.common.serialize.Cleanable;
 import com.alibaba.dubbo.common.serialize.ObjectInput;
-import com.alibaba.dubbo.common.serialize.OptimizedSerialization;
-import com.alibaba.dubbo.common.serialize.support.kryo.KryoSerialization;
 import com.alibaba.dubbo.common.utils.Assert;
 import com.alibaba.dubbo.common.utils.ReflectUtils;
 import com.alibaba.dubbo.common.utils.StringUtils;
@@ -39,6 +31,12 @@ import com.alibaba.dubbo.remoting.exchange.Request;
 import com.alibaba.dubbo.remoting.transport.CodecSupport;
 import com.alibaba.dubbo.rpc.RpcInvocation;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
+
 import static com.alibaba.dubbo.rpc.protocol.dubbo.CallbackServiceCodec.decodeInvocationArgument;
 
 /**
@@ -48,13 +46,13 @@ public class DecodeableRpcInvocation extends RpcInvocation implements Codec, Dec
 
     private static final Logger log = LoggerFactory.getLogger(DecodeableRpcInvocation.class);
 
-    private Channel     channel;
+    private Channel channel;
 
-    private byte        serializationType;
+    private byte serializationType;
 
     private InputStream inputStream;
 
-    private Request     request;
+    private Request request;
 
     private volatile boolean hasDecoded;
 
