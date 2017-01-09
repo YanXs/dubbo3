@@ -26,6 +26,7 @@ import com.alibaba.dubbo.remoting.ChannelHandler;
 import com.alibaba.dubbo.remoting.RemotingException;
 import com.alibaba.dubbo.remoting.exchange.ExchangeClient;
 import com.alibaba.dubbo.remoting.exchange.ExchangeHandler;
+import com.alibaba.dubbo.remoting.exchange.Interceptor;
 import com.alibaba.dubbo.remoting.exchange.ResponseFuture;
 
 /**
@@ -168,5 +169,10 @@ final class ReferenceCountExchangeClient implements ExchangeClient {
     
     public void incrementAndGetCount(){
         refenceCount.incrementAndGet();
+    }
+
+    @Override
+    public void addInterceptor(Interceptor interceptor) {
+        client.addInterceptor(interceptor);
     }
 }

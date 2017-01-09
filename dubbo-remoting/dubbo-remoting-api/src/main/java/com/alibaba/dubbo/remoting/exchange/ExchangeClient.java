@@ -19,9 +19,11 @@ import com.alibaba.dubbo.remoting.Client;
 
 /**
  * ExchangeClient. (API/SPI, Prototype, ThreadSafe)
- * 
+ *
  * @author william.liangf
  */
 public interface ExchangeClient extends Client, ExchangeChannel {
+
+    void addInterceptor(Interceptor interceptor);
 
 }

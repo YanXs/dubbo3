@@ -23,10 +23,7 @@ import com.alibaba.dubbo.remoting.Channel;
 import com.alibaba.dubbo.remoting.ChannelHandler;
 import com.alibaba.dubbo.remoting.Codec;
 import com.alibaba.dubbo.remoting.RemotingException;
-import com.alibaba.dubbo.remoting.exchange.ExchangeClient;
-import com.alibaba.dubbo.remoting.exchange.ExchangeHandler;
-import com.alibaba.dubbo.remoting.exchange.ResponseCallback;
-import com.alibaba.dubbo.remoting.exchange.ResponseFuture;
+import com.alibaba.dubbo.remoting.exchange.*;
 import com.alibaba.dubbo.remoting.exchange.support.Replier;
 
 /**
@@ -260,5 +257,9 @@ public class MockedClient implements ExchangeClient {
     @Deprecated
     public void reset(com.alibaba.dubbo.common.Parameters parameters) {
     }
-    
+
+    @Override
+    public void addInterceptor(Interceptor interceptor) {
+
+    }
 }

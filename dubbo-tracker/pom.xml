@@ -13,6 +13,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>dubbo-tracker-api</module>
+        <module>dubbo-tracker-zipkin</module>
     </modules>
 
 </project>

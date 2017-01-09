@@ -75,7 +75,7 @@ public class HeaderExchangeServer implements ExchangeServer {
         if (heartbeatTimeout < heartbeat * 2) {
             throw new IllegalStateException("heartbeatTimeout < heartbeatInterval * 2");
         }
-        startHeatbeatTimer();
+        startHeartbeatTimer();
     }
 
     public Server getServer() {
@@ -205,7 +205,7 @@ public class HeaderExchangeServer implements ExchangeServer {
                 if (h != heartbeat || t != heartbeatTimeout) {
                     heartbeat = h;
                     heartbeatTimeout = t;
-                    startHeatbeatTimer();
+                    startHeartbeatTimer();
                 }
             }
         } catch (Throwable t) {
@@ -232,7 +232,7 @@ public class HeaderExchangeServer implements ExchangeServer {
         server.send(message, sent);
     }
 
-    private void startHeatbeatTimer() {
+    private void startHeartbeatTimer() {
         stopHeartbeatTimer();
         if (heartbeat > 0) {
             heartbeatTimer = scheduled.scheduleWithFixedDelay(

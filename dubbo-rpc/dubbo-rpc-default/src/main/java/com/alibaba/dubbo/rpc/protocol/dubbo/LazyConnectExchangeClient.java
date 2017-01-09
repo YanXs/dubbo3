@@ -23,10 +23,7 @@ import com.alibaba.dubbo.common.logger.LoggerFactory;
 import com.alibaba.dubbo.common.utils.NetUtils;
 import com.alibaba.dubbo.remoting.ChannelHandler;
 import com.alibaba.dubbo.remoting.RemotingException;
-import com.alibaba.dubbo.remoting.exchange.ExchangeClient;
-import com.alibaba.dubbo.remoting.exchange.ExchangeHandler;
-import com.alibaba.dubbo.remoting.exchange.Exchangers;
-import com.alibaba.dubbo.remoting.exchange.ResponseFuture;
+import com.alibaba.dubbo.remoting.exchange.*;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.atomic.AtomicLong;
@@ -218,5 +215,10 @@ final class LazyConnectExchangeClient implements ExchangeClient {
             throw new IllegalStateException(
                     "LazyConnectExchangeClient state error. the client has not be init .url:" + url);
         }
+    }
+
+    @Override
+    public void addInterceptor(Interceptor interceptor) {
+        client.addInterceptor(interceptor);
     }
 }

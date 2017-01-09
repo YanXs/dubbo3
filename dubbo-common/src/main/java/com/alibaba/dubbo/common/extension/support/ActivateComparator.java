@@ -22,7 +22,7 @@ import com.alibaba.dubbo.common.extension.ExtensionLoader;
 import com.alibaba.dubbo.common.extension.SPI;
 
 /**
- * OrderComparetor
+ * OrderComparator
  * 
  * @author william.liangf
  */
