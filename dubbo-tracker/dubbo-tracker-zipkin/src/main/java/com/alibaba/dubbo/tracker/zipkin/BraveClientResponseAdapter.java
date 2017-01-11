@@ -11,7 +11,6 @@ import java.util.Collection;
  */
 public class BraveClientResponseAdapter implements ClientResponseAdapter {
 
-
     private DecodeableResponse response;
 
     public BraveClientResponseAdapter(DecodeableResponse response) {

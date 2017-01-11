@@ -44,7 +44,6 @@ public class TomcatHttpServer extends AbstractHttpServer {
 
     public TomcatHttpServer(URL url, final HttpHandler handler) {
         super(url, handler);
-
         this.url = url;
         DispatcherServlet.addHttpHandler(url.getPort(), handler);
         String baseDir = new File(System.getProperty("java.io.tmpdir")).getAbsolutePath();
@@ -67,7 +66,6 @@ public class TomcatHttpServer extends AbstractHttpServer {
         Tomcat.addServlet(context, "dispatcher", new DispatcherServlet());
         context.addServletMapping("/*", "dispatcher");
         ServletManager.getInstance().addServletContext(url.getPort(), context.getServletContext());
-
         try {
             tomcat.start();
         } catch (LifecycleException e) {
@@ -77,9 +75,7 @@ public class TomcatHttpServer extends AbstractHttpServer {
 
     public void close() {
         super.close();
-
         ServletManager.getInstance().removeServletContext(url.getPort());
-
         try {
             tomcat.stop();
         } catch (Exception e) {

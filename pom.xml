@@ -41,24 +41,24 @@
         <url>http://www.alibaba.com</url>
     </organization>
 
-    <repositories>
-        <repository>
-            <id>alimaven</id>
-            <name>aliyun maven</name>
-            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
-        </repository>
-        <repository>
-            <id>maven.net.cn</id>
-            <name>one of the central mirrors in china</name>
-            <url>http://maven.net.cn/content/groups/public/</url>
-        </repository>
+    <!--<repositories>-->
+        <!--<repository>-->
+            <!--<id>alimaven</id>-->
+            <!--<name>aliyun maven</name>-->
+            <!--<url>http://maven.aliyun.com/nexus/content/groups/public/</url>-->
+        <!--</repository>-->
+        <!--<repository>-->
+            <!--<id>maven.net.cn</id>-->
+            <!--<name>one of the central mirrors in china</name>-->
+            <!--<url>http://maven.net.cn/content/groups/public/</url>-->
+        <!--</repository>-->
 
-        <repository>
-            <id>jboss-public-repository-group</id>
-            <name>JBoss Public Repository Group</name>
-            <url>http://repository.jboss.org/nexus/content/groups/public</url>
-        </repository>
-    </repositories>
+        <!--<repository>-->
+            <!--<id>jboss-public-repository-group</id>-->
+            <!--<name>JBoss Public Repository Group</name>-->
+            <!--<url>http://repository.jboss.org/nexus/content/groups/public</url>-->
+        <!--</repository>-->
+    <!--</repositories>-->
 
     <modules>
         <module>dubbo-common</module>
@@ -499,6 +499,18 @@
             <dependency>
                 <groupId>io.zipkin.brave</groupId>
                 <artifactId>brave-spancollector-http</artifactId>
+                <version>3.9.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.zipkin.brave</groupId>
+                <artifactId>brave-spancollector-kafka</artifactId>
+                <version>3.9.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.zipkin.brave</groupId>
+                <artifactId>brave-spancollector-scribe</artifactId>
                 <version>3.9.0</version>
             </dependency>
 

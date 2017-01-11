@@ -21,15 +21,8 @@ public class OkHttpConnectionFactory implements HessianConnectionFactory {
 
     private final OkHttpClient client;
 
-    public OkHttpConnectionFactory(com.alibaba.dubbo.common.URL url) {
+    public OkHttpConnectionFactory() {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
-        Boolean enableTrace = url.getParameter(Constants.ENABLE_TRACE_KEY, true);
-        if (enableTrace) {
-            RpcTracker rpcTracker = ExtensionLoader.getExtensionLoader(RpcTracker.class).getDefaultExtension();
-        }
-        int timeout = url.getParameter(Constants.TIMEOUT_KEY, Constants.DEFAULT_TIMEOUT);
-        builder.readTimeout(timeout, TimeUnit.MILLISECONDS);
-        builder.writeTimeout(timeout, TimeUnit.MILLISECONDS);
         client = builder.build();
     }
 

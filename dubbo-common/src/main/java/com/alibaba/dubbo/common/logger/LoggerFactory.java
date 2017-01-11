@@ -41,7 +41,6 @@ public class LoggerFactory {
 	
 	private static final ConcurrentMap<String, FailsafeLogger> LOGGERS = new ConcurrentHashMap<String, FailsafeLogger>();
 
-	// 查找常用的日志框架
 	static {
 	    String logger = System.getProperty("dubbo.application.logger");
 	    if ("slf4j".equals(logger)) {
