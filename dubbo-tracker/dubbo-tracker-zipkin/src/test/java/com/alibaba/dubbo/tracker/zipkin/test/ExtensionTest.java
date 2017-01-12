@@ -1,7 +1,6 @@
 package com.alibaba.dubbo.tracker.zipkin.test;
 
 import com.alibaba.dubbo.common.URL;
-import com.alibaba.dubbo.common.extension.ExtensionLoader;
 import com.alibaba.dubbo.tracker.RpcTracker;
 import com.alibaba.dubbo.tracker.RpcTrackerFactory;
 import com.alibaba.dubbo.tracker.TrackerManager;
@@ -19,8 +18,9 @@ public class ExtensionTest {
 
     @Test
     public void test_create_tracker() {
-        RpcTrackerFactory factory = ExtensionLoader.getExtensionLoader(RpcTrackerFactory.class).getDefaultExtension();
-        URL url = URL.valueOf("zipkin://localhost:9411?service-name=test&collector=http&sampler=counting&rate=0.2");
-        RpcTracker rpcTracker = factory.createRpcTracker(url);
+        RpcTrackerFactory factory = TrackerManager.getTrackerFactory();
+        URL url = URL.valueOf("zipkin://localhost:9411?application=test&collector=http&sampler=counting&rate=0.2");
+        RpcTracker rpcTracker = TrackerManager.create(url);
+        Assert.assertEquals(rpcTracker, TrackerManager.getRpcTracker());
     }
 }

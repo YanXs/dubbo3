@@ -1,9 +1,7 @@
 package com.alibaba.dubbo.tracker.zipkin;
 
-import com.alibaba.dubbo.remoting.exchange.Request;
 import com.alibaba.dubbo.rpc.RpcInvocation;
 import com.alibaba.dubbo.tracker.ClientRequestInterceptor;
-import com.alibaba.dubbo.tracker.DecodeableRequest;
 import com.alibaba.dubbo.tracker.DubboSpanNameProvider;
 
 /**
@@ -23,16 +21,10 @@ public class BraveClientRequestInterceptor implements ClientRequestInterceptor {
 
     @Override
     public void handle(Object request) {
-        if (!(request instanceof Request)) {
+        if (!(request instanceof RpcInvocation)) {
             return;
         }
-        Request req = (Request) request;
-        if (req.isEvent()) {
-            return;
-        }
-        if (!(req.getData() instanceof RpcInvocation)) {
-            return;
-        }
-        clientRequestInterceptor.handle(new BraveClientRequestAdapter(new DecodeableRequest(req), spanNameProvider));
+        RpcInvocation invocation = (RpcInvocation) request;
+        clientRequestInterceptor.handle(new BraveClientRequestAdapter(new BraveRpcInvocation(invocation), spanNameProvider));
     }
 }

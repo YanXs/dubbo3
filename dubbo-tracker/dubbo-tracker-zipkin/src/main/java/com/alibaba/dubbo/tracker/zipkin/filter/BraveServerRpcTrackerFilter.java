@@ -6,7 +6,6 @@ import com.alibaba.dubbo.rpc.Invocation;
 import com.alibaba.dubbo.rpc.Invoker;
 import com.alibaba.dubbo.rpc.Result;
 import com.alibaba.dubbo.rpc.RpcException;
-import com.alibaba.dubbo.tracker.RpcTrackerFactory;
 import com.alibaba.dubbo.tracker.filter.ServerRpcTrackerFilter;
 
 /**
@@ -15,14 +14,9 @@ import com.alibaba.dubbo.tracker.filter.ServerRpcTrackerFilter;
 @Activate(group = Constants.PROVIDER, order = Integer.MIN_VALUE)
 public class BraveServerRpcTrackerFilter implements ServerRpcTrackerFilter {
 
-    private RpcTrackerFactory rpcTrackerFactory;
-
-    public void setRpcTrackerFactory(RpcTrackerFactory rpcTrackerFactory) {
-        this.rpcTrackerFactory = rpcTrackerFactory;
-    }
-
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
-        return invoker.invoke(invocation);
+        Result result = invoker.invoke(invocation);
+        return result;
     }
 }

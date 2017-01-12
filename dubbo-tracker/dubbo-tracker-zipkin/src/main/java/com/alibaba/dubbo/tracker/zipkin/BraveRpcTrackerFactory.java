@@ -12,11 +12,10 @@ public class BraveRpcTrackerFactory implements RpcTrackerFactory {
     private volatile BraveRpcTracker braveRpcTracker;
 
     @Override
-    public synchronized RpcTracker createRpcTracker(URL url) {
-        if (braveRpcTracker != null) {
-            return braveRpcTracker;
+    public RpcTracker createRpcTracker(URL url) {
+        if (braveRpcTracker == null) {
+            braveRpcTracker = BraveRpcTracker.create(url);
         }
-        braveRpcTracker = BraveRpcTracker.create(url);
         return braveRpcTracker;
     }
 

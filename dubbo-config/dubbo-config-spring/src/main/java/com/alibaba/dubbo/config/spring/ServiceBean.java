@@ -218,6 +218,14 @@ public class ServiceBean<T> extends ServiceConfig<T> implements InitializingBean
                 }
             }
         }
+
+        //TODO ADD TRACKER HERE
+        if (getTracker() == null &&
+                (getProvider() == null || getProvider().getTracker() == null) &&
+                (getApplication() == null || getApplication().getTracker() == null)) {
+
+        }
+
         if ((getProtocols() == null || getProtocols().size() == 0)
                 && (getProvider() == null || getProvider().getProtocols() == null || getProvider().getProtocols().size() == 0)) {
             Map<String, ProtocolConfig> protocolConfigMap = applicationContext == null ? null : BeanFactoryUtils.beansOfTypeIncludingAncestors(applicationContext, ProtocolConfig.class, false, false);

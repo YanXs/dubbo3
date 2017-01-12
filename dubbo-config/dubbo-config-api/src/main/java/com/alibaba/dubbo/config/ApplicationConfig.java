@@ -64,6 +64,8 @@ public class ApplicationConfig extends AbstractConfig {
     // 服务监控
     private MonitorConfig monitor;
 
+    private TrackerConfig tracker;
+
     // 是否为缺省
     private Boolean isDefault;
 
@@ -168,6 +170,14 @@ public class ApplicationConfig extends AbstractConfig {
 
     public void setMonitor(String monitor) {
         this.monitor = new MonitorConfig(monitor);
+    }
+
+    public TrackerConfig getTracker() {
+        return tracker;
+    }
+
+    public void setTracker(TrackerConfig tracker) {
+        this.tracker = tracker;
     }
 
     public String getCompiler() {

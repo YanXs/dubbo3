@@ -1,24 +1,25 @@
 package com.alibaba.dubbo.tracker.zipkin;
 
-import com.alibaba.dubbo.tracker.DecodeableResponse;
 import com.github.kristofa.brave.ClientResponseAdapter;
 import com.github.kristofa.brave.KeyValueAnnotation;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * @author Xs
  */
 public class BraveClientResponseAdapter implements ClientResponseAdapter {
 
-    private DecodeableResponse response;
+    private final BraveRpcResult rpcResult;
 
-    public BraveClientResponseAdapter(DecodeableResponse response) {
-        this.response = response;
+    public BraveClientResponseAdapter(BraveRpcResult rpcResult) {
+        this.rpcResult = rpcResult;
     }
 
     @Override
     public Collection<KeyValueAnnotation> responseAnnotations() {
-        return null;
+
+        return Collections.EMPTY_LIST;
     }
 }
