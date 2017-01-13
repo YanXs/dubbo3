@@ -1,7 +1,8 @@
 package com.alibaba.dubbo.tracker.zipkin;
 
-import com.alibaba.dubbo.tracker.DubboSpanNameProvider;
+import com.alibaba.dubbo.tracker.InvocationSpanNameProvider;
 import com.alibaba.dubbo.tracker.RpcAttachment;
+import com.alibaba.dubbo.tracker.RpcRequest;
 import com.alibaba.dubbo.tracker.TrackerKeys;
 import com.github.kristofa.brave.ClientRequestAdapter;
 import com.github.kristofa.brave.IdConversion;
@@ -17,12 +18,12 @@ import java.util.Collections;
  */
 public class BraveClientRequestAdapter implements ClientRequestAdapter {
 
-    private final DubboSpanNameProvider spanNameProvider;
+    private final InvocationSpanNameProvider spanNameProvider;
 
-    private final BraveRpcInvocation invocation;
+    private final RpcRequest rpcRequest;
 
-    public BraveClientRequestAdapter(BraveRpcInvocation invocation, DubboSpanNameProvider spanNameProvider) {
-        this.invocation = invocation;
+    public BraveClientRequestAdapter(RpcRequest rpcRequest, InvocationSpanNameProvider spanNameProvider) {
+        this.rpcRequest = rpcRequest;
         this.spanNameProvider = spanNameProvider;
     }
 

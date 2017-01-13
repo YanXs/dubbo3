@@ -11,5 +11,9 @@ public interface RpcTracker {
 
     ClientResponseInterceptor clientResponseInterceptor();
 
+    ServerRequestInterceptor serverRequestInterceptor();
+
+    ServerResponseInterceptor serverResponseInterceptor();
+
     ServletFilter servletFilter();
 }

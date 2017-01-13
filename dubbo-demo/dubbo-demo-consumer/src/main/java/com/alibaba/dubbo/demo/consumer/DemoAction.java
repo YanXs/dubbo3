@@ -78,12 +78,12 @@ public class DemoAction {
             System.out.println("SUCCESS: caught exception " + e.getClass());
         }
 
-        User user = new User(1L, "larrypage");
-        System.out.println("SUCCESS: registered user with id " + anotherUserRestService.registerUser(user).getId());
-
-        RpcContext.getContext().setAttachment("clientName", "demo");
-        RpcContext.getContext().setAttachment("clientImpl", "dubbox");
-        System.out.println("SUCCESS: got user " + anotherUserRestService.getUser(1L));
+//        User user = new User(1L, "larrypage");
+//        System.out.println("SUCCESS: registered user with id " + anotherUserRestService.registerUser(user).getId());
+//
+//        RpcContext.getContext().setAttachment("clientName", "demo");
+//        RpcContext.getContext().setAttachment("clientImpl", "dubbox");
+//        System.out.println("SUCCESS: got user " + anotherUserRestService.getUser(1L));
     }
 
 }

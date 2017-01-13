@@ -22,7 +22,7 @@
 
     <bean class="com.alibaba.dubbo.demo.consumer.DemoAction" init-method="start">
 		<property name="bidService" ref="bidService" />
-		<property name="anotherUserRestService" ref="anotherUserRestService" />
+		<!--<property name="anotherUserRestService" ref="anotherUserRestService" />-->
 	</bean>
 
 </beans>

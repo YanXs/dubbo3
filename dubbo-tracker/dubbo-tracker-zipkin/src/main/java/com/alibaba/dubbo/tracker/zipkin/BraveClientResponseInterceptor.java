@@ -1,5 +1,6 @@
 package com.alibaba.dubbo.tracker.zipkin;
 
+import com.alibaba.dubbo.rpc.RpcResult;
 import com.alibaba.dubbo.rpc.protocol.dubbo.DecodeableRpcResult;
 import com.alibaba.dubbo.tracker.ClientResponseInterceptor;
 
@@ -17,10 +18,10 @@ public class BraveClientResponseInterceptor implements ClientResponseInterceptor
 
     @Override
     public void handle(Object response) {
-        if (!(response instanceof DecodeableRpcResult)) {
+        if (!(response instanceof RpcResult)) {
             return;
         }
-        DecodeableRpcResult result = (DecodeableRpcResult) response;
+        RpcResult result = (RpcResult) response;
         clientResponseInterceptor.handle(new BraveClientResponseAdapter(new BraveRpcResult(result)));
     }
 }

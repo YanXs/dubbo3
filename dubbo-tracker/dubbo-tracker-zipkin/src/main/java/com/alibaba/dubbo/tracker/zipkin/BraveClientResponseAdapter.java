@@ -1,5 +1,6 @@
 package com.alibaba.dubbo.tracker.zipkin;
 
+import com.alibaba.dubbo.tracker.TrackerKeys;
 import com.github.kristofa.brave.ClientResponseAdapter;
 import com.github.kristofa.brave.KeyValueAnnotation;
 
@@ -19,7 +20,11 @@ public class BraveClientResponseAdapter implements ClientResponseAdapter {
 
     @Override
     public Collection<KeyValueAnnotation> responseAnnotations() {
+        if (rpcResult.hasException()) {
+            KeyValueAnnotation statusAnnotation = KeyValueAnnotation.create(TrackerKeys.RETURN_STATUS, rpcResult.exception());
+            return Collections.singletonList(statusAnnotation);
+        }
+        return Collections.emptyList();
 
-        return Collections.EMPTY_LIST;
     }
 }

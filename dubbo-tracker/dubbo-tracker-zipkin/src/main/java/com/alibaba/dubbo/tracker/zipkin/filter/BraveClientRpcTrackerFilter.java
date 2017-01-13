@@ -6,6 +6,7 @@ import com.alibaba.dubbo.rpc.Invocation;
 import com.alibaba.dubbo.rpc.Invoker;
 import com.alibaba.dubbo.rpc.Result;
 import com.alibaba.dubbo.rpc.RpcException;
+import com.alibaba.dubbo.tracker.RpcRequest;
 import com.alibaba.dubbo.tracker.RpcTracker;
 import com.alibaba.dubbo.tracker.TrackerManager;
 import com.alibaba.dubbo.tracker.filter.ClientRpcTrackerFilter;
@@ -19,7 +20,7 @@ public class BraveClientRpcTrackerFilter implements ClientRpcTrackerFilter {
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
         RpcTracker rpcTracker = TrackerManager.mockRpcTracker("consumer");
-        rpcTracker.clientRequestInterceptor().handle(invocation);
+        rpcTracker.clientRequestInterceptor().handle(new RpcRequest(invoker, invocation));
         Result result = invoker.invoke(invocation);
         rpcTracker.clientResponseInterceptor().handle(result);
         return result;
