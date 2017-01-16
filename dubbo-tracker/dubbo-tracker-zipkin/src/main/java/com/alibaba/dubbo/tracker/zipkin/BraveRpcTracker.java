@@ -12,14 +12,13 @@ import com.github.kristofa.brave.http.DefaultSpanNameProvider;
  */
 public class BraveRpcTracker implements RpcTracker {
 
-    private final BraveClientRequestInterceptor clientRequestInterceptor;
+    private final BraveConsumerInvocationInterceptor clientRequestInterceptor;
 
-    private final BraveClientResponseInterceptor clientResponseInterceptor;
+    private final BraveConsumerResultInterceptor clientResponseInterceptor;
 
-    private final BraveServerRequestInterceptor serverRequestInterceptor;
+    private final BraveProviderInvocationInterceptor serverRequestInterceptor;
 
-    private final BraveServerResponseInterceptor serverResponseInterceptor;
-
+    private final BraveProviderResultInterceptor serverResponseInterceptor;
 
     private final BraveServletFilter braveServletFilter;
 
@@ -32,31 +31,31 @@ public class BraveRpcTracker implements RpcTracker {
         builder.spanCollector(SpanCollectorFactory.create(url));
         builder.traceSampler(SamplerFactory.create(url));
         Brave brave = builder.build();
-        clientRequestInterceptor = new BraveClientRequestInterceptor(brave.clientRequestInterceptor(), new InvocationSpanNameProvider());
-        clientResponseInterceptor = new BraveClientResponseInterceptor(brave.clientResponseInterceptor());
-        serverRequestInterceptor = new BraveServerRequestInterceptor(brave.serverRequestInterceptor(), new InvocationSpanNameProvider());
-        serverResponseInterceptor = new BraveServerResponseInterceptor(brave.serverResponseInterceptor());
+        clientRequestInterceptor = new BraveConsumerInvocationInterceptor(brave.clientRequestInterceptor(), new RpcRequestSpanNameProvider());
+        clientResponseInterceptor = new BraveConsumerResultInterceptor(brave.clientResponseInterceptor());
+        serverRequestInterceptor = new BraveProviderInvocationInterceptor(brave.serverRequestInterceptor(), new RpcRequestSpanNameProvider());
+        serverResponseInterceptor = new BraveProviderResultInterceptor(brave.serverResponseInterceptor());
         braveServletFilter = new BraveServletFilter(new com.github.kristofa.brave.servlet.BraveServletFilter(
                 brave.serverRequestInterceptor(), brave.serverResponseInterceptor(), new DefaultSpanNameProvider()));
     }
 
     @Override
-    public ClientRequestInterceptor clientRequestInterceptor() {
+    public ConsumerInvocationInterceptor clientRequestInterceptor() {
         return clientRequestInterceptor;
     }
 
     @Override
-    public ClientResponseInterceptor clientResponseInterceptor() {
+    public ConsumerResultInterceptor clientResponseInterceptor() {
         return clientResponseInterceptor;
     }
 
     @Override
-    public ServerRequestInterceptor serverRequestInterceptor() {
+    public ProviderInvocationInterceptor serverRequestInterceptor() {
         return serverRequestInterceptor;
     }
 
     @Override
-    public ServerResponseInterceptor serverResponseInterceptor() {
+    public ProviderResultInterceptor serverResponseInterceptor() {
         return serverResponseInterceptor;
     }
 

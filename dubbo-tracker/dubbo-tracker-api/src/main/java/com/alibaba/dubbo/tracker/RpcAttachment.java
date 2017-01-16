@@ -2,7 +2,6 @@ package com.alibaba.dubbo.tracker;
 
 /**
  * @author Xs
- * @seeBraveHttpHeaders
  */
 public enum RpcAttachment {
 

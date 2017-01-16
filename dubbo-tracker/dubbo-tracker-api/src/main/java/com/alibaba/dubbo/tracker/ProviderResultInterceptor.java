@@ -1,6 +1,6 @@
 package com.alibaba.dubbo.tracker;
 
-public interface ServerResponseInterceptor {
+public interface ProviderResultInterceptor {
 
     void handle(RpcResponse response);
 }

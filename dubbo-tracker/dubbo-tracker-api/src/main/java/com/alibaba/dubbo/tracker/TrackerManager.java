@@ -34,8 +34,8 @@ public class TrackerManager {
         return rpcTracker;
     }
 
-    public static RpcTracker mockRpcTracker(String application) {
-        String urlStr = "zipkin://localhost:9411?application=" + application + "&collector=http";
+    public static RpcTracker mockRpcTracker(String address, String application) {
+        String urlStr = "zipkin://" + address + "?application=" + application + "&collector=http";
         URL url = URL.valueOf(urlStr);
         return create(url);
     }

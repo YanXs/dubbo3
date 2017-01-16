@@ -1,8 +1,8 @@
 package com.alibaba.dubbo.tracker.zipkin;
 
-import com.alibaba.dubbo.tracker.InvocationSpanNameProvider;
 import com.alibaba.dubbo.tracker.RpcAttachment;
 import com.alibaba.dubbo.tracker.RpcRequest;
+import com.alibaba.dubbo.tracker.RpcRequestSpanNameProvider;
 import com.alibaba.dubbo.tracker.TrackerKeys;
 import com.github.kristofa.brave.ClientRequestAdapter;
 import com.github.kristofa.brave.IdConversion;
@@ -18,37 +18,37 @@ import java.util.Collections;
  */
 public class BraveClientRequestAdapter implements ClientRequestAdapter {
 
-    private final InvocationSpanNameProvider spanNameProvider;
+    private final RpcRequestSpanNameProvider spanNameProvider;
 
     private final RpcRequest rpcRequest;
 
-    public BraveClientRequestAdapter(RpcRequest rpcRequest, InvocationSpanNameProvider spanNameProvider) {
+    public BraveClientRequestAdapter(RpcRequest rpcRequest, RpcRequestSpanNameProvider spanNameProvider) {
         this.rpcRequest = rpcRequest;
         this.spanNameProvider = spanNameProvider;
     }
 
     @Override
     public String getSpanName() {
-        return spanNameProvider.spanName(invocation.getRpcInvocation());
+        return spanNameProvider.spanName(rpcRequest);
     }
 
     @Override
     public void addSpanIdToRequest(SpanId spanId) {
         if (spanId == null) {
-            invocation.addAttachment(RpcAttachment.Sampled.getName(), "0");
+            rpcRequest.addAttachment(RpcAttachment.Sampled.getName(), "0");
         } else {
-            invocation.addAttachment(RpcAttachment.Sampled.getName(), "1");
-            invocation.addAttachment(RpcAttachment.TraceId.getName(), IdConversion.convertToString(spanId.traceId));
-            invocation.addAttachment(RpcAttachment.SpanId.getName(), IdConversion.convertToString(spanId.spanId));
+            rpcRequest.addAttachment(RpcAttachment.Sampled.getName(), "1");
+            rpcRequest.addAttachment(RpcAttachment.TraceId.getName(), IdConversion.convertToString(spanId.traceId));
+            rpcRequest.addAttachment(RpcAttachment.SpanId.getName(), IdConversion.convertToString(spanId.spanId));
             if (spanId.nullableParentId() != null) {
-                invocation.addAttachment(RpcAttachment.ParentSpanId.getName(), IdConversion.convertToString(spanId.parentId));
+                rpcRequest.addAttachment(RpcAttachment.ParentSpanId.getName(), IdConversion.convertToString(spanId.parentId));
             }
         }
     }
 
     @Override
     public Collection<KeyValueAnnotation> requestAnnotations() {
-        KeyValueAnnotation annotation = KeyValueAnnotation.create(TrackerKeys.PROVIDER_ADDR, invocation.providerAddress());
+        KeyValueAnnotation annotation = KeyValueAnnotation.create(TrackerKeys.PROVIDER_ADDR, rpcRequest.providerAddress());
         return Collections.singletonList(annotation);
     }
 

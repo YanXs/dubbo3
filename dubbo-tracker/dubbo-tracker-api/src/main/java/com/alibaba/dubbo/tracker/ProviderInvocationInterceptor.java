@@ -1,9 +1,6 @@
 package com.alibaba.dubbo.tracker;
 
-/**
- * @author Xs
- */
-public interface ClientRequestInterceptor {
+public interface ProviderInvocationInterceptor {
 
     void handle(RpcRequest request);
 }

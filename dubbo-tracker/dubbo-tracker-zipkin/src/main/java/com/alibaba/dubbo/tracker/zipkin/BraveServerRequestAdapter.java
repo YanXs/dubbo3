@@ -1,8 +1,8 @@
 package com.alibaba.dubbo.tracker.zipkin;
 
-import com.alibaba.dubbo.tracker.InvocationSpanNameProvider;
 import com.alibaba.dubbo.tracker.RpcAttachment;
 import com.alibaba.dubbo.tracker.RpcRequest;
+import com.alibaba.dubbo.tracker.RpcRequestSpanNameProvider;
 import com.alibaba.dubbo.tracker.TrackerKeys;
 import com.github.kristofa.brave.KeyValueAnnotation;
 import com.github.kristofa.brave.ServerRequestAdapter;
@@ -16,25 +16,25 @@ import static com.github.kristofa.brave.IdConversion.convertToLong;
 
 public class BraveServerRequestAdapter implements ServerRequestAdapter {
 
-    private final InvocationSpanNameProvider spanNameProvider;
+    private final RpcRequestSpanNameProvider spanNameProvider;
 
     private final RpcRequest rpcRequest;
 
-    public BraveServerRequestAdapter(RpcRequest rpcRequest, InvocationSpanNameProvider spanNameProvider) {
+    public BraveServerRequestAdapter(RpcRequest rpcRequest, RpcRequestSpanNameProvider spanNameProvider) {
         this.spanNameProvider = spanNameProvider;
         this.rpcRequest = rpcRequest;
     }
 
     @Override
     public TraceData getTraceData() {
-        final String sampled = invocation.getAttachment(RpcAttachment.Sampled.getName());
+        final String sampled = rpcRequest.getAttachment(RpcAttachment.Sampled.getName());
         if (sampled != null) {
             if (sampled.equals("0") || sampled.toLowerCase().equals("false")) {
                 return TraceData.builder().sample(false).build();
             } else {
-                final String parentSpanId = invocation.getAttachment(RpcAttachment.ParentSpanId.getName());
-                final String traceId = invocation.getAttachment(RpcAttachment.TraceId.getName());
-                final String spanId = invocation.getAttachment(RpcAttachment.SpanId.getName());
+                final String parentSpanId = rpcRequest.getAttachment(RpcAttachment.ParentSpanId.getName());
+                final String traceId = rpcRequest.getAttachment(RpcAttachment.TraceId.getName());
+                final String spanId = rpcRequest.getAttachment(RpcAttachment.SpanId.getName());
 
                 if (traceId != null && spanId != null) {
                     SpanId span = getSpanId(traceId, spanId, parentSpanId);
@@ -47,12 +47,12 @@ public class BraveServerRequestAdapter implements ServerRequestAdapter {
 
     @Override
     public String getSpanName() {
-        return spanNameProvider.spanName(invocation.getRpcInvocation());
+        return spanNameProvider.spanName(rpcRequest);
     }
 
     @Override
     public Collection<KeyValueAnnotation> requestAnnotations() {
-        KeyValueAnnotation annotation = KeyValueAnnotation.create(TrackerKeys.PROVIDER_ADDR, invocation.providerAddress());
+        KeyValueAnnotation annotation = KeyValueAnnotation.create(TrackerKeys.PROVIDER_ADDR, rpcRequest.providerAddress());
         return Collections.singletonList(annotation);
     }
 

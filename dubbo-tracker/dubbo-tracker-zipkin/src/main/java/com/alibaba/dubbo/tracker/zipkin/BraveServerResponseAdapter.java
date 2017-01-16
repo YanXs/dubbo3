@@ -19,10 +19,10 @@ public class BraveServerResponseAdapter implements ServerResponseAdapter {
     @Override
     public Collection<KeyValueAnnotation> responseAnnotations() {
         KeyValueAnnotation statusAnnotation;
-        if (rpcResult.hasException()) {
-            statusAnnotation = KeyValueAnnotation.create(TrackerKeys.RETURN_STATUS, rpcResult.exception());
-        } else {
+        if (rpcResponse.returnSuccessfully()) {
             statusAnnotation = KeyValueAnnotation.create(TrackerKeys.RETURN_STATUS, "OK");
+        } else {
+            statusAnnotation = KeyValueAnnotation.create(TrackerKeys.RETURN_STATUS, rpcResponse.exceptionMessage());
         }
         return Collections.singletonList(statusAnnotation);
     }

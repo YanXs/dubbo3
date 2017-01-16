@@ -17,6 +17,7 @@ package com.alibaba.dubbo.rpc.protocol.http;
 
 import com.alibaba.dubbo.common.Constants;
 import com.alibaba.dubbo.common.URL;
+import com.alibaba.dubbo.common.utils.StringUtils;
 import com.alibaba.dubbo.remoting.http.HttpBinder;
 import com.alibaba.dubbo.remoting.http.HttpHandler;
 import com.alibaba.dubbo.remoting.http.HttpServer;
@@ -115,7 +116,9 @@ public class HttpProtocol extends AbstractProxyProtocol {
         httpProxyFactoryBean.setServiceUrl(url.toIdentityString());
         httpProxyFactoryBean.setServiceInterface(serviceType);
         String client = url.getParameter(Constants.CLIENT_KEY);
-        if (client == null || client.length() == 0 || "simple".equals(client)) {
+        if (StringUtils.isEmpty(client) || "okHttpClient".equals(client)) {
+            httpProxyFactoryBean.setHttpInvokerRequestExecutor(new OkHttpInvokerRequestExecutor(url));
+        } else if ("simple".equals(client)) {
             SimpleHttpInvokerRequestExecutor httpInvokerRequestExecutor = new SimpleHttpInvokerRequestExecutor() {
                 protected void prepareConnection(HttpURLConnection con,
                                                  int contentLength) throws IOException {
@@ -129,8 +132,6 @@ public class HttpProtocol extends AbstractProxyProtocol {
             CommonsHttpInvokerRequestExecutor httpInvokerRequestExecutor = new CommonsHttpInvokerRequestExecutor();
             httpInvokerRequestExecutor.setReadTimeout(url.getParameter(Constants.CONNECT_TIMEOUT_KEY, Constants.DEFAULT_CONNECT_TIMEOUT));
             httpProxyFactoryBean.setHttpInvokerRequestExecutor(httpInvokerRequestExecutor);
-        } else if ("okHttpClient".equals(client)) {
-            httpProxyFactoryBean.setHttpInvokerRequestExecutor(new OkHttpInvokerRequestExecutor(url));
         } else if (client.length() > 0) {
             throw new IllegalStateException("Unsupported http protocol client " + client + ", only supported: simple, commons");
         }
