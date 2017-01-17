@@ -47,6 +47,7 @@ public class HeaderExchangeClient implements ExchangeClient {
 
     private static final ScheduledThreadPoolExecutor scheduled = new ScheduledThreadPoolExecutor(2, new NamedThreadFactory("dubbo-remoting-client-heartbeat", true));
 
+
     // 心跳定时器
     private ScheduledFuture<?> heartbeatTimer;
 
@@ -183,47 +184,7 @@ public class HeaderExchangeClient implements ExchangeClient {
     }
 
     public ResponseFuture request(Object request, int timeout) throws RemotingException {
-        Interceptor.Chain chain = new ExchangeClientInterceptorChain(0, request);
-        return chain.proceed(request, timeout);
-    }
-
-    @Override
-    public void addInterceptor(Interceptor interceptor) {
-        interceptors.add(interceptor);
-    }
-
-    /**
-     * @author Xs request interceptor
-     */
-    class ExchangeClientInterceptorChain implements Interceptor.Chain {
-
-        private final int index;
-
-        private final Object request;
-
-        ExchangeClientInterceptorChain(int index, Object request) {
-            this.index = index;
-            this.request = request;
-        }
-
-        @Override
-        public Object request() {
-            return request;
-        }
-
-        @Override
-        public ResponseFuture proceed(Object request, int timeout) throws RemotingException {
-            if (index < interceptors.size()) {
-                Interceptor.Chain chain = new ExchangeClientInterceptorChain(index + 1, request);
-                Interceptor interceptor = interceptors.get(index);
-                ResponseFuture responseFuture = interceptor.intercept(chain);
-                if (responseFuture == null) {
-                    throw new NullPointerException("interceptor " + interceptor
-                            + " returned null");
-                }
-            }
-            return channel.request(request, timeout);
-        }
+        return channel.request(request, timeout);
     }
 
 

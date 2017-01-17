@@ -16,6 +16,7 @@
 
 package com.alibaba.dubbo.remoting.exchange.support.header;
 
+import com.alibaba.dubbo.common.Version;
 import com.alibaba.dubbo.common.logger.Logger;
 import com.alibaba.dubbo.common.logger.LoggerFactory;
 import com.alibaba.dubbo.remoting.Channel;
@@ -57,11 +58,11 @@ final class HeartBeatTask implements Runnable {
                             HeaderExchangeHandler.KEY_WRITE_TIMESTAMP);
                     if ((lastRead != null && now - lastRead > heartbeat)
                             || (lastWrite != null && now - lastWrite > heartbeat)) {
-                        Request req = new Request();
-                        req.setVersion("2.0.0");
-                        req.setTwoWay(true);
-                        req.setEvent(Request.HEARTBEAT_EVENT);
-                        channel.send(req);
+                        Request.Builder builder = new Request.Builder();
+                        builder.newId().version(Version.getVersion()).
+                                twoWay(true).isEvent(true).data(Request.HEARTBEAT_EVENT);
+                        Request request = builder.build();
+                        channel.send(request);
                         if (logger.isDebugEnabled()) {
                             logger.debug("Send heartbeat to remote channel " + channel.getRemoteAddress()
                                     + ", cause: The channel has no data-transmission exceeds a heartbeat period: " + heartbeat + "ms");

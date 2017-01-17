@@ -21,8 +21,10 @@ public class OkHttpConnectionFactory implements HessianConnectionFactory {
 
     private final OkHttpClient client;
 
-    public OkHttpConnectionFactory() {
+    public OkHttpConnectionFactory(com.alibaba.dubbo.common.URL url) {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        builder.readTimeout(url.getParameter(Constants.TIMEOUT_KEY, Constants.DEFAULT_TIMEOUT), TimeUnit.MILLISECONDS);
+        builder.connectTimeout(url.getParameter(Constants.TIMEOUT_KEY, Constants.DEFAULT_TIMEOUT), TimeUnit.MILLISECONDS);
         client = builder.build();
     }
 

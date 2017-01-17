@@ -119,8 +119,7 @@ public class DecodeableRpcResult extends RpcResult implements Codec, Decodeable 
                 if (log.isWarnEnabled()) {
                     log.warn("Decode rpc result failed: " + e.getMessage(), e);
                 }
-                response.setStatus(Response.CLIENT_ERROR);
-                response.setErrorMessage(StringUtils.toString(e));
+                response = response.newBuilder().status(Response.CLIENT_ERROR).errorMsg(StringUtils.toString(e)).build();
             } finally {
                 hasDecoded = true;
             }

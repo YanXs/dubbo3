@@ -1,12 +1,12 @@
 /*
  * Copyright 1999-2011 Alibaba Group.
- *  
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- *  
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -111,9 +111,7 @@ public class DefaultFuture implements ResponseFuture {
     }
 
     public void cancel() {
-        Response errorResult = new Response(id);
-        errorResult.setErrorMessage("request future has been canceled.");
-        response = errorResult;
+        response = response.newBuilder().errorMsg("request future has been canceled.").build();
         FUTURES.remove(id);
         CHANNELS.remove(id);
     }
@@ -290,10 +288,10 @@ public class DefaultFuture implements ResponseFuture {
                         }
                         if (System.currentTimeMillis() - future.getStartTimestamp() > future.getTimeout()) {
                             // create exception response.
-                            Response timeoutResponse = new Response(future.getId());
-                            // set timeout status.
-                            timeoutResponse.setStatus(future.isSent() ? Response.SERVER_TIMEOUT : Response.CLIENT_TIMEOUT);
-                            timeoutResponse.setErrorMessage(future.getTimeoutMessage(true));
+                            Response.Builder builder = new Response.Builder(future.getId());
+                            builder.status(future.isSent() ? Response.SERVER_TIMEOUT : Response.CLIENT_TIMEOUT);
+                            builder.errorMsg(future.getTimeoutMessage(true));
+                            Response timeoutResponse = builder.build();
                             // handle response.
                             DefaultFuture.received(future.getChannel(), timeoutResponse);
                         }

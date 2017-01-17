@@ -7,13 +7,13 @@ import com.alibaba.dubbo.remoting.RemotingException;
  */
 public interface Interceptor {
 
-    ResponseFuture intercept(Chain chain);
+    Response intercept(Chain chain);
 
     interface Chain {
 
-        Object request();
+        Request request();
 
-        ResponseFuture proceed(Object request, int timeout) throws RemotingException;
+        Response proceed(Request request, int timeout) throws RemotingException;
 
     }
 }

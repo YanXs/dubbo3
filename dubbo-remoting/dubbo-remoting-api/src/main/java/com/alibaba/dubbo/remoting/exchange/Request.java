@@ -35,22 +35,92 @@ public class Request {
 
     private final long mId;
 
-    private String mVersion;
+    private final String mVersion;
 
-    private boolean mTwoWay = true;
+    private final boolean mTwoWay;
 
-    private boolean mEvent = false;
+    private final boolean mEvent;
 
-    private boolean mBroken = false;
+    private final boolean mBroken;
 
-    private Object mData;
+    private final Object mData;
 
-    public Request() {
-        mId = newId();
+    public Request(Builder builder) {
+        this.mId = builder.mId;
+        this.mVersion = builder.mVersion;
+        this.mTwoWay = builder.mTwoWay;
+        this.mEvent = builder.mEvent;
+        this.mBroken = builder.mBroken;
+        this.mData = builder.mData;
     }
 
-    public Request(long id) {
-        mId = id;
+    public Builder newBuilder() {
+        return new Builder(this);
+    }
+
+    public static class Builder {
+        private long mId;
+        private String mVersion;
+        private boolean mTwoWay = true;
+        private boolean mEvent = false;
+        private boolean mBroken = false;
+        private Object mData;
+
+        public Builder() {
+        }
+
+        public Builder(long mId) {
+            this.mId = mId;
+        }
+
+        public Builder(Request request) {
+            this.mId = request.mId;
+            this.mVersion = request.mVersion;
+            this.mTwoWay = request.mTwoWay;
+            this.mEvent = request.mEvent;
+            this.mBroken = request.mBroken;
+            this.mData = request.mData;
+
+        }
+
+        public Builder id(long mId) {
+            this.mId = mId;
+            return this;
+        }
+
+        public Builder newId() {
+            this.mId = Request.newId();
+            return this;
+        }
+
+        public Builder version(String mVersion) {
+            this.mVersion = mVersion;
+            return this;
+        }
+
+        public Builder twoWay(boolean mTwoWay) {
+            this.mTwoWay = mTwoWay;
+            return this;
+        }
+
+        public Builder isEvent(boolean mEvent) {
+            this.mEvent = mEvent;
+            return this;
+        }
+
+        public Builder broken(boolean mBroken) {
+            this.mBroken = mBroken;
+            return this;
+        }
+
+        public Builder data(Object mData) {
+            this.mData = mData;
+            return this;
+        }
+
+        public Request build() {
+            return new Request(this);
+        }
     }
 
     public long getId() {
@@ -61,51 +131,25 @@ public class Request {
         return mVersion;
     }
 
-    public void setVersion(String version) {
-        mVersion = version;
-    }
-
     public boolean isTwoWay() {
         return mTwoWay;
-    }
-
-    public void setTwoWay(boolean twoWay) {
-        mTwoWay = twoWay;
     }
 
     public boolean isEvent() {
         return mEvent;
     }
 
-    public void setEvent(String event) {
-        mEvent = true;
-        mData = event;
-    }
-
     public boolean isBroken() {
         return mBroken;
     }
 
-    public void setBroken(boolean mBroken) {
-        this.mBroken = mBroken;
-    }
 
     public Object getData() {
         return mData;
     }
 
-    public void setData(Object msg) {
-        mData = msg;
-    }
-
     public boolean isHeartbeat() {
         return mEvent && HEARTBEAT_EVENT == mData;
-    }
-
-    public void setHeartbeat(boolean isHeartbeat) {
-        if (isHeartbeat) {
-            setEvent(HEARTBEAT_EVENT);
-        }
     }
 
     private static long newId() {

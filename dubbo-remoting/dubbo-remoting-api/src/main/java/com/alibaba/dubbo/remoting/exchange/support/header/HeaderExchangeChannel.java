@@ -17,6 +17,7 @@ package com.alibaba.dubbo.remoting.exchange.support.header;
 
 import com.alibaba.dubbo.common.Constants;
 import com.alibaba.dubbo.common.URL;
+import com.alibaba.dubbo.common.Version;
 import com.alibaba.dubbo.common.logger.Logger;
 import com.alibaba.dubbo.common.logger.LoggerFactory;
 import com.alibaba.dubbo.remoting.Channel;
@@ -83,10 +84,9 @@ final class HeaderExchangeChannel implements ExchangeChannel {
                 || message instanceof String) {
             channel.send(message, sent);
         } else {
-            Request request = new Request();
-            request.setVersion("2.0.0");
-            request.setTwoWay(false);
-            request.setData(message);
+            Request.Builder builder = new Request.Builder();
+            builder.newId().version(Version.getVersion()).twoWay(false).data(message);
+            Request request = builder.build();
             channel.send(request, sent);
         }
     }
@@ -101,10 +101,9 @@ final class HeaderExchangeChannel implements ExchangeChannel {
                     ", cause: The channel " + this + " is closed!");
         }
         // create request.
-        Request req = new Request();
-        req.setVersion("2.0.0");
-        req.setTwoWay(true);
-        req.setData(request);
+        Request.Builder builder = new Request.Builder();
+        builder.newId().version(Version.getVersion()).twoWay(true).data(request);
+        Request req = builder.build();
         DefaultFuture future = new DefaultFuture(channel, req, timeout);
         try {
             channel.send(req);

@@ -217,8 +217,4 @@ final class LazyConnectExchangeClient implements ExchangeClient {
         }
     }
 
-    @Override
-    public void addInterceptor(Interceptor interceptor) {
-        client.addInterceptor(interceptor);
-    }
 }

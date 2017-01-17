@@ -35,7 +35,6 @@ public class HttpClientConnection extends AbstractHessianConnection {
 
     private final HttpClient httpClient;
 
-
     private final HttpPost request;
 
     private volatile HttpResponse response;

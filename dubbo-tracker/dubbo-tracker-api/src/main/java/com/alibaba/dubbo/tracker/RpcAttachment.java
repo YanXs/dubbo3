@@ -11,7 +11,9 @@ public enum RpcAttachment {
 
     ParentSpanId("X-B3-ParentSpanId"),
 
-    Sampled("X-B3-Sampled");
+    Sampled("X-B3-Sampled"),
+
+    Method("X-B3-Method");
 
     private final String name;
 

@@ -74,8 +74,7 @@ public class DecodeableRpcInvocation extends RpcInvocation implements Codec, Dec
                 if (log.isWarnEnabled()) {
                     log.warn("Decode rpc invocation failed: " + e.getMessage(), e);
                 }
-                request.setBroken(true);
-                request.setData(e);
+                request = request.newBuilder().broken(true).data(e).build();
             } finally {
                 hasDecoded = true;
             }
@@ -140,7 +139,6 @@ public class DecodeableRpcInvocation extends RpcInvocation implements Codec, Dec
                     }
                 }
                 setParameterTypes(pts);
-
                 Map<String, String> map = (Map<String, String>) in.readObject(Map.class);
                 if (map != null && map.size() > 0) {
                     Map<String, String> attachment = getAttachments();

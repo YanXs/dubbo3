@@ -257,9 +257,4 @@ public class MockedClient implements ExchangeClient {
     @Deprecated
     public void reset(com.alibaba.dubbo.common.Parameters parameters) {
     }
-
-    @Override
-    public void addInterceptor(Interceptor interceptor) {
-
-    }
 }

@@ -15,6 +15,7 @@
  */
 package com.alibaba.dubbo.remoting.exchange.codec;
 
+import com.alibaba.dubbo.common.Version;
 import com.alibaba.dubbo.common.io.Bytes;
 import com.alibaba.dubbo.common.io.StreamUtils;
 import com.alibaba.dubbo.common.logger.Logger;
@@ -47,17 +48,14 @@ import java.io.InputStream;
 public class ExchangeCodec extends TelnetCodec {
 
     private static final Logger logger = LoggerFactory.getLogger(ExchangeCodec.class);
-
     // header length.
     protected static final int HEADER_LENGTH = 16;
-
     // magic header.
     protected static final short MAGIC = (short) 0xdabb;
 
     protected static final byte MAGIC_HIGH = Bytes.short2bytes(MAGIC)[0];
 
     protected static final byte MAGIC_LOW = Bytes.short2bytes(MAGIC)[1];
-
     // message flag.
     protected static final byte FLAG_REQUEST = (byte) 0x80;
 
@@ -151,56 +149,54 @@ public class ExchangeCodec extends TelnetCodec {
         long id = Bytes.bytes2long(header, 4);
         if ((flag & FLAG_REQUEST) == 0) {
             // decode response.
-            Response res = new Response(id);
-            if ((flag & FLAG_EVENT) != 0) {
-                res.setEvent(Response.HEARTBEAT_EVENT);
+            Response.Builder builder = new Response.Builder(id);
+            boolean isEvent = (flag & FLAG_EVENT) != 0;
+            builder.isEvent(isEvent);
+            if (isEvent) {
+                builder.result(Response.HEARTBEAT_EVENT);
             }
             // get status.
             byte status = header[3];
-            res.setStatus(status);
+            builder.status(status);
             if (status == Response.OK) {
                 try {
                     Object data;
-                    if (res.isHeartbeat()) {
-                        data = decodeHeartbeatData(channel, in);
-                    } else if (res.isEvent()) {
+                    if (isEvent) {
                         data = decodeEventData(channel, in);
                     } else {
                         data = decodeResponseData(channel, in, getRequestData(id));
                     }
-                    res.setResult(data);
+                    builder.result(data);
                 } catch (Throwable t) {
-                    res.setStatus(Response.CLIENT_ERROR);
-                    res.setErrorMessage(StringUtils.toString(t));
+                    builder.status(Response.CLIENT_ERROR);
+                    builder.errorMsg(StringUtils.toString(t));
                 }
             } else {
-                res.setErrorMessage(in.readUTF());
+                builder.errorMsg(in.readUTF());
             }
-            return res;
+            return builder.build();
         } else {
             // decode request.
-            Request req = new Request(id);
-            req.setVersion("2.0.0");
-            req.setTwoWay((flag & FLAG_TWOWAY) != 0);
-            if ((flag & FLAG_EVENT) != 0) {
-                req.setEvent(Request.HEARTBEAT_EVENT);
+            Request.Builder builder = new Request.Builder(id);
+            builder.version(Version.getVersion()).twoWay((flag & FLAG_TWOWAY) != 0);
+            boolean isEvent = (flag & FLAG_EVENT) != 0;
+            if (isEvent) {
+                builder.isEvent(true).data(Request.HEARTBEAT_EVENT);
             }
             try {
                 Object data;
-                if (req.isHeartbeat()) {
-                    data = decodeHeartbeatData(channel, in);
-                } else if (req.isEvent()) {
+                if (isEvent) {
                     data = decodeEventData(channel, in);
                 } else {
                     data = decodeRequestData(channel, in);
                 }
-                req.setData(data);
+                builder.data(data);
             } catch (Throwable t) {
                 // bad request
-                req.setBroken(true);
-                req.setData(t);
+                builder.broken(true);
+                builder.data(t);
             }
-            return req;
+            return builder.build();
         }
     }
 
@@ -220,16 +216,12 @@ public class ExchangeCodec extends TelnetCodec {
         byte[] header = new byte[HEADER_LENGTH];
         // set magic number.
         Bytes.short2bytes(MAGIC, header);
-
         // set request and serialization flag.
         header[2] = (byte) (FLAG_REQUEST | serialization.getContentTypeId());
-
         if (req.isTwoWay()) header[2] |= FLAG_TWOWAY;
         if (req.isEvent()) header[2] |= FLAG_EVENT;
-
         // set request id.
         Bytes.long2bytes(req.getId(), header, 4);
-
         // encode request data.
         int savedWriteIndex = buffer.writerIndex();
         buffer.writerIndex(savedWriteIndex + HEADER_LENGTH);
@@ -285,7 +277,7 @@ public class ExchangeCodec extends TelnetCodec {
                 // encode response data or error message.
                 if (status == Response.OK) {
                     if (res.isHeartbeat()) {
-                        encodeHeartbeatData(channel, out, res.getResult());
+                        encodeEventData(channel, out, res.getResult());
                     } else {
                         encodeResponseData(channel, out, res.getResult());
                     }
@@ -314,12 +306,10 @@ public class ExchangeCodec extends TelnetCodec {
                 try {
                     // FIXME 在Codec中打印出错日志？在IoHanndler的caught中统一处理？
                     logger.warn("Fail to encode response: " + res + ", send bad_response info instead, cause: " + t.getMessage(), t);
-
-                    Response r = new Response(res.getId(), res.getVersion());
-                    r.setStatus(Response.BAD_RESPONSE);
-                    r.setErrorMessage("Failed to send response: " + res + ", cause: " + StringUtils.toString(t));
-                    channel.send(r);
-
+                    Response.Builder builder = new Response.Builder(res.getId());
+                    builder.version(res.getVersion()).status(Response.BAD_RESPONSE);
+                    builder.errorMsg("Failed to send response: " + res + ", cause: " + StringUtils.toString(t));
+                    channel.send(builder.build());
                     return;
                 } catch (RemotingException e) {
                     logger.warn("Failed to send bad_response info back: " + res + ", cause: " + e.getMessage(), e);
@@ -342,15 +332,6 @@ public class ExchangeCodec extends TelnetCodec {
     @Override
     protected Object decodeData(ObjectInput in) throws IOException {
         return decodeRequestData(in);
-    }
-
-    @Deprecated
-    protected Object decodeHeartbeatData(ObjectInput in) throws IOException {
-        try {
-            return in.readObject();
-        } catch (ClassNotFoundException e) {
-            throw new IOException(StringUtils.toString("Read object failed.", e));
-        }
     }
 
     protected Object decodeRequestData(ObjectInput in) throws IOException {
@@ -378,11 +359,6 @@ public class ExchangeCodec extends TelnetCodec {
         out.writeObject(data);
     }
 
-    @Deprecated
-    protected void encodeHeartbeatData(ObjectOutput out, Object data) throws IOException {
-        encodeEventData(out, data);
-    }
-
     protected void encodeRequestData(ObjectOutput out, Object data) throws IOException {
         out.writeObject(data);
     }
@@ -397,15 +373,6 @@ public class ExchangeCodec extends TelnetCodec {
     }
 
     protected Object decodeEventData(Channel channel, ObjectInput in) throws IOException {
-        try {
-            return in.readObject();
-        } catch (ClassNotFoundException e) {
-            throw new IOException(StringUtils.toString("Read object failed.", e));
-        }
-    }
-
-    @Deprecated
-    protected Object decodeHeartbeatData(Channel channel, ObjectInput in) throws IOException {
         try {
             return in.readObject();
         } catch (ClassNotFoundException e) {
@@ -432,11 +399,6 @@ public class ExchangeCodec extends TelnetCodec {
 
     private void encodeEventData(Channel channel, ObjectOutput out, Object data) throws IOException {
         encodeEventData(out, data);
-    }
-
-    @Deprecated
-    protected void encodeHeartbeatData(Channel channel, ObjectOutput out, Object data) throws IOException {
-        encodeHeartbeatData(out, data);
     }
 
     protected void encodeRequestData(Channel channel, ObjectOutput out, Object data) throws IOException {

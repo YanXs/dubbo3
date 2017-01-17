@@ -15,7 +15,7 @@ import com.alibaba.dubbo.tracker.filter.ClientRpcTrackerFilter;
 /**
  * @author Xs
  */
-@Activate(group = Constants.CONSUMER, order = Integer.MAX_VALUE)
+//@Activate(group = Constants.CONSUMER, order = Integer.MAX_VALUE)
 public class BraveClientRpcTrackerFilter implements ClientRpcTrackerFilter {
 
     @Override

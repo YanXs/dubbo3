@@ -1,10 +1,6 @@
 package com.alibaba.dubbo.remoting.transport.codec;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
-import com.alibaba.dubbo.common.Constants;
+import com.alibaba.dubbo.common.Version;
 import com.alibaba.dubbo.common.io.Bytes;
 import com.alibaba.dubbo.common.io.StreamUtils;
 import com.alibaba.dubbo.common.io.UnsafeByteArrayInputStream;
@@ -23,23 +19,24 @@ import com.alibaba.dubbo.remoting.exchange.Response;
 import com.alibaba.dubbo.remoting.exchange.support.DefaultFuture;
 import com.alibaba.dubbo.remoting.transport.CodecSupport;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
 /**
  * @author <a href="mailto:gang.lvg@taobao.com">kimi</a>
  */
 final class DeprecatedExchangeCodec extends DeprecatedTelnetCodec implements Codec {
 
     private static final Logger logger = LoggerFactory.getLogger(DeprecatedExchangeCodec.class);
-
     // header length.
     protected static final int HEADER_LENGTH = 16;
-
     // magic header.
     protected static final short MAGIC = (short) 0xdabb;
 
     protected static final byte MAGIC_HIGH = Bytes.short2bytes(MAGIC)[0];
 
     protected static final byte MAGIC_LOW = Bytes.short2bytes(MAGIC)[1];
-
     // message flag.
     protected static final byte FLAG_REQUEST = (byte) 0x80;
 
@@ -73,7 +70,7 @@ final class DeprecatedExchangeCodec extends DeprecatedTelnetCodec implements Cod
     protected Object decode(Channel channel, InputStream is, int readable, byte[] header) throws IOException {
         // check magic number.
         if (readable > 0 && header[0] != MAGIC_HIGH
-            || readable > 1 && header[1] != MAGIC_LOW) {
+                || readable > 1 && header[1] != MAGIC_LOW) {
             int length = header.length;
             if (header.length < readable) {
                 header = Bytes.copyOf(header, readable);
@@ -93,20 +90,17 @@ final class DeprecatedExchangeCodec extends DeprecatedTelnetCodec implements Cod
         if (readable < HEADER_LENGTH) {
             return NEED_MORE_INPUT;
         }
-
         // get data length.
         int len = Bytes.bytes2int(header, 12);
         checkPayload(channel, len);
-
         int tt = len + HEADER_LENGTH;
         if (readable < tt) {
             return NEED_MORE_INPUT;
         }
-
         // limit input stream.
-        if (readable != tt)
+        if (readable != tt) {
             is = StreamUtils.limitedInputStream(is, len);
-
+        }
         try {
             return decodeBody(channel, is, header);
         } finally {
@@ -131,56 +125,54 @@ final class DeprecatedExchangeCodec extends DeprecatedTelnetCodec implements Cod
         long id = Bytes.bytes2long(header, 4);
         if ((flag & FLAG_REQUEST) == 0) {
             // decode response.
-            Response res = new Response(id);
-            if ((flag & FLAG_EVENT) != 0) {
-                res.setEvent(Response.HEARTBEAT_EVENT);
+            Response.Builder builder = new Response.Builder(id);
+            boolean isEvent = (flag & FLAG_EVENT) != 0;
+            builder.isEvent(isEvent);
+            if (isEvent) {
+                builder.result(Response.HEARTBEAT_EVENT);
             }
             // get status.
             byte status = header[3];
-            res.setStatus(status);
+            builder.status(status);
+            Response res = builder.build();
             if (status == Response.OK) {
                 try {
                     Object data;
-                    if (res.isHeartbeat()) {
-                        data = decodeHeartbeatData(channel, in);
-                    } else if (res.isEvent()) {
+                    if (isEvent) {
                         data = decodeEventData(channel, in);
                     } else {
                         data = decodeResponseData(channel, in, getRequestData(id));
                     }
-                    res.setResult(data);
+                    res = res.newBuilder().result(data).build();
                 } catch (Throwable t) {
-                    res.setStatus(Response.CLIENT_ERROR);
-                    res.setErrorMessage(StringUtils.toString(t));
+                    res = res.newBuilder().status(Response.CLIENT_ERROR).errorMsg(StringUtils.toString(t)).build();
                 }
             } else {
-                res.setErrorMessage(in.readUTF());
+                res = res.newBuilder().errorMsg(in.readUTF()).build();
             }
             return res;
         } else {
             // decode request.
-            Request req = new Request(id);
-            req.setVersion("2.0.0");
-            req.setTwoWay((flag & FLAG_TWOWAY) != 0);
-            if ((flag & FLAG_EVENT) != 0) {
-                req.setEvent(Request.HEARTBEAT_EVENT);
+            Request.Builder builder = new Request.Builder(id);
+            builder.version(Version.getVersion());
+            builder.twoWay((flag & FLAG_TWOWAY) != 0);
+            boolean isEvent = (flag & FLAG_EVENT) != 0;
+            if (isEvent) {
+                builder.isEvent(true).data(Request.HEARTBEAT_EVENT);
             }
             try {
                 Object data;
-                if (req.isHeartbeat()) {
-                    data = decodeHeartbeatData(channel, in);
-                } else if (req.isEvent()) {
+                if (isEvent) {
                     data = decodeEventData(channel, in);
                 } else {
                     data = decodeRequestData(channel, in);
                 }
-                req.setData(data);
+                builder.data(data);
             } catch (Throwable t) {
                 // bad request
-                req.setBroken(true);
-                req.setData(t);
+                builder.broken(true).data(t);
             }
-            return req;
+            return builder.build();
         }
     }
 
@@ -251,7 +243,7 @@ final class DeprecatedExchangeCodec extends DeprecatedTelnetCodec implements Cod
             // encode response data or error message.
             if (status == Response.OK) {
                 if (res.isHeartbeat()) {
-                    encodeHeartbeatData(channel, out, res.getResult());
+                    encodeEventData(channel, out, res.getResult());
                 } else {
                     encodeResponseData(channel, out, res.getResult());
                 }
@@ -272,12 +264,11 @@ final class DeprecatedExchangeCodec extends DeprecatedTelnetCodec implements Cod
                 try {
                     // FIXME 在Codec中打印出错日志？在IoHanndler的caught中统一处理？
                     logger.warn("Fail to encode response: " + res + ", send bad_response info instead, cause: " + t.getMessage(), t);
-
-                    Response r = new Response(res.getId(), res.getVersion());
-                    r.setStatus(Response.BAD_RESPONSE);
-                    r.setErrorMessage("Failed to send response: " + res + ", cause: " + StringUtils.toString(t));
+                    Response r = res.newBuilder().
+                            status(Response.BAD_RESPONSE).
+                            errorMsg("Failed to send response: " + res + ", cause: " + StringUtils.toString(t)).
+                            build();
                     channel.send(r);
-
                     return;
                 } catch (RemotingException e) {
                     logger.warn("Failed to send bad_response info back: " + res + ", cause: " + e.getMessage(), e);
@@ -289,10 +280,8 @@ final class DeprecatedExchangeCodec extends DeprecatedTelnetCodec implements Cod
                 throw (IOException) t;
             } else if (t instanceof RuntimeException) {
                 throw (RuntimeException) t;
-            } else if (t instanceof Error) {
-                throw (Error) t;
             } else {
-                throw new RuntimeException(t.getMessage(), t);
+                throw (Error) t;
             }
         }
     }
@@ -386,11 +375,6 @@ final class DeprecatedExchangeCodec extends DeprecatedTelnetCodec implements Cod
 
     private void encodeEventData(Channel channel, ObjectOutput out, Object data) throws IOException {
         encodeEventData(out, data);
-    }
-
-    @Deprecated
-    protected void encodeHeartbeatData(Channel channel, ObjectOutput out, Object data) throws IOException {
-        encodeHeartbeatData(out, data);
     }
 
     protected void encodeRequestData(Channel channel, ObjectOutput out, Object data) throws IOException {

@@ -16,12 +16,8 @@
 package com.alibaba.dubbo.remoting.handler;
 
 
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.junit.Assert;
-import org.junit.Test;
-
 import com.alibaba.dubbo.common.Constants;
+import com.alibaba.dubbo.common.Version;
 import com.alibaba.dubbo.remoting.Channel;
 import com.alibaba.dubbo.remoting.RemotingException;
 import com.alibaba.dubbo.remoting.exchange.ExchangeChannel;
@@ -29,20 +25,24 @@ import com.alibaba.dubbo.remoting.exchange.ExchangeHandler;
 import com.alibaba.dubbo.remoting.exchange.Request;
 import com.alibaba.dubbo.remoting.exchange.Response;
 import com.alibaba.dubbo.remoting.exchange.support.header.HeaderExchangeHandler;
+import org.junit.Assert;
+import org.junit.Test;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 //TODO response test
 public class HeaderExchangeHandlerTest {
-    
+
     @Test
-    public void test_received_request_oneway() throws RemotingException{
+    public void test_received_request_oneway() throws RemotingException {
         final Channel mchannel = new MockedChannel();
-        
+
         final Person requestdata = new Person("charles");
-        Request request = new Request();
-        request.setTwoWay(false);
-        request.setData(requestdata);
-        
-        ExchangeHandler exhandler = new MockedExchangeHandler(){
+        Request.Builder builder = new Request.Builder();
+        builder.newId().version(Version.getVersion()).twoWay(false).data(requestdata);
+        Request request = builder.build();
+
+        ExchangeHandler exhandler = new MockedExchangeHandler() {
             public void received(Channel channel, Object message) throws RemotingException {
                 Assert.assertEquals(requestdata, message);
             }
@@ -50,19 +50,19 @@ public class HeaderExchangeHandlerTest {
         HeaderExchangeHandler hexhandler = new HeaderExchangeHandler(exhandler);
         hexhandler.received(mchannel, request);
     }
-    
+
     @Test
-    public void test_received_request_twoway() throws RemotingException{
+    public void test_received_request_twoway() throws RemotingException {
         final Person requestdata = new Person("charles");
-        final Request request = new Request();
-        request.setTwoWay(true);
-        request.setData(requestdata);
-        
+        Request.Builder builder = new Request.Builder();
+        builder.newId().version(Version.getVersion()).twoWay(true).data(requestdata);
+        final Request request = builder.build();
+
         final AtomicInteger count = new AtomicInteger(0);
-        final Channel mchannel = new MockedChannel(){
+        final Channel mchannel = new MockedChannel() {
             @Override
             public void send(Object message) throws RemotingException {
-                Response res = (Response)message;
+                Response res = (Response) message;
                 Assert.assertEquals(request.getId(), res.getId());
                 Assert.assertEquals(request.getVersion(), res.getVersion());
                 Assert.assertEquals(Response.OK, res.getStatus());
@@ -71,11 +71,12 @@ public class HeaderExchangeHandlerTest {
                 count.incrementAndGet();
             }
         };
-        ExchangeHandler exhandler = new MockedExchangeHandler(){
+        ExchangeHandler exhandler = new MockedExchangeHandler() {
             @Override
             public Object reply(ExchangeChannel channel, Object request) throws RemotingException {
                 return request;
             }
+
             public void received(Channel channel, Object message) throws RemotingException {
                 Assert.fail();
             }
@@ -84,23 +85,24 @@ public class HeaderExchangeHandlerTest {
         hexhandler.received(mchannel, request);
         Assert.assertEquals(1, count.get());
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
-    public void test_received_request_twoway_error_nullhandler() throws RemotingException{
+    public void test_received_request_twoway_error_nullhandler() throws RemotingException {
         new HeaderExchangeHandler(null);
     }
+
     @Test
-    public void test_received_request_twoway_error_reply() throws RemotingException{
+    public void test_received_request_twoway_error_reply() throws RemotingException {
         final Person requestdata = new Person("charles");
-        final Request request = new Request();
-        request.setTwoWay(true);
-        request.setData(requestdata);
-        
+        Request.Builder builder = new Request.Builder();
+        builder.newId().version(Version.getVersion()).twoWay(true).data(requestdata);
+        final Request request = builder.build();
+
         final AtomicInteger count = new AtomicInteger(0);
-        final Channel mchannel = new MockedChannel(){
+        final Channel mchannel = new MockedChannel() {
             @Override
             public void send(Object message) throws RemotingException {
-                Response res = (Response)message;
+                Response res = (Response) message;
                 Assert.assertEquals(request.getId(), res.getId());
                 Assert.assertEquals(request.getVersion(), res.getVersion());
                 Assert.assertEquals(Response.SERVICE_ERROR, res.getStatus());
@@ -109,7 +111,7 @@ public class HeaderExchangeHandlerTest {
                 count.incrementAndGet();
             }
         };
-        ExchangeHandler exhandler = new MockedExchangeHandler(){
+        ExchangeHandler exhandler = new MockedExchangeHandler() {
             @Override
             public Object reply(ExchangeChannel channel, Object request) throws RemotingException {
                 throw new BizException();
@@ -119,19 +121,18 @@ public class HeaderExchangeHandlerTest {
         hexhandler.received(mchannel, request);
         Assert.assertEquals(1, count.get());
     }
-    
+
     @Test
-    public void test_received_request_twoway_error_reqeustBroken() throws RemotingException{
-        final Request request = new Request();
-        request.setTwoWay(true);
-        request.setData(new BizException());
-        request.setBroken(true);
-        
+    public void test_received_request_twoway_error_reqeustBroken() throws RemotingException {
+        Request.Builder builder = new Request.Builder();
+        builder.newId().version(Version.getVersion()).twoWay(true).broken(true).data(new BizException());
+        final Request request = builder.build();
+
         final AtomicInteger count = new AtomicInteger(0);
-        final Channel mchannel = new MockedChannel(){
+        final Channel mchannel = new MockedChannel() {
             @Override
             public void send(Object message) throws RemotingException {
-                Response res = (Response)message;
+                Response res = (Response) message;
                 Assert.assertEquals(request.getId(), res.getId());
                 Assert.assertEquals(request.getVersion(), res.getVersion());
                 Assert.assertEquals(Response.BAD_REQUEST, res.getStatus());
@@ -144,53 +145,53 @@ public class HeaderExchangeHandlerTest {
         hexhandler.received(mchannel, request);
         Assert.assertEquals(1, count.get());
     }
-    
+
     @Test
-    public void test_received_request_event_readonly() throws RemotingException{
-        final Request request = new Request();
-        request.setTwoWay(true);
-        request.setEvent(Request.READONLY_EVENT);
-        
+    public void test_received_request_event_readonly() throws RemotingException {
+        Request.Builder builder = new Request.Builder();
+        builder.newId().version(Version.getVersion()).twoWay(true).isEvent(true).data(Request.READONLY_EVENT);
+        final Request request = builder.build();
+
         final Channel mchannel = new MockedChannel();
         HeaderExchangeHandler hexhandler = new HeaderExchangeHandler(new MockedExchangeHandler());
         hexhandler.received(mchannel, request);
         Assert.assertTrue(mchannel.hasAttribute(Constants.CHANNEL_ATTRIBUTE_READONLY_KEY));
     }
-    
+
     @Test
-    public void test_received_request_event_other_discard() throws RemotingException{
-        final Request request = new Request();
-        request.setTwoWay(true);
-        request.setEvent("my event");
-        
-        final Channel mchannel = new MockedChannel(){
+    public void test_received_request_event_other_discard() throws RemotingException {
+        Request.Builder builder = new Request.Builder();
+        builder.newId().version(Version.getVersion()).twoWay(true).isEvent(true).data("my event");
+        final Request request = builder.build();
+
+        final Channel mchannel = new MockedChannel() {
             @Override
             public void send(Object message) throws RemotingException {
                 Assert.fail();
             }
         };
-        HeaderExchangeHandler hexhandler = new HeaderExchangeHandler(new MockedExchangeHandler(){
+        HeaderExchangeHandler hexhandler = new HeaderExchangeHandler(new MockedExchangeHandler() {
 
             @Override
             public Object reply(ExchangeChannel channel, Object request) throws RemotingException {
                 Assert.fail();
-                throw new RemotingException(channel,"");
+                throw new RemotingException(channel, "");
             }
 
             @Override
             public void received(Channel channel, Object message) throws RemotingException {
                 Assert.fail();
-                throw new RemotingException(channel,"");
+                throw new RemotingException(channel, "");
             }
         });
         hexhandler.received(mchannel, request);
     }
 
-    private class BizException extends RuntimeException{
+    private class BizException extends RuntimeException {
         private static final long serialVersionUID = 1L;
     }
-    
-    private class MockedExchangeHandler extends MockedChannelHandler implements ExchangeHandler{
+
+    private class MockedExchangeHandler extends MockedChannelHandler implements ExchangeHandler {
 
         public String telnet(Channel channel, String message) throws RemotingException {
             throw new UnsupportedOperationException();
@@ -200,13 +201,15 @@ public class HeaderExchangeHandlerTest {
             throw new UnsupportedOperationException();
         }
     }
-    
+
     private class Person {
         private String name;
+
         public Person(String name) {
             super();
             this.name = name;
         }
+
         @Override
         public String toString() {
             return "Person [name=" + name + "]";

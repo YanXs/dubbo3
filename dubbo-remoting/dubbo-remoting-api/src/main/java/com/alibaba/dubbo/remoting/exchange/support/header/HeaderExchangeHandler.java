@@ -64,31 +64,28 @@ public class HeaderExchangeHandler implements ChannelHandlerDelegate {
     }
 
     Response handleRequest(ExchangeChannel channel, Request req) throws RemotingException {
-        Response res = new Response(req.getId(), req.getVersion());
+        Response.Builder builder = new Response.Builder(req.getId());
+        builder.version(req.getVersion());
         if (req.isBroken()) {
             Object data = req.getData();
-
             String msg;
             if (data == null) msg = null;
             else if (data instanceof Throwable) msg = StringUtils.toString((Throwable) data);
             else msg = data.toString();
-            res.setErrorMessage("Fail to decode request due to: " + msg);
-            res.setStatus(Response.BAD_REQUEST);
-
-            return res;
+            builder.errorMsg("Fail to decode request due to: " + msg);
+            builder.status(Response.BAD_REQUEST);
+            return builder.build();
         }
         // find handler by message class.
         Object msg = req.getData();
         try {
             // handle data.
             Object result = handler.reply(channel, msg);
-            res.setStatus(Response.OK);
-            res.setResult(result);
+            builder.status(Response.OK).result(result);
         } catch (Throwable e) {
-            res.setStatus(Response.SERVICE_ERROR);
-            res.setErrorMessage(StringUtils.toString(e));
+            builder.status(Response.SERVICE_ERROR).errorMsg(StringUtils.toString(e));
         }
-        return res;
+        return builder.build();
     }
 
     void handleResponse(Channel channel, Response response) throws RemotingException {
@@ -161,7 +158,6 @@ public class HeaderExchangeHandler implements ChannelHandlerDelegate {
         ExchangeChannel exchangeChannel = HeaderExchangeChannel.getOrAddChannel(channel);
         try {
             if (message instanceof Request) {
-                // handle request.
                 Request request = (Request) message;
                 if (request.isEvent()) {
                     handlerEvent(channel, request);
@@ -200,10 +196,9 @@ public class HeaderExchangeHandler implements ChannelHandlerDelegate {
             if (msg instanceof Request) {
                 Request req = (Request) msg;
                 if (req.isTwoWay() && !req.isHeartbeat()) {
-                    Response res = new Response(req.getId(), req.getVersion());
-                    res.setStatus(Response.SERVER_ERROR);
-                    res.setErrorMessage(StringUtils.toString(e));
-                    channel.send(res);
+                    Response.Builder builder = new Response.Builder(req.getId());
+                    builder.version(req.getVersion()).status(Response.SERVER_ERROR).errorMsg(StringUtils.toString(e));
+                    channel.send(builder.build());
                     return;
                 }
             }

@@ -63,8 +63,10 @@ public class HeartbeatHandler extends AbstractChannelHandlerDelegate {
         if (isHeartbeatRequest(message)) {
             Request req = (Request) message;
             if (req.isTwoWay()) {
-                Response res = new Response(req.getId(), req.getVersion());
-                res.setEvent(Response.HEARTBEAT_EVENT);
+                Response res = new Response.Builder(req.getId()).
+                        version(req.getVersion()).
+                        isEvent(true).
+                        result(Response.HEARTBEAT_EVENT).build();
                 channel.send(res);
                 if (logger.isInfoEnabled()) {
                     int heartbeat = channel.getUrl().getParameter(Constants.HEARTBEAT_KEY, 0);
