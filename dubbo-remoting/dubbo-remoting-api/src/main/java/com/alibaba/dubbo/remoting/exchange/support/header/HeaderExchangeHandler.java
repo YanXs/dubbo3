@@ -57,13 +57,13 @@ public class HeaderExchangeHandler implements ChannelHandlerDelegate {
         this.handler = handler;
     }
 
-    void handlerEvent(Channel channel, Request req) throws RemotingException {
+    private void handlerEvent(Channel channel, Request req) throws RemotingException {
         if (req.getData() != null && req.getData().equals(Request.READONLY_EVENT)) {
             channel.setAttribute(Constants.CHANNEL_ATTRIBUTE_READONLY_KEY, Boolean.TRUE);
         }
     }
 
-    Response handleRequest(ExchangeChannel channel, Request req) throws RemotingException {
+    private Response handleRequest(ExchangeChannel channel, Request req) throws RemotingException {
         Response.Builder builder = new Response.Builder(req.getId());
         builder.version(req.getVersion());
         if (req.isBroken()) {
@@ -88,7 +88,7 @@ public class HeaderExchangeHandler implements ChannelHandlerDelegate {
         return builder.build();
     }
 
-    void handleResponse(Channel channel, Response response) throws RemotingException {
+    private void handleResponse(Channel channel, Response response) throws RemotingException {
         if (response != null && !response.isHeartbeat()) {
             DefaultFuture.received(channel, response);
         }
@@ -173,7 +173,8 @@ public class HeaderExchangeHandler implements ChannelHandlerDelegate {
                 handleResponse(channel, (Response) message);
             } else if (message instanceof String) {
                 if (isClientSide(channel)) {
-                    Exception e = new Exception("Dubbo client can not supported string message: " + message + " in channel: " + channel + ", url: " + channel.getUrl());
+                    Exception e = new Exception("Dubbo client can not supported string message: " +
+                            message + " in channel: " + channel + ", url: " + channel.getUrl());
                     logger.error(e.getMessage(), e);
                 } else {
                     String echo = handler.telnet(channel, (String) message);

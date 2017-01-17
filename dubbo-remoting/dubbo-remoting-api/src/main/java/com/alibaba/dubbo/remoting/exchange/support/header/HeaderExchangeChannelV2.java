@@ -8,6 +8,7 @@ import com.alibaba.dubbo.common.logger.LoggerFactory;
 import com.alibaba.dubbo.remoting.Channel;
 import com.alibaba.dubbo.remoting.ChannelHandler;
 import com.alibaba.dubbo.remoting.RemotingException;
+import com.alibaba.dubbo.remoting.TimeoutException;
 import com.alibaba.dubbo.remoting.exchange.ExchangeChannelV2;
 import com.alibaba.dubbo.remoting.exchange.ExchangeHandler;
 import com.alibaba.dubbo.remoting.exchange.Request;
@@ -88,9 +89,9 @@ public class HeaderExchangeChannelV2 implements ExchangeChannelV2 {
             throw new RemotingException(this.getLocalAddress(), null, "Failed to send request " + request +
                     ", cause: The channel " + this + " is closed!");
         }
-        Long requestId = request.getId();
-        PendingReply pendingReply = new PendingReply(requestId);
+        PendingReply pendingReply = new PendingReply(request.getId());
         addPendingReply(pendingReply);
+        long startTimeMs = System.currentTimeMillis();
         try {
             channel.send(request);
         } catch (RemotingException e) {
@@ -106,7 +107,18 @@ public class HeaderExchangeChannelV2 implements ExchangeChannelV2 {
         } finally {
             removePendingReply(pendingReply);
         }
+        // timeout
+        if (response == null) {
+            throw new TimeoutException(channel, getTimeoutMessage(request, timeout, startTimeMs));
+        }
         return response;
+    }
+
+    public String getTimeoutMessage(Request request, int timeout, long startTimeMs) {
+        long nowTimestamp = System.currentTimeMillis();
+        return "elapsed: " + (nowTimestamp - startTimeMs) + " ms, timeout: "
+                + timeout + " ms, request: " + request + ", channel: " + channel.getLocalAddress()
+                + " -> " + channel.getRemoteAddress();
     }
 
     private static void addPendingReply(PendingReply pendingReply) {
@@ -126,6 +138,7 @@ public class HeaderExchangeChannelV2 implements ExchangeChannelV2 {
         LinkedBlockingQueue<Response> replyHandoff = pendingReply.getQueue();
         replyHandoff.add(response);
     }
+
 
     public boolean isClosed() {
         return closed;

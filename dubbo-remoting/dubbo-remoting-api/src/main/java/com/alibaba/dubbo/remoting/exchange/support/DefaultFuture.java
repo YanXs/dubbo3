@@ -104,7 +104,7 @@ public class DefaultFuture implements ResponseFuture {
                 lock.unlock();
             }
             if (!isDone()) {
-                throw new TimeoutException(sent > 0, channel, getTimeoutMessage(false));
+                throw new TimeoutException(channel, getTimeoutMessage(false));
             }
         }
         return returnFromResponse();
@@ -160,7 +160,7 @@ public class DefaultFuture implements ResponseFuture {
             }
         } else if (res.getStatus() == Response.CLIENT_TIMEOUT || res.getStatus() == Response.SERVER_TIMEOUT) {
             try {
-                TimeoutException te = new TimeoutException(res.getStatus() == Response.SERVER_TIMEOUT, channel, res.getErrorMessage());
+                TimeoutException te = new TimeoutException(channel, res.getErrorMessage());
                 callbackCopy.caught(te);
             } catch (Exception e) {
                 logger.error("callback invoke error ,url:" + channel.getUrl(), e);
@@ -184,7 +184,7 @@ public class DefaultFuture implements ResponseFuture {
             return res.getResult();
         }
         if (res.getStatus() == Response.CLIENT_TIMEOUT || res.getStatus() == Response.SERVER_TIMEOUT) {
-            throw new TimeoutException(res.getStatus() == Response.SERVER_TIMEOUT, channel, res.getErrorMessage());
+            throw new TimeoutException(channel, res.getErrorMessage());
         }
         throw new RemotingException(channel, res.getErrorMessage());
     }
