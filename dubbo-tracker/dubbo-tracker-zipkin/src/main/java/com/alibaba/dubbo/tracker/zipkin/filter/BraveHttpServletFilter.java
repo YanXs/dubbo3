@@ -1,15 +1,16 @@
 package com.alibaba.dubbo.tracker.zipkin.filter;
 
 import com.alibaba.dubbo.tracker.filter.ServletFilter;
+import com.github.kristofa.brave.servlet.BraveServletFilter;
 
 import javax.servlet.*;
 import java.io.IOException;
 
-public class BraveServletFilter implements ServletFilter {
+public class BraveHttpServletFilter implements ServletFilter {
 
-    private final com.github.kristofa.brave.servlet.BraveServletFilter servletFilter;
+    private final BraveServletFilter servletFilter;
 
-    public BraveServletFilter(com.github.kristofa.brave.servlet.BraveServletFilter servletFilter) {
+    public BraveHttpServletFilter(BraveServletFilter servletFilter) {
         this.servletFilter = servletFilter;
     }
 

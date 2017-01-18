@@ -7,13 +7,11 @@ import com.alibaba.dubbo.tracker.filter.ServletFilter;
  */
 public interface RpcTracker {
 
-    ConsumerInvocationInterceptor clientRequestInterceptor();
+    ClientRequestInterceptor clientRequestInterceptor();
 
-    ConsumerResultInterceptor clientResponseInterceptor();
-
-    ProviderInvocationInterceptor serverRequestInterceptor();
-
-    ProviderResultInterceptor serverResponseInterceptor();
+    ClientResponseInterceptor clientResponseInterceptor();
 
     ServletFilter servletFilter();
+
+    RpcTrackerEngine trackerEngine();
 }

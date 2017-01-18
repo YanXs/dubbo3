@@ -128,7 +128,7 @@ public class HeaderExchangeClientV2 implements ExchangeClientV2 {
         Request.Builder builder = new Request.Builder();
         builder.newId().version(Version.getVersion()).twoWay(true).data(request);
         Request req = builder.build();
-        Interceptor.Chain chain = new ExchangeClientInterceptorChain(0, req);
+        Interceptor.Chain chain = new ExchangeClientInterceptorChain(0, req, timeout);
         return chain.proceed(req, timeout);
     }
 
@@ -145,9 +145,12 @@ public class HeaderExchangeClientV2 implements ExchangeClientV2 {
 
         private final Request request;
 
-        ExchangeClientInterceptorChain(int index, Request request) {
+        private final int timeout;
+
+        ExchangeClientInterceptorChain(int index, Request request, int timeout) {
             this.index = index;
             this.request = request;
+            this.timeout = timeout;
         }
 
         @Override
@@ -156,9 +159,14 @@ public class HeaderExchangeClientV2 implements ExchangeClientV2 {
         }
 
         @Override
+        public int timeout() {
+            return timeout;
+        }
+
+        @Override
         public Response proceed(Request request, int timeout) throws RemotingException {
             if (index < interceptors.size()) {
-                Interceptor.Chain chain = new ExchangeClientInterceptorChain(index + 1, request);
+                Interceptor.Chain chain = new ExchangeClientInterceptorChain(index + 1, request, timeout);
                 Interceptor interceptor = interceptors.get(index);
                 Response response = interceptor.intercept(chain);
                 if (response == null) {
