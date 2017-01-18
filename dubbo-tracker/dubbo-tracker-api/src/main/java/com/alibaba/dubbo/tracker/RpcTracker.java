@@ -1,6 +1,6 @@
 package com.alibaba.dubbo.tracker;
 
-import com.alibaba.dubbo.tracker.filter.ServletFilter;
+import com.sun.javafx.scene.traversal.TraversalEngine;
 
 /**
  * @author Xs
@@ -11,7 +11,9 @@ public interface RpcTracker {
 
     ClientResponseInterceptor clientResponseInterceptor();
 
-    ServletFilter servletFilter();
+    ServerRequestInterceptor serverRequestInterceptor();
+
+    ServerResponseInterceptor serverResponseInterceptor();
 
     RpcTrackerEngine trackerEngine();
 }

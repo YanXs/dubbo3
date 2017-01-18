@@ -8,11 +8,15 @@ public class BraveRpcTrackerEngine implements RpcTrackerEngine {
 
     private final Brave brave;
 
-    public BraveRpcTrackerEngine(URL url) {
+    BraveRpcTrackerEngine(URL url) {
         Brave.Builder builder = new Brave.Builder(url.getParameter("application", "demo"));
         builder.spanCollector(SpanCollectorFactory.create(url));
         builder.traceSampler(SamplerFactory.create(url));
         brave = builder.build();
+    }
+
+    public static BraveRpcTrackerEngine create(URL url) {
+        return new BraveRpcTrackerEngine(url);
     }
 
     @Override

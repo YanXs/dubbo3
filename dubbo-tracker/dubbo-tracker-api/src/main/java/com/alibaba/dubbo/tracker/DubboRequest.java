@@ -31,6 +31,10 @@ public class DubboRequest {
         invocation.setAttachment(key, value);
     }
 
+    public String getAttachment(String key){
+        return invocation.getAttachment(key);
+    }
+
     public String providerAddress() {
         return invocation.getInvoker().getUrl().getAddress();
     }

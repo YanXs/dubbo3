@@ -1,12 +1,8 @@
 package com.alibaba.dubbo.tracker.zipkin.http;
 
-import com.alibaba.dubbo.tracker.ClientRequestInterceptor;
-import com.alibaba.dubbo.tracker.ClientResponseInterceptor;
-import com.alibaba.dubbo.tracker.RpcTracker;
-import com.alibaba.dubbo.tracker.RpcTrackerEngine;
-import com.alibaba.dubbo.tracker.filter.ServletFilter;
+import com.alibaba.dubbo.tracker.*;
 
-public class HttpRpcTracker implements RpcTracker{
+public class HttpRpcTracker implements RpcTracker {
 
     @Override
     public ClientRequestInterceptor clientRequestInterceptor() {
@@ -19,7 +15,12 @@ public class HttpRpcTracker implements RpcTracker{
     }
 
     @Override
-    public ServletFilter servletFilter() {
+    public ServerRequestInterceptor serverRequestInterceptor() {
+        return null;
+    }
+
+    @Override
+    public ServerResponseInterceptor serverResponseInterceptor() {
         return null;
     }
 
