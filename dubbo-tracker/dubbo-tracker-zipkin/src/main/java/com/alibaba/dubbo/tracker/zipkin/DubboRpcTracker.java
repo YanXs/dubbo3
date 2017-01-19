@@ -2,6 +2,11 @@ package com.alibaba.dubbo.tracker.zipkin;
 
 import com.alibaba.dubbo.tracker.*;
 
+/**
+ * 追踪dubbo协议同步调用
+ *
+ * @author Xs
+ */
 public class DubboRpcTracker implements RpcTracker {
 
     private final ClientRequestInterceptor clientRequestInterceptor;
@@ -17,13 +22,13 @@ public class DubboRpcTracker implements RpcTracker {
     public DubboRpcTracker(BraveRpcTrackerEngine trackerEngine) {
         this.trackerEngine = trackerEngine;
         this.clientRequestInterceptor = new BraveDubboClientRequestInterceptor(
-                (com.github.kristofa.brave.ClientRequestInterceptor) trackerEngine.clientRequestInterceptor());
+                trackerEngine.clientRequestInterceptor());
         this.clientResponseInterceptor = new BraveDubboClientResponseInterceptor(
-                (com.github.kristofa.brave.ClientResponseInterceptor) trackerEngine.clientResponseInterceptor());
+                trackerEngine.clientResponseInterceptor());
         this.serverRequestInterceptor = new BraveDubboServerRequestInterceptor(
-                (com.github.kristofa.brave.ServerRequestInterceptor) trackerEngine.serverRequestInterceptor());
+                trackerEngine.serverRequestInterceptor());
         this.serverResponseInterceptor = new BraveDubboServerResponseInterceptor(
-                (com.github.kristofa.brave.ServerResponseInterceptor) trackerEngine.serverResponseInterceptor());
+                trackerEngine.serverResponseInterceptor());
     }
 
     @Override

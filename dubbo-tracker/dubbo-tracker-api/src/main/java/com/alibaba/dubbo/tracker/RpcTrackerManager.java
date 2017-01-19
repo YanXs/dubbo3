@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * @author Xs
  */
-public class TrackerManager {
+public class RpcTrackerManager {
 
     private static RpcTrackerFactory rpcTrackerFactory;
 

@@ -8,15 +8,15 @@ import com.alibaba.dubbo.tracker.DubboRequest;
 import com.alibaba.dubbo.tracker.DubboRequestSpanNameProvider;
 import com.alibaba.dubbo.tracker.DubboResponse;
 
-public class DubboRequestResponseInterceptor implements Interceptor {
+public class DubboClientRequestResponseInterceptor implements Interceptor {
 
     private final DubboClientRequestInterceptor clientRequestInterceptor;
     private final DubboClientResponseInterceptor clientResponseInterceptor;
     private final DubboRequestSpanNameProvider spanNameProvider;
 
-    public DubboRequestResponseInterceptor(DubboClientRequestInterceptor clientRequestInterceptor,
-                                           DubboClientResponseInterceptor clientResponseInterceptor,
-                                           DubboRequestSpanNameProvider spanNameProvider) {
+    public DubboClientRequestResponseInterceptor(DubboClientRequestInterceptor clientRequestInterceptor,
+                                                 DubboClientResponseInterceptor clientResponseInterceptor,
+                                                 DubboRequestSpanNameProvider spanNameProvider) {
         this.clientRequestInterceptor = clientRequestInterceptor;
         this.clientResponseInterceptor = clientResponseInterceptor;
         this.spanNameProvider = spanNameProvider;

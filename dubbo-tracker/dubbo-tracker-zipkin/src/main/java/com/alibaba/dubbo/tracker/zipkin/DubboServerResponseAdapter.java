@@ -26,7 +26,7 @@ public class DubboServerResponseAdapter implements ServerResponseAdapter {
     @Override
     public Collection<KeyValueAnnotation> responseAnnotations() {
         KeyValueAnnotation statusAnnotation;
-        if (response.returnSuccessfully()) {
+        if (response.returnOK()) {
             statusAnnotation = KeyValueAnnotation.create(TrackerKeys.RETURN_STATUS, "OK");
         } else {
             statusAnnotation = KeyValueAnnotation.create(TrackerKeys.RETURN_STATUS, response.exceptionMessage());

@@ -90,8 +90,7 @@ public abstract class AbstractClusterInvoker<T> implements Invoker<T> {
      * a)先lb选择，如果在selected列表中 或者 不可用且做检验时，进入下一步(重选),否则直接返回</br>
      * b)重选验证规则：selected > available .保证重选出的结果尽量不在select中，并且是可用的
      *
-     * @param availablecheck 如果设置true，在选择的时候先选invoker.available == true
-     * @param selected       已选过的invoker.注意：输入保证不重复
+     * @param selected 已选过的invoker.注意：输入保证不重复
      */
     protected Invoker<T> select(LoadBalance loadbalance, Invocation invocation, List<Invoker<T>> invokers, List<Invoker<T>> selected) throws RpcException {
         if (invokers == null || invokers.size() == 0)
@@ -228,7 +227,6 @@ public abstract class AbstractClusterInvoker<T> implements Invoker<T> {
     }
 
     protected void checkWheatherDestoried() {
-
         if (destroyed) {
             throw new RpcException("Rpc cluster invoker for " + getInterface() + " on consumer " + NetUtils.getLocalHost()
                     + " use dubbo version " + Version.getVersion()
@@ -257,7 +255,6 @@ public abstract class AbstractClusterInvoker<T> implements Invoker<T> {
                                        LoadBalance loadbalance) throws RpcException;
 
     protected List<Invoker<T>> list(Invocation invocation) throws RpcException {
-        List<Invoker<T>> invokers = directory.list(invocation);
-        return invokers;
+        return directory.list(invocation);
     }
 }

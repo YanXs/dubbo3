@@ -17,5 +17,7 @@ public interface Interceptor {
 
         Response proceed(Request request, int timeout) throws RemotingException;
 
+        Response proceed(Request request) throws RemotingException;
+
     }
 }

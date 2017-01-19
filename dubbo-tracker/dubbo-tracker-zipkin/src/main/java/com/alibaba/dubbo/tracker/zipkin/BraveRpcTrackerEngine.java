@@ -2,8 +2,13 @@ package com.alibaba.dubbo.tracker.zipkin;
 
 import com.alibaba.dubbo.common.URL;
 import com.alibaba.dubbo.tracker.RpcTrackerEngine;
-import com.github.kristofa.brave.Brave;
+import com.github.kristofa.brave.*;
 
+/**
+ * 基于Zipkin的RpcTracker引擎
+ *
+ * @author Xs
+ */
 public class BraveRpcTrackerEngine implements RpcTrackerEngine {
 
     private final Brave brave;
@@ -20,22 +25,22 @@ public class BraveRpcTrackerEngine implements RpcTrackerEngine {
     }
 
     @Override
-    public Object clientRequestInterceptor() {
+    public ClientRequestInterceptor clientRequestInterceptor() {
         return brave.clientRequestInterceptor();
     }
 
     @Override
-    public Object clientResponseInterceptor() {
+    public ClientResponseInterceptor clientResponseInterceptor() {
         return brave.clientResponseInterceptor();
     }
 
     @Override
-    public Object serverRequestInterceptor() {
+    public ServerRequestInterceptor serverRequestInterceptor() {
         return brave.serverRequestInterceptor();
     }
 
     @Override
-    public Object serverResponseInterceptor() {
+    public ServerResponseInterceptor serverResponseInterceptor() {
         return brave.serverResponseInterceptor();
     }
 }

@@ -10,14 +10,13 @@ import com.alibaba.dubbo.remoting.Channel;
 import com.alibaba.dubbo.remoting.ChannelHandler;
 import com.alibaba.dubbo.remoting.ExecutionException;
 import com.alibaba.dubbo.remoting.RemotingException;
-import com.alibaba.dubbo.remoting.exchange.ExchangeChannel;
-import com.alibaba.dubbo.remoting.exchange.ExchangeHandler;
-import com.alibaba.dubbo.remoting.exchange.Request;
-import com.alibaba.dubbo.remoting.exchange.Response;
+import com.alibaba.dubbo.remoting.exchange.*;
 import com.alibaba.dubbo.remoting.exchange.support.DefaultFuture;
 import com.alibaba.dubbo.remoting.transport.ChannelHandlerDelegate;
 
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Xs
@@ -29,6 +28,8 @@ public class HeaderExchangeHandlerV2 implements ChannelHandlerDelegate {
     public static String KEY_READ_TIMESTAMP = HeartbeatHandler.KEY_READ_TIMESTAMP;
 
     public static String KEY_WRITE_TIMESTAMP = HeartbeatHandler.KEY_WRITE_TIMESTAMP;
+
+    private final List<Interceptor> interceptors = new ArrayList<Interceptor>();
 
     private final ExchangeHandler handler;
 
@@ -77,11 +78,11 @@ public class HeaderExchangeHandlerV2 implements ChannelHandlerDelegate {
     public void connected(Channel channel) throws RemotingException {
         channel.setAttribute(KEY_READ_TIMESTAMP, System.currentTimeMillis());
         channel.setAttribute(KEY_WRITE_TIMESTAMP, System.currentTimeMillis());
-        ExchangeChannel exchangeChannel = HeaderExchangeChannel.getOrAddChannel(channel);
+        ExchangeChannel exchangeChannel = HeaderExchangeChannelV2.getOrAddChannel(channel);
         try {
             handler.connected(exchangeChannel);
         } finally {
-            HeaderExchangeChannel.removeChannelIfDisconnected(channel);
+            HeaderExchangeChannelV2.removeChannelIfDisconnected(channel);
         }
     }
 
@@ -100,11 +101,11 @@ public class HeaderExchangeHandlerV2 implements ChannelHandlerDelegate {
         Throwable exception = null;
         try {
             channel.setAttribute(KEY_WRITE_TIMESTAMP, System.currentTimeMillis());
-            ExchangeChannel exchangeChannel = HeaderExchangeChannel.getOrAddChannel(channel);
+            ExchangeChannel exchangeChannel = HeaderExchangeChannelV2.getOrAddChannel(channel);
             try {
                 handler.sent(exchangeChannel, message);
             } finally {
-                HeaderExchangeChannel.removeChannelIfDisconnected(channel);
+                HeaderExchangeChannelV2.removeChannelIfDisconnected(channel);
             }
         } catch (Throwable t) {
             exception = t;
@@ -135,7 +136,7 @@ public class HeaderExchangeHandlerV2 implements ChannelHandlerDelegate {
 
     public void received(Channel channel, Object message) throws RemotingException {
         channel.setAttribute(KEY_READ_TIMESTAMP, System.currentTimeMillis());
-        ExchangeChannel exchangeChannel = HeaderExchangeChannel.getOrAddChannel(channel);
+        ExchangeChannel exchangeChannel = HeaderExchangeChannelV2.getOrAddChannel(channel);
         try {
             if (message instanceof Request) {
                 Request request = (Request) message;
@@ -143,7 +144,8 @@ public class HeaderExchangeHandlerV2 implements ChannelHandlerDelegate {
                     handlerEvent(channel, request);
                 } else {
                     if (request.isTwoWay()) {
-                        Response response = handleRequest(exchangeChannel, request);
+                        Interceptor.Chain chain = new ExchangeHandlerChain(0, exchangeChannel, request);
+                        Response response = chain.proceed(request);
                         channel.send(response);
                     } else {
                         handler.received(exchangeChannel, request.getData());
@@ -166,7 +168,48 @@ public class HeaderExchangeHandlerV2 implements ChannelHandlerDelegate {
                 handler.received(exchangeChannel, message);
             }
         } finally {
-            HeaderExchangeChannel.removeChannelIfDisconnected(channel);
+            HeaderExchangeChannelV2.removeChannelIfDisconnected(channel);
+        }
+    }
+
+    class ExchangeHandlerChain implements Interceptor.Chain {
+        private final int index;
+        private final ExchangeChannel exchangeChannel;
+        private final Request request;
+
+        public ExchangeHandlerChain(int index, ExchangeChannel exchangeChannel, Request request) {
+            this.index = index;
+            this.exchangeChannel = exchangeChannel;
+            this.request = request;
+        }
+
+        @Override
+        public Request request() {
+            return request;
+        }
+
+        @Override
+        public int timeout() {
+            return 0;
+        }
+
+        @Override
+        public Response proceed(Request request, int timeout) throws RemotingException {
+            throw new UnsupportedOperationException("This is client side method");
+        }
+
+        @Override
+        public Response proceed(Request request) throws RemotingException {
+            if (index < interceptors.size()) {
+                Interceptor.Chain chain = new ExchangeHandlerChain(index + 1, exchangeChannel, request);
+                Interceptor interceptor = interceptors.get(index);
+                Response response = interceptor.intercept(chain);
+                if (response == null) {
+                    throw new NullPointerException("interceptor " + interceptor + " returned null");
+                }
+                return response;
+            }
+            return handleRequest(exchangeChannel, request);
         }
     }
 
@@ -184,11 +227,11 @@ public class HeaderExchangeHandlerV2 implements ChannelHandlerDelegate {
                 }
             }
         }
-        ExchangeChannel exchangeChannel = HeaderExchangeChannel.getOrAddChannel(channel);
+        ExchangeChannel exchangeChannel = HeaderExchangeChannelV2.getOrAddChannel(channel);
         try {
             handler.caught(exchangeChannel, exception);
         } finally {
-            HeaderExchangeChannel.removeChannelIfDisconnected(channel);
+            HeaderExchangeChannelV2.removeChannelIfDisconnected(channel);
         }
     }
 
@@ -198,5 +241,9 @@ public class HeaderExchangeHandlerV2 implements ChannelHandlerDelegate {
         } else {
             return handler;
         }
+    }
+
+    public void addInterceptor(Interceptor interceptor) {
+        interceptors.add(interceptor);
     }
 }

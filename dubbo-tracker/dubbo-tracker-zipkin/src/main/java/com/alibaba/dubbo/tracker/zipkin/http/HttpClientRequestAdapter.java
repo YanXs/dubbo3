@@ -11,6 +11,9 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
 
+/**
+ * @author Xs
+ */
 public class HttpClientRequestAdapter implements ClientRequestAdapter {
 
     private final HttpClientRequest request;

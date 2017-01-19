@@ -19,8 +19,8 @@ public class DubboResponse {
         }
     }
 
-    public boolean returnSuccessfully() {
-        return !result.hasException();
+    public boolean returnOK() {
+        return response.getStatus() == Response.OK && !result.hasException();
     }
 
     public boolean isTraceable() {
@@ -28,8 +28,8 @@ public class DubboResponse {
     }
 
     public String exceptionMessage() {
-        if (returnSuccessfully()) {
-            return "result OK";
+        if (returnOK()) {
+            return "response OK";
         }
         Throwable throwable = result.getException();
         if (throwable instanceof NullPointerException) {

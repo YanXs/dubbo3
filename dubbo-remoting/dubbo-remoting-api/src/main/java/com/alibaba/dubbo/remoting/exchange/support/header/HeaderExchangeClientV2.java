@@ -177,6 +177,11 @@ public class HeaderExchangeClientV2 implements ExchangeClientV2 {
             }
             return channel.request(request, timeout);
         }
+
+        @Override
+        public Response proceed(Request request) {
+            throw new UnsupportedOperationException("This is server side method");
+        }
     }
 
     @Override
