@@ -1,34 +1,21 @@
 package com.alibaba.dubbo.tracker.zipkin.http;
 
-import com.alibaba.dubbo.tracker.*;
+import com.alibaba.dubbo.tracker.RpcTrackerEngine;
+import com.alibaba.dubbo.tracker.zipkin.BraveRpcTrackerEngine;
 
 /**
  * @author Xs
  */
-public class HttpRpcTracker implements RpcTracker {
+public class HttpRpcTracker extends FacadeHttpRpcTracker {
 
-    @Override
-    public ClientRequestInterceptor clientRequestInterceptor() {
-        return null;
-    }
+    private final BraveRpcTrackerEngine trackerEngine;
 
-    @Override
-    public ClientResponseInterceptor clientResponseInterceptor() {
-        return null;
-    }
-
-    @Override
-    public ServerRequestInterceptor serverRequestInterceptor() {
-        return null;
-    }
-
-    @Override
-    public ServerResponseInterceptor serverResponseInterceptor() {
-        return null;
+    public HttpRpcTracker(BraveRpcTrackerEngine trackerEngine) {
+        this.trackerEngine = trackerEngine;
     }
 
     @Override
     public RpcTrackerEngine trackerEngine() {
-        return null;
+        return trackerEngine;
     }
 }

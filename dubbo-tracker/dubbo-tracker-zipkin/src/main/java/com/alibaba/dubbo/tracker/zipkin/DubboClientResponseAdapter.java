@@ -22,7 +22,7 @@ public class DubboClientResponseAdapter implements ClientResponseAdapter {
 
     @Override
     public Collection<KeyValueAnnotation> responseAnnotations() {
-        if (!response.returnSuccessfully()) {
+        if (!response.returnOK()) {
             KeyValueAnnotation statusAnnotation = KeyValueAnnotation.create(TrackerKeys.RETURN_STATUS, response.exceptionMessage());
             return Collections.singletonList(statusAnnotation);
         }

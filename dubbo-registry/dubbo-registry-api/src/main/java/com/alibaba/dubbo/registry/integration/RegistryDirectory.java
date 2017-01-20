@@ -98,7 +98,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
         this.queryMap = StringUtils.parseQueryString(url.getParameterAndDecoded(Constants.REFER_KEY));
         this.overrideDirectoryUrl = this.directoryUrl = url.setPath(url.getServiceInterface()).clearParameters().addParameters(queryMap).removeParameter(Constants.MONITOR_KEY);
         String group = directoryUrl.getParameter(Constants.GROUP_KEY, "");
-        this.multiGroup = group != null && ("*".equals(group) || group.contains(","));
+        this.multiGroup = group != null && ("*".equals(group) || group.contains(",") || group.equals("grouping"));
         String methods = queryMap.get(Constants.METHODS_KEY);
         this.serviceMethods = methods == null ? null : Constants.COMMA_SPLIT_PATTERN.split(methods);
     }
@@ -323,8 +323,6 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
      * 将urls转成invokers,如果url已经被refer过，不再重新引用。
      *
      * @param urls
-     * @param overrides
-     * @param query
      * @return invokers
      */
     private Map<String, Invoker<T>> toInvokers(List<URL> urls) {
@@ -376,7 +374,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
                         enabled = url.getParameter(Constants.ENABLED_KEY, true);
                     }
                     if (enabled) {
-                        invoker = new InvokerDelegete<T>(protocol.refer(serviceType, url), url, providerUrl);
+                        invoker = new InvokerDelegate<T>(protocol.refer(serviceType, url), url, providerUrl);
                     }
                 } catch (Throwable t) {
                     logger.error("Failed to refer invoker for interface:" + serviceType + ",url:(" + url + ")" + t.getMessage(), t);
@@ -396,7 +394,6 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
      * 合并url参数 顺序为override > -D >Consumer > Provider
      *
      * @param providerUrl
-     * @param overrides
      * @return
      */
     private URL mergeUrl(URL providerUrl) {
@@ -518,8 +515,6 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
     /**
      * 检查缓存中的invoker是否需要被destroy
      * 如果url中指定refer.autodestroy=false，则只增加不减少，可能会有refer泄漏，
-     *
-     * @param invokers
      */
     private void destroyUnusedInvokers(Map<String, Invoker<T>> oldUrlInvokerMap, Map<String, Invoker<T>> newUrlInvokerMap) {
         if (newUrlInvokerMap == null || newUrlInvokerMap.size() == 0) {
@@ -648,10 +643,10 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
      * @param <T>
      * @author chao.liuc
      */
-    private static class InvokerDelegete<T> extends InvokerWrapper<T> {
+    private static class InvokerDelegate<T> extends InvokerWrapper<T> {
         private URL providerUrl;
 
-        public InvokerDelegete(Invoker<T> invoker, URL url, URL providerUrl) {
+        public InvokerDelegate(Invoker<T> invoker, URL url, URL providerUrl) {
             super(invoker, url);
             this.providerUrl = providerUrl;
         }

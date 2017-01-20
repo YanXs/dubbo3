@@ -46,11 +46,11 @@ public class HeaderExchangeHandlerV2 implements ChannelHandlerDelegate {
         }
     }
 
-    private Response handleRequest(ExchangeChannel channel, Request req) throws RemotingException {
-        Response.Builder builder = new Response.Builder(req.getId());
-        builder.version(req.getVersion());
-        if (req.isBroken()) {
-            Object data = req.getData();
+    private Response handleRequest(ExchangeChannel channel, Request request) throws RemotingException {
+        Response.Builder builder = new Response.Builder(request.getId());
+        builder.version(request.getVersion());
+        if (request.isBroken()) {
+            Object data = request.getData();
             String msg;
             if (data == null) msg = null;
             else if (data instanceof Throwable) msg = StringUtils.toString((Throwable) data);
@@ -59,7 +59,7 @@ public class HeaderExchangeHandlerV2 implements ChannelHandlerDelegate {
             builder.status(Response.BAD_REQUEST);
             return builder.build();
         }
-        Object msg = req.getData();
+        Object msg = request.getData();
         try {
             Object result = handler.reply(channel, msg);
             builder.status(Response.OK).result(result);

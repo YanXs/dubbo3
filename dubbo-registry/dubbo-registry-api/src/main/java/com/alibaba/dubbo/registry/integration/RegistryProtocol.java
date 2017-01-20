@@ -167,7 +167,6 @@ public class RegistryProtocol implements Protocol {
         final ExporterChangeableWrapper<T> exporter = (ExporterChangeableWrapper<T>) bounds.get(key);
         if (exporter == null) {
             logger.warn(new IllegalStateException("error state, exporter should not be null"));
-            return;//不存在是异常场景 直接返回
         } else {
             final Invoker<T> invokerDelegete = new InvokerDelegete<T>(originInvoker, newInvokerUrl);
             exporter.setExporter(protocol.export(invokerDelegete));
@@ -198,8 +197,7 @@ public class RegistryProtocol implements Protocol {
     private URL getRegistedProviderUrl(final Invoker<?> originInvoker) {
         URL providerUrl = getProviderUrl(originInvoker);
         //注册中心看到的地址
-        final URL registedProviderUrl = providerUrl.removeParameters(getFilteredKeys(providerUrl)).removeParameter(Constants.MONITOR_KEY);
-        return registedProviderUrl;
+        return providerUrl.removeParameters(getFilteredKeys(providerUrl)).removeParameter(Constants.MONITOR_KEY);
     }
 
     private URL getSubscribedOverrideUrl(URL registedProviderUrl) {
@@ -246,16 +244,17 @@ public class RegistryProtocol implements Protocol {
         Map<String, String> qs = StringUtils.parseQueryString(url.getParameterAndDecoded(Constants.REFER_KEY));
         String group = qs.get(Constants.GROUP_KEY);
         if (group != null && group.length() > 0) {
-            if ((Constants.COMMA_SPLIT_PATTERN.split(group)).length > 1
-                    || "*".equals(group)) {
-                return doRefer(getMergeableCluster(), registry, type, url);
+            if ((Constants.COMMA_SPLIT_PATTERN.split(group)).length > 1) {
+                return doRefer(getCluster("mergeable"), registry, type, url);
+            } else if ("*".equals(group)) {
+                return doRefer(getCluster("grouping"), registry, type, url);
             }
         }
         return doRefer(cluster, registry, type, url);
     }
 
-    private Cluster getMergeableCluster() {
-        return ExtensionLoader.getExtensionLoader(Cluster.class).getExtension("mergeable");
+    private Cluster getCluster(String cluster) {
+        return ExtensionLoader.getExtensionLoader(Cluster.class).getExtension(cluster);
     }
 
     private <T> Invoker<T> doRefer(Cluster cluster, Registry registry, Class<T> type, URL url) {

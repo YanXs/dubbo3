@@ -98,16 +98,14 @@ public abstract class AbstractClusterInvoker<T> implements Invoker<T> {
         String methodName = invocation == null ? "" : invocation.getMethodName();
 
         boolean sticky = invokers.get(0).getUrl().getMethodParameter(methodName, Constants.CLUSTER_STICKY_KEY, Constants.DEFAULT_CLUSTER_STICKY);
-        {
-            //ignore overloaded method
-            if (stickyInvoker != null && !invokers.contains(stickyInvoker)) {
-                stickyInvoker = null;
-            }
-            //ignore cucurrent problem
-            if (sticky && stickyInvoker != null && (selected == null || !selected.contains(stickyInvoker))) {
-                if (availablecheck && stickyInvoker.isAvailable()) {
-                    return stickyInvoker;
-                }
+        //ignore overloaded method
+        if (stickyInvoker != null && !invokers.contains(stickyInvoker)) {
+            stickyInvoker = null;
+        }
+        //ignore cucurrent problem
+        if (sticky && stickyInvoker != null && (selected == null || !selected.contains(stickyInvoker))) {
+            if (availablecheck && stickyInvoker.isAvailable()) {
+                return stickyInvoker;
             }
         }
         Invoker<T> invoker = doSelect(loadbalance, invocation, invokers, selected);
@@ -210,11 +208,8 @@ public abstract class AbstractClusterInvoker<T> implements Invoker<T> {
     }
 
     public Result invoke(final Invocation invocation) throws RpcException {
-
         checkWheatherDestoried();
-
         LoadBalance loadbalance;
-
         List<Invoker<T>> invokers = list(invocation);
         if (invokers != null && invokers.size() > 0) {
             loadbalance = ExtensionLoader.getExtensionLoader(LoadBalance.class).getExtension(invokers.get(0).getUrl()

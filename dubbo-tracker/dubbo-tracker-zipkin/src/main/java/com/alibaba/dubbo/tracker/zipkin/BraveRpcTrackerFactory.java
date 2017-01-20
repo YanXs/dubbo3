@@ -18,7 +18,7 @@ public class BraveRpcTrackerFactory implements RpcTrackerFactory {
         if (protocol.equals("dubbo")) {
             rpcTracker = new DubboRpcTracker((BraveRpcTrackerEngine) RpcTrackerManager.getRpcTrackerEngine());
         } else if (protocol.equals("http") || protocol.equals("hessian")) {
-            rpcTracker = new HttpRpcTracker();
+            rpcTracker = new HttpRpcTracker((BraveRpcTrackerEngine) RpcTrackerManager.getRpcTrackerEngine());
         }
         return rpcTracker;
     }

@@ -345,10 +345,9 @@ public final class StringUtils {
 	{
 		String[] tmp = str.split(itemSeparator);
 		Map<String, String> map = new HashMap<String, String>(tmp.length);
-		for(int i=0;i<tmp.length;i++)
-		{
-			Matcher matcher = KVP_PATTERN.matcher(tmp[i]);
-			if( matcher.matches() == false )
+		for (String aTmp : tmp) {
+			Matcher matcher = KVP_PATTERN.matcher(aTmp);
+			if (!matcher.matches())
 				continue;
 			map.put(matcher.group(1), matcher.group(2));
 		}
