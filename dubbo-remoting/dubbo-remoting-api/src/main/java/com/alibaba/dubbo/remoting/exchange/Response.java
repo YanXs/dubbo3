@@ -21,7 +21,7 @@ package com.alibaba.dubbo.remoting.exchange;
  * @author qian.lei
  * @author william.liangf
  */
-public class Response {
+public class Response extends Message {
 
     public static final String HEARTBEAT_EVENT = null;
     public static final String READONLY_EVENT = "R";

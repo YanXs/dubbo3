@@ -25,14 +25,13 @@ import com.alibaba.dubbo.remoting.Channel;
 import com.alibaba.dubbo.remoting.ChannelHandler;
 import com.alibaba.dubbo.remoting.ExecutionException;
 import com.alibaba.dubbo.remoting.RemotingException;
-import com.alibaba.dubbo.remoting.exchange.ExchangeChannel;
-import com.alibaba.dubbo.remoting.exchange.ExchangeHandler;
-import com.alibaba.dubbo.remoting.exchange.Request;
-import com.alibaba.dubbo.remoting.exchange.Response;
+import com.alibaba.dubbo.remoting.exchange.*;
 import com.alibaba.dubbo.remoting.exchange.support.DefaultFuture;
 import com.alibaba.dubbo.remoting.transport.ChannelHandlerDelegate;
 
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * ExchangeReceiver
@@ -47,6 +46,8 @@ public class HeaderExchangeHandler implements ChannelHandlerDelegate {
     public static String KEY_READ_TIMESTAMP = HeartbeatHandler.KEY_READ_TIMESTAMP;
 
     public static String KEY_WRITE_TIMESTAMP = HeartbeatHandler.KEY_WRITE_TIMESTAMP;
+
+    private final List<Interceptor> interceptors = new ArrayList<Interceptor>();
 
     private final ExchangeHandler handler;
 
@@ -88,9 +89,9 @@ public class HeaderExchangeHandler implements ChannelHandlerDelegate {
         return builder.build();
     }
 
-    private void handleResponse(Channel channel, Response response) throws RemotingException {
+    private void handleResponse(Response response) throws RemotingException {
         if (response != null && !response.isHeartbeat()) {
-            DefaultFuture.received(channel, response);
+            HeaderExchangeChannel.handleResponse(response);
         }
     }
 
@@ -163,14 +164,15 @@ public class HeaderExchangeHandler implements ChannelHandlerDelegate {
                     handlerEvent(channel, request);
                 } else {
                     if (request.isTwoWay()) {
-                        Response response = handleRequest(exchangeChannel, request);
+                        Interceptor.Chain chain = new ExchangeHandlerChain(0, exchangeChannel, request);
+                        Response response = chain.proceed(request);
                         channel.send(response);
                     } else {
                         handler.received(exchangeChannel, request.getData());
                     }
                 }
             } else if (message instanceof Response) {
-                handleResponse(channel, (Response) message);
+                handleResponse((Response) message);
             } else if (message instanceof String) {
                 if (isClientSide(channel)) {
                     Exception e = new Exception("Dubbo client can not supported string message: " +
@@ -187,6 +189,51 @@ public class HeaderExchangeHandler implements ChannelHandlerDelegate {
             }
         } finally {
             HeaderExchangeChannel.removeChannelIfDisconnected(channel);
+        }
+    }
+
+    public void addInterceptor(Interceptor interceptor) {
+        interceptors.add(interceptor);
+    }
+
+    class ExchangeHandlerChain implements Interceptor.Chain {
+        private final int index;
+        private final ExchangeChannel exchangeChannel;
+        private final Request request;
+
+        public ExchangeHandlerChain(int index, ExchangeChannel exchangeChannel, Request request) {
+            this.index = index;
+            this.exchangeChannel = exchangeChannel;
+            this.request = request;
+        }
+
+        @Override
+        public Request request() {
+            return request;
+        }
+
+        @Override
+        public int timeout() {
+            return 0;
+        }
+
+        @Override
+        public Response proceed(Request request, int timeout) throws RemotingException {
+            throw new UnsupportedOperationException("This is client side method");
+        }
+
+        @Override
+        public Response proceed(Request request) throws RemotingException {
+            if (index < interceptors.size()) {
+                Interceptor.Chain chain = new ExchangeHandlerChain(index + 1, exchangeChannel, request);
+                Interceptor interceptor = interceptors.get(index);
+                Response response = interceptor.intercept(chain);
+                if (response == null) {
+                    throw new NullPointerException("interceptor " + interceptor + " returned null");
+                }
+                return response;
+            }
+            return handleRequest(exchangeChannel, request);
         }
     }
 

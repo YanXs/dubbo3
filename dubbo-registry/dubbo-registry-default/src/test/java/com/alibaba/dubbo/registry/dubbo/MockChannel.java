@@ -20,9 +20,7 @@ import java.net.InetSocketAddress;
 import com.alibaba.dubbo.common.URL;
 import com.alibaba.dubbo.remoting.ChannelHandler;
 import com.alibaba.dubbo.remoting.RemotingException;
-import com.alibaba.dubbo.remoting.exchange.ExchangeChannel;
-import com.alibaba.dubbo.remoting.exchange.ExchangeHandler;
-import com.alibaba.dubbo.remoting.exchange.ResponseFuture;
+import com.alibaba.dubbo.remoting.exchange.*;
 
 public class MockChannel implements ExchangeChannel {
 
@@ -77,6 +75,16 @@ public class MockChannel implements ExchangeChannel {
     }
 
     public ResponseFuture request(Object request, int timeout) throws RemotingException {
+        return null;
+    }
+
+    @Override
+    public Response execute(Request request) throws RemotingException {
+        return null;
+    }
+
+    @Override
+    public Response execute(Request request, int timeout) throws RemotingException {
         return null;
     }
 

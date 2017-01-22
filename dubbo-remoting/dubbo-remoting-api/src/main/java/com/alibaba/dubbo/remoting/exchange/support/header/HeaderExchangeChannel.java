@@ -23,10 +23,14 @@ import com.alibaba.dubbo.common.logger.LoggerFactory;
 import com.alibaba.dubbo.remoting.Channel;
 import com.alibaba.dubbo.remoting.ChannelHandler;
 import com.alibaba.dubbo.remoting.RemotingException;
+import com.alibaba.dubbo.remoting.TimeoutException;
 import com.alibaba.dubbo.remoting.exchange.*;
 import com.alibaba.dubbo.remoting.exchange.support.DefaultFuture;
 
 import java.net.InetSocketAddress;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 /**
  * ExchangeReceiver
@@ -38,6 +42,8 @@ final class HeaderExchangeChannel implements ExchangeChannel {
     private static final Logger logger = LoggerFactory.getLogger(HeaderExchangeChannel.class);
 
     private static final String CHANNEL_KEY = HeaderExchangeChannel.class.getName() + ".CHANNEL";
+
+    private static final ConcurrentHashMap<Long, PendingReply> REPLY_HOLDER = new ConcurrentHashMap<Long, PendingReply>();
 
     private final Channel channel;
 
@@ -112,6 +118,67 @@ final class HeaderExchangeChannel implements ExchangeChannel {
             throw e;
         }
         return future;
+    }
+
+    @Override
+    public Response execute(Request request) throws RemotingException {
+        return execute(request, channel.getUrl().getPositiveParameter(Constants.TIMEOUT_KEY, Constants.DEFAULT_TIMEOUT));
+    }
+
+    @Override
+    public Response execute(Request request, int timeout) throws RemotingException {
+        if (closed) {
+            throw new RemotingException(this.getLocalAddress(), null, "Failed to send request " + request +
+                    ", cause: The channel " + this + " is closed!");
+        }
+        PendingReply pendingReply = new PendingReply(request.getId());
+        addPendingReply(pendingReply);
+        long startTimeMs = System.currentTimeMillis();
+        try {
+            channel.send(request);
+        } catch (RemotingException e) {
+            removePendingReply(pendingReply);
+            throw e;
+        }
+        LinkedBlockingQueue<Response> reply = pendingReply.getQueue();
+        Response response = null;
+        try {
+            response = (timeout < 0) ? reply.take() : reply.poll(timeout, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            throw new RemotingException(this, e);
+        } finally {
+            removePendingReply(pendingReply);
+        }
+        // timeout
+        if (response == null) {
+            throw new TimeoutException(channel, getTimeoutMessage(request, timeout, startTimeMs));
+        }
+        return response;
+    }
+
+    public String getTimeoutMessage(Request request, int timeout, long startTimeMs) {
+        long nowTimestamp = System.currentTimeMillis();
+        return "elapsed: " + (nowTimestamp - startTimeMs) + " ms, timeout: "
+                + timeout + " ms, request: " + request + ", channel: " + channel.getLocalAddress()
+                + " -> " + channel.getRemoteAddress();
+    }
+
+    private static void addPendingReply(PendingReply pendingReply) {
+        REPLY_HOLDER.putIfAbsent(pendingReply.getSavedReplyTo(), pendingReply);
+    }
+
+    private static void removePendingReply(PendingReply pendingReply) {
+        REPLY_HOLDER.remove(pendingReply.getSavedReplyTo());
+    }
+
+    public static void handleResponse(Response response) {
+        PendingReply pendingReply = REPLY_HOLDER.get(response.getId());
+        if (pendingReply == null) {
+            logger.warn("Response received after timeout for " + response);
+            return;
+        }
+        LinkedBlockingQueue<Response> replyHandoff = pendingReply.getQueue();
+        replyHandoff.add(response);
     }
 
     public boolean isClosed() {

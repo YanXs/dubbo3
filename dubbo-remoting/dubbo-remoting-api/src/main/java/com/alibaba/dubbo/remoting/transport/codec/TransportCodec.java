@@ -49,10 +49,6 @@ public class TransportCodec extends AbstractCodec {
     }
 
     public Object decode(Channel channel, ChannelBuffer buffer) throws IOException {
-//        InputStream input = new ChannelBufferInputStream(buffer);
-//        return decodeData(channel, getSerialization(channel).deserialize(channel.getUrl(), input));
-
-        // modified by lishen
         InputStream input = new ChannelBufferInputStream(buffer);
         ObjectInput objectInput = getSerialization(channel).deserialize(channel.getUrl(), input);
         Object object = decodeData(channel, objectInput);

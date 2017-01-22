@@ -58,11 +58,11 @@
     <!-- use the external tomcat or other server with the servlet approach; the port and contextpath must be exactly the same as those in external server -->
     <!--<dubbo:protocol name="rest" port="8888" contextpath="services" server="servlet"/>-->
 
-    <dubbo:protocol name="http" port="8889" client="okHttpClient"/>
+    <dubbo:protocol name="http" port="8887" client="okHttpClient"/>
     <!--<dubbo:protocol name="hessian" port="8890"/>-->
     <!--<dubbo:protocol name="webservice" port="8892"/>-->
 
-    <dubbo:service interface="com.alibaba.dubbo.demo.bid.BidService" ref="bidService" protocol="http"/>
+    <dubbo:service interface="com.alibaba.dubbo.demo.bid.BidService" ref="bidService" protocol="dubbo" group="02"/>
 
     <!-- we add the group property since there's another annotation-configured service impl: com.alibaba.dubbo.demo.user.facade.AnnotationDrivenUserRestServiceImpl -->
     <!--<dubbo:service interface="com.alibaba.dubbo.demo.user.UserService" ref="userService"  protocol="dubbo" group="xmlConfig"/>-->

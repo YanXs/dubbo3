@@ -104,7 +104,6 @@ public class DecodeableRpcResult extends RpcResult implements Codec, Decodeable 
             }
             return this;
         } finally {
-            // modified by lishen
             if (in instanceof Cleanable) {
                 ((Cleanable) in).cleanup();
             }

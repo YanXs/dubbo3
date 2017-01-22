@@ -20,9 +20,7 @@ import com.alibaba.dubbo.common.Parameters;
 import com.alibaba.dubbo.common.URL;
 import com.alibaba.dubbo.remoting.ChannelHandler;
 import com.alibaba.dubbo.remoting.RemotingException;
-import com.alibaba.dubbo.remoting.exchange.ExchangeClient;
-import com.alibaba.dubbo.remoting.exchange.ExchangeHandler;
-import com.alibaba.dubbo.remoting.exchange.ResponseFuture;
+import com.alibaba.dubbo.remoting.exchange.*;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.ConcurrentMap;
@@ -40,12 +38,9 @@ final class ReferenceCountExchangeClient implements ExchangeClient {
 
     private final URL url;
 
-//    private final ExchangeHandler handler;
-
     private final AtomicInteger refenceCount = new AtomicInteger(0);
 
     private final ConcurrentMap<String, LazyConnectExchangeClient> ghostClientMap;
-
 
     public ReferenceCountExchangeClient(ExchangeClient client, ConcurrentMap<String, LazyConnectExchangeClient> ghostClientMap) {
         this.client = client;
@@ -79,6 +74,16 @@ final class ReferenceCountExchangeClient implements ExchangeClient {
 
     public ResponseFuture request(Object request, int timeout) throws RemotingException {
         return client.request(request, timeout);
+    }
+
+    @Override
+    public Response execute(Request request) throws RemotingException {
+        return client.execute(request);
+    }
+
+    @Override
+    public Response execute(Request request, int timeout) throws RemotingException {
+        return client.execute(request, timeout);
     }
 
     public boolean isConnected() {
@@ -169,5 +174,10 @@ final class ReferenceCountExchangeClient implements ExchangeClient {
 
     public void incrementAndGetCount() {
         refenceCount.incrementAndGet();
+    }
+
+    @Override
+    public void addInterceptor(Interceptor interceptor) {
+        client.addInterceptor(interceptor);
     }
 }

@@ -17,6 +17,7 @@ package com.alibaba.dubbo.remoting.exchange.support.header;
 
 import com.alibaba.dubbo.common.Constants;
 import com.alibaba.dubbo.common.URL;
+import com.alibaba.dubbo.common.Version;
 import com.alibaba.dubbo.common.logger.Logger;
 import com.alibaba.dubbo.common.logger.LoggerFactory;
 import com.alibaba.dubbo.common.utils.NamedThreadFactory;
@@ -46,7 +47,6 @@ public class HeaderExchangeClient implements ExchangeClient {
     private static final Logger logger = LoggerFactory.getLogger(HeaderExchangeClient.class);
 
     private static final ScheduledThreadPoolExecutor scheduled = new ScheduledThreadPoolExecutor(2, new NamedThreadFactory("dubbo-remoting-client-heartbeat", true));
-
 
     // 心跳定时器
     private ScheduledFuture<?> heartbeatTimer;
@@ -185,6 +185,69 @@ public class HeaderExchangeClient implements ExchangeClient {
 
     public ResponseFuture request(Object request, int timeout) throws RemotingException {
         return channel.request(request, timeout);
+    }
+
+    @Override
+    public Response execute(Request request) throws RemotingException {
+        return execute(request, channel.getUrl().getPositiveParameter(Constants.TIMEOUT_KEY, Constants.DEFAULT_TIMEOUT));
+    }
+
+    @Override
+    public Response execute(Request request, int timeout) throws RemotingException {
+        Interceptor.Chain chain = new ExchangeClientInterceptorChain(0, request, timeout);
+        return chain.proceed(request, timeout);
+    }
+
+    public void addInterceptor(Interceptor interceptor) {
+        this.interceptors.add(interceptor);
+    }
+
+    /**
+     * @author Xs request interceptor
+     */
+    class ExchangeClientInterceptorChain implements Interceptor.Chain {
+
+        private final int index;
+
+        private final Request request;
+
+        private final int timeout;
+
+        ExchangeClientInterceptorChain(int index, Request request, int timeout) {
+            this.index = index;
+            this.request = request;
+            this.timeout = timeout;
+        }
+
+        @Override
+        public Request request() {
+            return request;
+        }
+
+        @Override
+        public int timeout() {
+            return timeout;
+        }
+
+        @Override
+        public Response proceed(Request request, int timeout) throws RemotingException {
+            if (index < interceptors.size()) {
+                Interceptor.Chain chain = new ExchangeClientInterceptorChain(index + 1, request, timeout);
+                Interceptor interceptor = interceptors.get(index);
+                Response response = interceptor.intercept(chain);
+                if (response == null) {
+                    throw new NullPointerException("interceptor " + interceptor
+                            + " returned null");
+                }
+                return response;
+            }
+            return channel.execute(request, timeout);
+        }
+
+        @Override
+        public Response proceed(Request request) {
+            throw new UnsupportedOperationException("This is server side method");
+        }
     }
 
 

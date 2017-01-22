@@ -145,7 +145,7 @@ public class Constants {
 
     public static final int MAX_BUFFER_SIZE = 16 * 1024;
 
-    public static final int MIN_BUFFER_SIZE = 1 * 1024;
+    public static final int MIN_BUFFER_SIZE = 1024;
 
     public static final String REMOVE_VALUE_PREFIX = "-";
 
@@ -596,10 +596,5 @@ public class Constants {
     //--------------------------------trace-------------------------------------------------------//
 
     public static final String ENABLE_TRACE_KEY = "enableTrace";
-
-
-    /*
-     * private Constants(){ }
-     */
 
 }

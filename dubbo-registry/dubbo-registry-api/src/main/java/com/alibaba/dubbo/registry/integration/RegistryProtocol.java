@@ -244,11 +244,12 @@ public class RegistryProtocol implements Protocol {
         Map<String, String> qs = StringUtils.parseQueryString(url.getParameterAndDecoded(Constants.REFER_KEY));
         String group = qs.get(Constants.GROUP_KEY);
         if (group != null && group.length() > 0) {
-            if ((Constants.COMMA_SPLIT_PATTERN.split(group)).length > 1) {
+            if ((Constants.COMMA_SPLIT_PATTERN.split(group)).length > 1 || Constants.ANY_VALUE.equals(group)) {
                 return doRefer(getCluster("mergeable"), registry, type, url);
-            } else if ("*".equals(group)) {
-                return doRefer(getCluster("grouping"), registry, type, url);
             }
+//            else if (Constants.GROUPING.equals(group)) {
+//                return doRefer(getCluster("grouping"), registry, type, url);
+//            }
         }
         return doRefer(cluster, registry, type, url);
     }

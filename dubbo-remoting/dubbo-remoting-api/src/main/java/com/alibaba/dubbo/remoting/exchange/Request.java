@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author qian.lei
  * @author william.liangf
  */
-public class Request {
+public class Request extends Message {
 
     public static final String HEARTBEAT_EVENT = null;
 

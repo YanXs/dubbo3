@@ -103,6 +103,16 @@ final class LazyConnectExchangeClient implements ExchangeClient {
         return client.request(request, timeout);
     }
 
+    @Override
+    public Response execute(Request request) throws RemotingException {
+        return client.execute(request);
+    }
+
+    @Override
+    public Response execute(Request request, int timeout) throws RemotingException {
+        return client.execute(request, timeout);
+    }
+
     /**
      * 如果配置了调用warning，则每调用5000次warning一次.
      *
@@ -217,4 +227,8 @@ final class LazyConnectExchangeClient implements ExchangeClient {
         }
     }
 
+    @Override
+    public void addInterceptor(Interceptor interceptor) {
+        client.addInterceptor(interceptor);
+    }
 }
