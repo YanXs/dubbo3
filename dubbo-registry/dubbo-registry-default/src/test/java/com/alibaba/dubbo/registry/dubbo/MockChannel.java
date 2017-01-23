@@ -18,9 +18,11 @@ package com.alibaba.dubbo.registry.dubbo;
 import java.net.InetSocketAddress;
 
 import com.alibaba.dubbo.common.URL;
-import com.alibaba.dubbo.remoting.ChannelHandler;
-import com.alibaba.dubbo.remoting.RemotingException;
+import com.alibaba.dubbo.remoting.transport.ChannelHandler;
+import com.alibaba.dubbo.remoting.exception.RemotingException;
 import com.alibaba.dubbo.remoting.exchange.*;
+import com.alibaba.dubbo.remoting.message.Request;
+import com.alibaba.dubbo.remoting.message.Response;
 
 public class MockChannel implements ExchangeChannel {
 

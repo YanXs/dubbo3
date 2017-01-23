@@ -19,6 +19,7 @@ import com.alibaba.dubbo.common.Constants;
 import com.alibaba.dubbo.common.URL;
 import com.alibaba.dubbo.common.extension.Adaptive;
 import com.alibaba.dubbo.common.extension.SPI;
+import com.alibaba.dubbo.remoting.transport.ChannelHandler;
 import com.alibaba.dubbo.remoting.transport.dispatcher.all.AllDispatcher;
 
 /**

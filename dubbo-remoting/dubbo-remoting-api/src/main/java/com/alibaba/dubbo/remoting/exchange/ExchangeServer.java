@@ -18,7 +18,7 @@ package com.alibaba.dubbo.remoting.exchange;
 import java.net.InetSocketAddress;
 import java.util.Collection;
 
-import com.alibaba.dubbo.remoting.Server;
+import com.alibaba.dubbo.remoting.transport.Server;
 
 /**
  * ExchangeServer. (API/SPI, Prototype, ThreadSafe)

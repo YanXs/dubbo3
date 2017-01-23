@@ -16,11 +16,11 @@
 package com.alibaba.dubbo.remoting.transport.netty;
 
 import com.alibaba.dubbo.common.URL;
-import com.alibaba.dubbo.remoting.ChannelHandler;
-import com.alibaba.dubbo.remoting.Client;
-import com.alibaba.dubbo.remoting.RemotingException;
-import com.alibaba.dubbo.remoting.Server;
-import com.alibaba.dubbo.remoting.Transporter;
+import com.alibaba.dubbo.remoting.transport.ChannelHandler;
+import com.alibaba.dubbo.remoting.transport.Client;
+import com.alibaba.dubbo.remoting.exception.RemotingException;
+import com.alibaba.dubbo.remoting.transport.Server;
+import com.alibaba.dubbo.remoting.transport.Transporter;
 
 /**
  * @author ding.lid

@@ -1,6 +1,6 @@
 package com.alibaba.dubbo.tracker;
 
-import com.alibaba.dubbo.remoting.exchange.Response;
+import com.alibaba.dubbo.remoting.message.Response;
 import com.alibaba.dubbo.rpc.RpcResult;
 
 public class DubboResponse {

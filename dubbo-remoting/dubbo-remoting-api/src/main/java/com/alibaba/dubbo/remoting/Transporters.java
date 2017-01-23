@@ -18,6 +18,11 @@ package com.alibaba.dubbo.remoting;
 import com.alibaba.dubbo.common.URL;
 import com.alibaba.dubbo.common.Version;
 import com.alibaba.dubbo.common.extension.ExtensionLoader;
+import com.alibaba.dubbo.remoting.transport.ChannelHandler;
+import com.alibaba.dubbo.remoting.transport.Client;
+import com.alibaba.dubbo.remoting.transport.Server;
+import com.alibaba.dubbo.remoting.transport.Transporter;
+import com.alibaba.dubbo.remoting.exception.RemotingException;
 import com.alibaba.dubbo.remoting.transport.ChannelHandlerAdapter;
 import com.alibaba.dubbo.remoting.transport.ChannelHandlerDispatcher;
 

@@ -15,7 +15,7 @@
  */
 package com.alibaba.dubbo.remoting.transport.netty;
 
-import com.alibaba.dubbo.remoting.RemotingException;
+import com.alibaba.dubbo.remoting.exception.RemotingException;
 import com.alibaba.dubbo.remoting.exchange.ExchangeChannel;
 import com.alibaba.dubbo.remoting.exchange.support.Replier;
 

@@ -18,6 +18,8 @@ package com.alibaba.dubbo.remoting;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.alibaba.dubbo.remoting.transport.Channel;
+import com.alibaba.dubbo.remoting.exception.RemotingException;
 import junit.framework.TestCase;
 
 import org.junit.Test;

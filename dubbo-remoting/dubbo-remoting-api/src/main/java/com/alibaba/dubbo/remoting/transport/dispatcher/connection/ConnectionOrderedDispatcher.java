@@ -16,7 +16,7 @@
 package com.alibaba.dubbo.remoting.transport.dispatcher.connection;
 
 import com.alibaba.dubbo.common.URL;
-import com.alibaba.dubbo.remoting.ChannelHandler;
+import com.alibaba.dubbo.remoting.transport.ChannelHandler;
 import com.alibaba.dubbo.remoting.Dispatcher;
 
 /**

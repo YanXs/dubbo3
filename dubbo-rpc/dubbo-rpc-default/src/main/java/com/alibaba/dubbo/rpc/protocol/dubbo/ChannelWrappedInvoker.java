@@ -17,12 +17,15 @@ package com.alibaba.dubbo.rpc.protocol.dubbo;
 
 import com.alibaba.dubbo.common.Constants;
 import com.alibaba.dubbo.common.URL;
-import com.alibaba.dubbo.remoting.Channel;
-import com.alibaba.dubbo.remoting.ChannelHandler;
-import com.alibaba.dubbo.remoting.RemotingException;
-import com.alibaba.dubbo.remoting.TimeoutException;
+import com.alibaba.dubbo.common.Version;
+import com.alibaba.dubbo.remoting.transport.Channel;
+import com.alibaba.dubbo.remoting.transport.ChannelHandler;
+import com.alibaba.dubbo.remoting.exception.RemotingException;
+import com.alibaba.dubbo.remoting.exception.TimeoutException;
 import com.alibaba.dubbo.remoting.exchange.ExchangeClient;
 import com.alibaba.dubbo.remoting.exchange.support.header.HeaderExchangeClient;
+import com.alibaba.dubbo.remoting.message.Request;
+import com.alibaba.dubbo.remoting.message.Response;
 import com.alibaba.dubbo.remoting.transport.ClientDelegate;
 import com.alibaba.dubbo.rpc.*;
 import com.alibaba.dubbo.rpc.protocol.AbstractInvoker;
@@ -40,7 +43,6 @@ class ChannelWrappedInvoker<T> extends AbstractInvoker<T> {
     private final String serviceKey;
 
     public ChannelWrappedInvoker(Class<T> serviceType, Channel channel, URL url, String serviceKey) {
-
         super(serviceType, url, new String[]{Constants.GROUP_KEY,
                 Constants.TOKEN_KEY, Constants.TIMEOUT_KEY});
         this.channel = channel;
@@ -53,9 +55,7 @@ class ChannelWrappedInvoker<T> extends AbstractInvoker<T> {
         //拿不到client端export 的service path.约定为interface的名称.
         inv.setAttachment(Constants.PATH_KEY, getInterface().getName());
         inv.setAttachment(Constants.CALLBACK_SERVICE_KEY, serviceKey);
-
         ExchangeClient currentClient = new HeaderExchangeClient(new ChannelWrapper(this.channel));
-
         try {
             if (getUrl().getMethodParameter(invocation.getMethodName(), Constants.ASYNC_KEY, false)) { // 不可靠异步
                 currentClient.send(inv, getUrl().getMethodParameter(invocation.getMethodName(), Constants.SENT_KEY, false));
@@ -63,11 +63,14 @@ class ChannelWrappedInvoker<T> extends AbstractInvoker<T> {
             }
             int timeout = getUrl().getMethodParameter(invocation.getMethodName(),
                     Constants.TIMEOUT_KEY, Constants.DEFAULT_TIMEOUT);
+            Request request = new Request.Builder().newId().version(Version.getVersion()).data(inv).build();
+            Response response;
             if (timeout > 0) {
-                return (Result) currentClient.request(inv, timeout).get();
+                response = currentClient.execute(request, timeout);
             } else {
-                return (Result) currentClient.request(inv).get();
+                response = currentClient.execute(request);
             }
+            return (Result) response.getResult();
         } catch (RpcException e) {
             throw e;
         } catch (TimeoutException e) {
@@ -148,17 +151,5 @@ class ChannelWrappedInvoker<T> extends AbstractInvoker<T> {
         public void send(Object message, boolean sent) throws RemotingException {
             channel.send(message, sent);
         }
-
     }
-
-    public void destroy() {
-        //channel资源的清空由channel创建者清除.
-//        super.destroy();
-//        try {
-//            channel.close();
-//        } catch (Throwable t) {
-//            logger.warn(t.getMessage(), t);
-//        }
-    }
-
 }

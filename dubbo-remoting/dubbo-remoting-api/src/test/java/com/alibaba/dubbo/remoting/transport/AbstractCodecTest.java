@@ -18,7 +18,6 @@ package com.alibaba.dubbo.remoting.transport;
 import java.io.IOException;
 
 import com.alibaba.dubbo.common.URL;
-import com.alibaba.dubbo.remoting.Channel;
 import junit.framework.TestCase;
 
 import static org.easymock.EasyMock.createMock;

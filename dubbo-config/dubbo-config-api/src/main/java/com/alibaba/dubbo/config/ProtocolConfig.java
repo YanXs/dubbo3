@@ -23,7 +23,7 @@ import com.alibaba.dubbo.config.support.Parameter;
 import com.alibaba.dubbo.registry.support.AbstractRegistryFactory;
 import com.alibaba.dubbo.remoting.Codec;
 import com.alibaba.dubbo.remoting.Dispatcher;
-import com.alibaba.dubbo.remoting.Transporter;
+import com.alibaba.dubbo.remoting.transport.Transporter;
 import com.alibaba.dubbo.remoting.exchange.Exchanger;
 import com.alibaba.dubbo.remoting.telnet.TelnetHandler;
 import com.alibaba.dubbo.rpc.Protocol;

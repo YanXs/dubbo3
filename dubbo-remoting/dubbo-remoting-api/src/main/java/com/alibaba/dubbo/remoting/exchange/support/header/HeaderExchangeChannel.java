@@ -20,12 +20,14 @@ import com.alibaba.dubbo.common.URL;
 import com.alibaba.dubbo.common.Version;
 import com.alibaba.dubbo.common.logger.Logger;
 import com.alibaba.dubbo.common.logger.LoggerFactory;
-import com.alibaba.dubbo.remoting.Channel;
-import com.alibaba.dubbo.remoting.ChannelHandler;
-import com.alibaba.dubbo.remoting.RemotingException;
-import com.alibaba.dubbo.remoting.TimeoutException;
+import com.alibaba.dubbo.remoting.transport.Channel;
+import com.alibaba.dubbo.remoting.transport.ChannelHandler;
+import com.alibaba.dubbo.remoting.exception.RemotingException;
+import com.alibaba.dubbo.remoting.exception.TimeoutException;
 import com.alibaba.dubbo.remoting.exchange.*;
 import com.alibaba.dubbo.remoting.exchange.support.DefaultFuture;
+import com.alibaba.dubbo.remoting.message.Request;
+import com.alibaba.dubbo.remoting.message.Response;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.ConcurrentHashMap;
@@ -110,7 +112,7 @@ final class HeaderExchangeChannel implements ExchangeChannel {
         Request.Builder builder = new Request.Builder();
         builder.newId().version(Version.getVersion()).twoWay(true).data(request);
         Request req = builder.build();
-        DefaultFuture future = new DefaultFuture(channel, req, timeout);
+        ResponseFuture future = new DefaultFuture(channel, req, timeout);
         try {
             channel.send(req);
         } catch (RemotingException e) {
@@ -143,7 +145,7 @@ final class HeaderExchangeChannel implements ExchangeChannel {
         LinkedBlockingQueue<Response> reply = pendingReply.getQueue();
         Response response = null;
         try {
-            response = (timeout < 0) ? reply.take() : reply.poll(timeout, TimeUnit.MILLISECONDS);
+            response = (timeout <= 0) ? reply.take() : reply.poll(timeout, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             throw new RemotingException(this, e);
         } finally {
@@ -193,7 +195,7 @@ final class HeaderExchangeChannel implements ExchangeChannel {
         }
     }
 
-    // graceful close
+    // gracefully close
     public void close(int timeout) {
         if (closed) {
             return;
@@ -201,8 +203,7 @@ final class HeaderExchangeChannel implements ExchangeChannel {
         closed = true;
         if (timeout > 0) {
             long start = System.currentTimeMillis();
-            while (DefaultFuture.hasFuture(HeaderExchangeChannel.this)
-                    && System.currentTimeMillis() - start < timeout) {
+            while (shouldWait(start, timeout)) {
                 try {
                     Thread.sleep(10);
                 } catch (InterruptedException e) {
@@ -211,6 +212,11 @@ final class HeaderExchangeChannel implements ExchangeChannel {
             }
         }
         close();
+    }
+
+    private boolean shouldWait(long start, long timeout) {
+        return (System.currentTimeMillis() - start < timeout) &&
+                (DefaultFuture.hasFuture(HeaderExchangeChannel.this) || !REPLY_HOLDER.isEmpty());
     }
 
     public InetSocketAddress getLocalAddress() {

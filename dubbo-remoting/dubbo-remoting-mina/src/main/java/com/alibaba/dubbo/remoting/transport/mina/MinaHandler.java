@@ -19,7 +19,7 @@ import org.apache.mina.common.IoHandlerAdapter;
 import org.apache.mina.common.IoSession;
 
 import com.alibaba.dubbo.common.URL;
-import com.alibaba.dubbo.remoting.ChannelHandler;
+import com.alibaba.dubbo.remoting.transport.ChannelHandler;
 
 /**
  * MinaHandler

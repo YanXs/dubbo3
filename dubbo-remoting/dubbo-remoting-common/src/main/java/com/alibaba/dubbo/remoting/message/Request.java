@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alibaba.dubbo.remoting.exchange;
+package com.alibaba.dubbo.remoting.message;
 
+import com.alibaba.dubbo.common.Version;
 import com.alibaba.dubbo.common.utils.StringUtils;
 
 import java.util.concurrent.atomic.AtomicLong;
@@ -60,7 +61,7 @@ public class Request extends Message {
 
     public static class Builder {
         private long mId;
-        private String mVersion;
+        private String mVersion = Version.getVersion();
         private boolean mTwoWay = true;
         private boolean mEvent = false;
         private boolean mBroken = false;

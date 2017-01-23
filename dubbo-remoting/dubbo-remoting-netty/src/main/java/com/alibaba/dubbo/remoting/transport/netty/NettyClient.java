@@ -34,8 +34,8 @@ import com.alibaba.dubbo.common.logger.Logger;
 import com.alibaba.dubbo.common.logger.LoggerFactory;
 import com.alibaba.dubbo.common.utils.NamedThreadFactory;
 import com.alibaba.dubbo.common.utils.NetUtils;
-import com.alibaba.dubbo.remoting.ChannelHandler;
-import com.alibaba.dubbo.remoting.RemotingException;
+import com.alibaba.dubbo.remoting.transport.ChannelHandler;
+import com.alibaba.dubbo.remoting.exception.RemotingException;
 import com.alibaba.dubbo.remoting.transport.AbstractClient;
 
 /**
@@ -172,7 +172,7 @@ public class NettyClient extends AbstractClient {
     }
 
     @Override
-    protected com.alibaba.dubbo.remoting.Channel getChannel() {
+    protected com.alibaba.dubbo.remoting.transport.Channel getChannel() {
         Channel c = channel;
         if (c == null || ! c.isConnected())
             return null;

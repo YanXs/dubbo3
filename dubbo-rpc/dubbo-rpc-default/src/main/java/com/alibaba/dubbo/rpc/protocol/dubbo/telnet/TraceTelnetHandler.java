@@ -19,7 +19,7 @@ import java.lang.reflect.Method;
 
 import com.alibaba.dubbo.common.extension.Activate;
 import com.alibaba.dubbo.common.utils.StringUtils;
-import com.alibaba.dubbo.remoting.Channel;
+import com.alibaba.dubbo.remoting.transport.Channel;
 import com.alibaba.dubbo.remoting.telnet.TelnetHandler;
 import com.alibaba.dubbo.remoting.telnet.support.Help;
 import com.alibaba.dubbo.rpc.Exporter;

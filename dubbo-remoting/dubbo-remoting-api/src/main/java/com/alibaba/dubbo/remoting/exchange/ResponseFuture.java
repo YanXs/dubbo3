@@ -15,7 +15,7 @@
  */
 package com.alibaba.dubbo.remoting.exchange;
 
-import com.alibaba.dubbo.remoting.RemotingException;
+import com.alibaba.dubbo.remoting.exception.RemotingException;
 
 /**
  * Future. (API/SPI, Prototype, ThreadSafe)
@@ -55,5 +55,7 @@ public interface ResponseFuture {
      * @return done or not.
      */
     boolean isDone();
+
+    void cancel();
 
 }

@@ -11,12 +11,12 @@ import com.alibaba.dubbo.common.serialize.ObjectInput;
 import com.alibaba.dubbo.common.serialize.ObjectOutput;
 import com.alibaba.dubbo.common.serialize.Serialization;
 import com.alibaba.dubbo.common.utils.StringUtils;
-import com.alibaba.dubbo.remoting.Channel;
+import com.alibaba.dubbo.remoting.transport.Channel;
 import com.alibaba.dubbo.remoting.Codec;
-import com.alibaba.dubbo.remoting.RemotingException;
-import com.alibaba.dubbo.remoting.exchange.Request;
-import com.alibaba.dubbo.remoting.exchange.Response;
+import com.alibaba.dubbo.remoting.exception.RemotingException;
 import com.alibaba.dubbo.remoting.exchange.support.DefaultFuture;
+import com.alibaba.dubbo.remoting.message.Request;
+import com.alibaba.dubbo.remoting.message.Response;
 import com.alibaba.dubbo.remoting.transport.CodecSupport;
 
 import java.io.IOException;

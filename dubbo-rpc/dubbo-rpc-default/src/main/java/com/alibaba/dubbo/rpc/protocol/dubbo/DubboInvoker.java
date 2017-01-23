@@ -17,14 +17,13 @@ package com.alibaba.dubbo.rpc.protocol.dubbo;
 
 import com.alibaba.dubbo.common.Constants;
 import com.alibaba.dubbo.common.URL;
-import com.alibaba.dubbo.common.Version;
 import com.alibaba.dubbo.common.utils.AtomicPositiveInteger;
-import com.alibaba.dubbo.remoting.RemotingException;
-import com.alibaba.dubbo.remoting.TimeoutException;
+import com.alibaba.dubbo.remoting.exception.RemotingException;
+import com.alibaba.dubbo.remoting.exception.TimeoutException;
 import com.alibaba.dubbo.remoting.exchange.ExchangeClient;
-import com.alibaba.dubbo.remoting.exchange.Request;
-import com.alibaba.dubbo.remoting.exchange.Response;
 import com.alibaba.dubbo.remoting.exchange.ResponseFuture;
+import com.alibaba.dubbo.remoting.message.Request;
+import com.alibaba.dubbo.remoting.message.Response;
 import com.alibaba.dubbo.rpc.*;
 import com.alibaba.dubbo.rpc.protocol.AbstractInvoker;
 import com.alibaba.dubbo.rpc.support.RpcUtils;
@@ -90,7 +89,7 @@ public class DubboInvoker<T> extends AbstractInvoker<T> {
                 return new RpcResult();
             } else {
                 RpcContext.getContext().setFuture(null);
-                Request request = new Request.Builder().newId().version(Version.getVersion()).data(inv).build();
+                Request request = new Request.Builder().newId().data(inv).build();
                 Response response = currentClient.execute(request, timeout);
                 return (Result) response.getResult();
             }

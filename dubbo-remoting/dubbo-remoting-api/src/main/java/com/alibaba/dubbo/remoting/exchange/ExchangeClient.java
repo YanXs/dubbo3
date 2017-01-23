@@ -15,7 +15,8 @@
  */
 package com.alibaba.dubbo.remoting.exchange;
 
-import com.alibaba.dubbo.remoting.Client;
+import com.alibaba.dubbo.remoting.transport.Client;
+import com.alibaba.dubbo.remoting.message.Interceptor;
 
 /**
  * ExchangeClient. (API/SPI, Prototype, ThreadSafe)

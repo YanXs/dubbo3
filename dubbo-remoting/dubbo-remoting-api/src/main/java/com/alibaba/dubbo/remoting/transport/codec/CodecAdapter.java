@@ -21,7 +21,7 @@ import java.io.IOException;
 import com.alibaba.dubbo.common.io.UnsafeByteArrayInputStream;
 import com.alibaba.dubbo.common.io.UnsafeByteArrayOutputStream;
 import com.alibaba.dubbo.common.utils.Assert;
-import com.alibaba.dubbo.remoting.Channel;
+import com.alibaba.dubbo.remoting.transport.Channel;
 import com.alibaba.dubbo.remoting.Codec;
 import com.alibaba.dubbo.remoting.Codec2;
 import com.alibaba.dubbo.remoting.buffer.ChannelBuffer;

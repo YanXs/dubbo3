@@ -23,10 +23,10 @@ import com.alibaba.dubbo.common.Constants;
 import com.alibaba.dubbo.common.utils.DubboAppender;
 import com.alibaba.dubbo.common.utils.LogUtil;
 import com.alibaba.dubbo.common.utils.NetUtils;
-import com.alibaba.dubbo.remoting.Channel;
-import com.alibaba.dubbo.remoting.Client;
-import com.alibaba.dubbo.remoting.RemotingException;
-import com.alibaba.dubbo.remoting.Server;
+import com.alibaba.dubbo.remoting.transport.Channel;
+import com.alibaba.dubbo.remoting.transport.Client;
+import com.alibaba.dubbo.remoting.exception.RemotingException;
+import com.alibaba.dubbo.remoting.transport.Server;
 import com.alibaba.dubbo.remoting.exchange.Exchangers;
 import com.alibaba.dubbo.remoting.exchange.support.ExchangeHandlerAdapter;
 

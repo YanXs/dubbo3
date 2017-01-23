@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import com.alibaba.dubbo.common.utils.StringUtils;
-import com.alibaba.dubbo.remoting.RemotingException;
+import com.alibaba.dubbo.remoting.exception.RemotingException;
 import com.alibaba.dubbo.remoting.exchange.ResponseFuture;
 import com.alibaba.dubbo.rpc.Result;
 import com.alibaba.dubbo.rpc.RpcException;
@@ -71,7 +71,7 @@ public class FutureAdapter<V> implements Future<V> {
         int timeoutInMillis = (int) unit.convert(timeout, TimeUnit.MILLISECONDS);
         try {
             return (V) (((Result) future.get(timeoutInMillis)).recreate());
-        } catch (com.alibaba.dubbo.remoting.TimeoutException e) {
+        } catch (com.alibaba.dubbo.remoting.exception.TimeoutException e) {
             throw new TimeoutException(StringUtils.toString(e));
         } catch (RemotingException e) {
             throw new ExecutionException(e.getMessage(), e);

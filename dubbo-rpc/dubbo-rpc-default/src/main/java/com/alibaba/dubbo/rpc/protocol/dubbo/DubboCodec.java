@@ -28,13 +28,12 @@ import com.alibaba.dubbo.common.serialize.OptimizedSerialization;
 import com.alibaba.dubbo.common.serialize.Serialization;
 import com.alibaba.dubbo.common.utils.ReflectUtils;
 import com.alibaba.dubbo.common.utils.StringUtils;
-import com.alibaba.dubbo.remoting.Channel;
+import com.alibaba.dubbo.remoting.transport.Channel;
 import com.alibaba.dubbo.remoting.Codec2;
-import com.alibaba.dubbo.remoting.exchange.Request;
-import com.alibaba.dubbo.remoting.exchange.Response;
 import com.alibaba.dubbo.remoting.exchange.codec.ExchangeCodec;
+import com.alibaba.dubbo.remoting.message.Request;
+import com.alibaba.dubbo.remoting.message.Response;
 import com.alibaba.dubbo.remoting.transport.CodecSupport;
-import com.alibaba.dubbo.rpc.Invocation;
 import com.alibaba.dubbo.rpc.Result;
 import com.alibaba.dubbo.rpc.RpcInvocation;
 
@@ -94,13 +93,11 @@ public class DubboCodec extends ExchangeCodec implements Codec2 {
                         if (channel.getUrl().getParameter(
                                 Constants.DECODE_IN_IO_THREAD_KEY,
                                 Constants.DEFAULT_DECODE_IN_IO_THREAD)) {
-                            result = new DecodeableRpcResult(channel, res, is,
-                                    (Invocation) getRequestData(id), proto);
+                            result = new DecodeableRpcResult(channel, res, is, proto);
                             result.decode();
                         } else {
                             result = new DecodeableRpcResult(channel, res,
-                                    new UnsafeByteArrayInputStream(readMessageData(is)),
-                                    (Invocation) getRequestData(id), proto);
+                                    new UnsafeByteArrayInputStream(readMessageData(is)), proto);
                         }
                         data = result;
                     }
@@ -171,15 +168,10 @@ public class DubboCodec extends ExchangeCodec implements Codec2 {
     @Override
     protected void encodeRequestData(Channel channel, ObjectOutput out, Object data) throws IOException {
         RpcInvocation inv = (RpcInvocation) data;
-
         out.writeUTF(inv.getAttachment(Constants.DUBBO_VERSION_KEY, DUBBO_VERSION));
         out.writeUTF(inv.getAttachment(Constants.PATH_KEY));
         out.writeUTF(inv.getAttachment(Constants.VERSION_KEY));
-
         out.writeUTF(inv.getMethodName());
-
-        // NOTICE modified by lishen
-        // TODO
         if (getSerialization(channel) instanceof OptimizedSerialization && !containComplexArguments(inv)) {
             out.writeInt(inv.getParameterTypes().length);
         } else {
@@ -198,7 +190,6 @@ public class DubboCodec extends ExchangeCodec implements Codec2 {
     @Override
     protected void encodeResponseData(Channel channel, ObjectOutput out, Object data) throws IOException {
         Result result = (Result) data;
-
         Throwable th = result.getException();
         if (th == null) {
             Object ret = result.getValue();

@@ -13,7 +13,7 @@ public enum RpcAttachment {
 
     Sampled("X-B3-Sampled"),
 
-    Method("X-B3-Method");
+    SpanName("X-B3-SpanName");
 
     private final String name;
 

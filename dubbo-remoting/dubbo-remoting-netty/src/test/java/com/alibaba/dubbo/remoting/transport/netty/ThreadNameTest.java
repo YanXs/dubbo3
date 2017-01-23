@@ -21,9 +21,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.alibaba.dubbo.common.URL;
-import com.alibaba.dubbo.remoting.Channel;
-import com.alibaba.dubbo.remoting.ChannelHandler;
-import com.alibaba.dubbo.remoting.RemotingException;
+import com.alibaba.dubbo.remoting.transport.Channel;
+import com.alibaba.dubbo.remoting.transport.ChannelHandler;
+import com.alibaba.dubbo.remoting.exception.RemotingException;
 
 /**
  * @author <a href="mailto:gang.lvg@alibaba-inc.com">kimi</a>

@@ -15,7 +15,7 @@
  */
 package com.alibaba.remoting.transport.mina;
 
-import com.alibaba.dubbo.remoting.RemotingException;
+import com.alibaba.dubbo.remoting.exception.RemotingException;
 import com.alibaba.dubbo.remoting.exchange.ExchangeChannel;
 import com.alibaba.dubbo.remoting.exchange.support.Replier;
 

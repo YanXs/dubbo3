@@ -24,7 +24,7 @@ public class HttpSpanNameProvider extends RpcContextMethodNameProvider implement
 
 
     private String getSpanNameFromHeader(HttpServerRequest httpServerRequest) {
-        return httpServerRequest.getHttpHeaderValue(RpcAttachment.Method.getName());
+        return httpServerRequest.getHttpHeaderValue(RpcAttachment.SpanName.getName());
     }
 
 }

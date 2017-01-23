@@ -25,14 +25,13 @@ import com.alibaba.dubbo.common.serialize.ObjectInput;
 import com.alibaba.dubbo.common.serialize.ObjectOutput;
 import com.alibaba.dubbo.common.serialize.Serialization;
 import com.alibaba.dubbo.common.utils.StringUtils;
-import com.alibaba.dubbo.remoting.Channel;
-import com.alibaba.dubbo.remoting.RemotingException;
+import com.alibaba.dubbo.remoting.transport.Channel;
+import com.alibaba.dubbo.remoting.exception.RemotingException;
 import com.alibaba.dubbo.remoting.buffer.ChannelBuffer;
 import com.alibaba.dubbo.remoting.buffer.ChannelBufferInputStream;
 import com.alibaba.dubbo.remoting.buffer.ChannelBufferOutputStream;
-import com.alibaba.dubbo.remoting.exchange.Request;
-import com.alibaba.dubbo.remoting.exchange.Response;
-import com.alibaba.dubbo.remoting.exchange.support.DefaultFuture;
+import com.alibaba.dubbo.remoting.message.Request;
+import com.alibaba.dubbo.remoting.message.Response;
 import com.alibaba.dubbo.remoting.telnet.codec.TelnetCodec;
 import com.alibaba.dubbo.remoting.transport.CodecSupport;
 
@@ -163,7 +162,7 @@ public class ExchangeCodec extends TelnetCodec {
                     if (isEvent) {
                         data = decodeEventData(channel, in);
                     } else {
-                        data = decodeResponseData(channel, in, getRequestData(id));
+                        data = decodeResponseData(channel, in);
                     }
                     builder.result(data);
                 } catch (Throwable t) {
@@ -197,16 +196,6 @@ public class ExchangeCodec extends TelnetCodec {
             }
             return builder.build();
         }
-    }
-
-    protected Object getRequestData(long id) {
-        DefaultFuture future = DefaultFuture.getFuture(id);
-        if (future == null)
-            return null;
-        Request req = future.getRequest();
-        if (req == null)
-            return null;
-        return req.getData();
     }
 
     protected void encodeRequest(Channel channel, ChannelBuffer buffer, Request req) throws IOException {
@@ -303,7 +292,6 @@ public class ExchangeCodec extends TelnetCodec {
             // 发送失败信息给Consumer，否则Consumer只能等超时了
             if (!res.isEvent() && res.getStatus() != Response.BAD_RESPONSE) {
                 try {
-                    // FIXME 在Codec中打印出错日志？在IoHanndler的caught中统一处理？
                     logger.warn("Fail to encode response: " + res + ", send bad_response info instead, cause: " + t.getMessage(), t);
                     Response.Builder builder = new Response.Builder(res.getId());
                     builder.version(res.getVersion()).status(Response.BAD_RESPONSE);
@@ -385,10 +373,6 @@ public class ExchangeCodec extends TelnetCodec {
 
     protected Object decodeResponseData(Channel channel, ObjectInput in) throws IOException {
         return decodeResponseData(in);
-    }
-
-    protected Object decodeResponseData(Channel channel, ObjectInput in, Object requestData) throws IOException {
-        return decodeResponseData(channel, in);
     }
 
     @Override

@@ -51,9 +51,9 @@ final class NettyCodecAdapter {
     
     private final int            bufferSize;
     
-    private final com.alibaba.dubbo.remoting.ChannelHandler handler;
+    private final com.alibaba.dubbo.remoting.transport.ChannelHandler handler;
 
-    public NettyCodecAdapter(Codec2 codec, URL url, com.alibaba.dubbo.remoting.ChannelHandler handler) {
+    public NettyCodecAdapter(Codec2 codec, URL url, com.alibaba.dubbo.remoting.transport.ChannelHandler handler) {
         this.codec = codec;
         this.url = url;
         this.handler = handler;

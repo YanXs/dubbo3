@@ -6,7 +6,7 @@ package com.alibaba.dubbo.rpc.benchmark;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import com.alibaba.dubbo.remoting.RemotingException;
+import com.alibaba.dubbo.remoting.exception.RemotingException;
 import com.alibaba.dubbo.remoting.exchange.ExchangeChannel;
 import com.alibaba.dubbo.remoting.exchange.Exchangers;
 import com.alibaba.dubbo.remoting.exchange.support.ExchangeHandlerAdapter;

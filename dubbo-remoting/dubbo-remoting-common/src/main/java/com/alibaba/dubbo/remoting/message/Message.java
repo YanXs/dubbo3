@@ -1,4 +1,4 @@
-package com.alibaba.dubbo.remoting.exchange;
+package com.alibaba.dubbo.remoting.message;
 
 /**
  * @author Xs.

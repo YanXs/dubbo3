@@ -24,9 +24,9 @@ import com.alibaba.dubbo.common.serialize.support.SerializationOptimizer;
 import com.alibaba.dubbo.common.utils.ConcurrentHashSet;
 import com.alibaba.dubbo.common.utils.NetUtils;
 import com.alibaba.dubbo.common.utils.StringUtils;
-import com.alibaba.dubbo.remoting.Channel;
-import com.alibaba.dubbo.remoting.RemotingException;
-import com.alibaba.dubbo.remoting.Transporter;
+import com.alibaba.dubbo.remoting.transport.Channel;
+import com.alibaba.dubbo.remoting.exception.RemotingException;
+import com.alibaba.dubbo.remoting.transport.Transporter;
 import com.alibaba.dubbo.remoting.exchange.*;
 import com.alibaba.dubbo.remoting.exchange.support.ExchangeHandlerAdapter;
 import com.alibaba.dubbo.rpc.*;
@@ -36,7 +36,6 @@ import java.net.InetSocketAddress;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * dubbo protocol support.
@@ -53,8 +52,6 @@ public class DubboProtocol extends AbstractProtocol {
 
     public static final int DEFAULT_PORT = 20880;
 
-    public final ReentrantLock lock = new ReentrantLock();
-
     private final Map<String, ExchangeServer> serverMap = new ConcurrentHashMap<String, ExchangeServer>(); // <host:port,Exchanger>
 
     private final Map<String, ReferenceCountExchangeClient> referenceClientMap = new ConcurrentHashMap<String, ReferenceCountExchangeClient>(); // <host:port,Exchanger>
@@ -63,11 +60,20 @@ public class DubboProtocol extends AbstractProtocol {
 
     private final Set<String> optimizers = new ConcurrentHashSet<String>();
 
-    //consumer side export a stub service for dispatching event
-    //servicekey-stubmethods
-    private final ConcurrentMap<String, String> stubServiceMethodsMap = new ConcurrentHashMap<String, String>();
-
     private static final String IS_CALLBACK_SERVICE_INVOKE = "_isCallBackServiceInvoke";
+
+    private static DubboProtocol INSTANCE;
+
+    public DubboProtocol() {
+        INSTANCE = this;
+    }
+
+    public static DubboProtocol getDubboProtocol() {
+        if (INSTANCE == null) {
+            ExtensionLoader.getExtensionLoader(Protocol.class).getExtension(DubboProtocol.NAME);
+        }
+        return INSTANCE;
+    }
 
     private ExchangeHandler requestHandler = new ExchangeHandlerAdapter() {
 
@@ -151,29 +157,12 @@ public class DubboProtocol extends AbstractProtocol {
         }
     };
 
-    private static DubboProtocol INSTANCE;
-
-    public DubboProtocol() {
-        INSTANCE = this;
-    }
-
-    public static DubboProtocol getDubboProtocol() {
-        if (INSTANCE == null) {
-            ExtensionLoader.getExtensionLoader(Protocol.class).getExtension(DubboProtocol.NAME); // load
-        }
-        return INSTANCE;
-    }
-
     public Collection<ExchangeServer> getServers() {
         return Collections.unmodifiableCollection(serverMap.values());
     }
 
     public Collection<Exporter<?>> getExporters() {
         return Collections.unmodifiableCollection(exporterMap.values());
-    }
-
-    Map<String, Exporter<?>> getExporterMap() {
-        return exporterMap;
     }
 
     private boolean isClientSide(Channel channel) {
@@ -224,7 +213,7 @@ public class DubboProtocol extends AbstractProtocol {
         String key = serviceKey(url);
         DubboExporter<T> exporter = new DubboExporter<T>(invoker, key, exporterMap);
         exporterMap.put(key, exporter);
-        //export an stub service for dispaching event
+        //export an stub service for dispatching event
         Boolean isStubSupportEvent = url.getParameter(Constants.STUB_EVENT_KEY, Constants.DEFAULT_STUB_EVENT);
         Boolean isCallbackService = url.getParameter(Constants.IS_CALLBACK_SERVICE, false);
         if (isStubSupportEvent && !isCallbackService) {
@@ -234,8 +223,6 @@ public class DubboProtocol extends AbstractProtocol {
                     logger.warn(new IllegalStateException("consumer [" + url.getParameter(Constants.INTERFACE_KEY) +
                             "], has set stubproxy support event ,but no stub methods founded."));
                 }
-            } else {
-                stubServiceMethodsMap.put(url.getServiceKey(), stubServiceMethods);
             }
         }
         openServer(url);
@@ -267,7 +254,6 @@ public class DubboProtocol extends AbstractProtocol {
             for (Class c : optimizer.getSerializableClasses()) {
                 SerializableClassRegistry.registerClass(c);
             }
-
             optimizers.add(className);
         } catch (ClassNotFoundException e) {
             throw new RpcException("Cannot find the serialization optimizer class: " + className, e);
@@ -322,10 +308,8 @@ public class DubboProtocol extends AbstractProtocol {
     }
 
     public <T> Invoker<T> refer(Class<T> serviceType, URL url) throws RpcException {
-
         // modified by lishen
         optimizeSerialization(url);
-
         // create rpc invoker.
         DubboInvoker<T> invoker = new DubboInvoker<T>(serviceType, url, getClients(url), invokers);
         invokers.add(invoker);
@@ -367,9 +351,8 @@ public class DubboProtocol extends AbstractProtocol {
                 referenceClientMap.remove(key);
             }
         }
-        ExchangeClient exchagneclient = initClient(url);
-
-        client = new ReferenceCountExchangeClient(exchagneclient, ghostClientMap);
+        ExchangeClient exchangeClient = initClient(url);
+        client = new ReferenceCountExchangeClient(exchangeClient, ghostClientMap);
         referenceClientMap.put(key, client);
         ghostClientMap.remove(key);
         return client;
@@ -379,7 +362,6 @@ public class DubboProtocol extends AbstractProtocol {
      * 创建新连接.
      */
     private ExchangeClient initClient(URL url) {
-
         // client type setting.
         String str = url.getParameter(Constants.CLIENT_KEY, url.getParameter(Constants.SERVER_KEY, Constants.DEFAULT_REMOTING_CLIENT));
 
@@ -452,7 +434,6 @@ public class DubboProtocol extends AbstractProtocol {
                 }
             }
         }
-        stubServiceMethodsMap.clear();
         super.destroy();
     }
 }

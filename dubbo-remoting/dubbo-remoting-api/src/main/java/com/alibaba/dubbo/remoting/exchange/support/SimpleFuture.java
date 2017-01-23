@@ -15,7 +15,7 @@
  */
 package com.alibaba.dubbo.remoting.exchange.support;
 
-import com.alibaba.dubbo.remoting.RemotingException;
+import com.alibaba.dubbo.remoting.exception.RemotingException;
 import com.alibaba.dubbo.remoting.exchange.ResponseCallback;
 import com.alibaba.dubbo.remoting.exchange.ResponseFuture;
 
@@ -46,6 +46,11 @@ public class SimpleFuture implements ResponseFuture {
 
     public boolean isDone() {
         return true;
+    }
+
+    @Override
+    public void cancel() {
+
     }
 
 }

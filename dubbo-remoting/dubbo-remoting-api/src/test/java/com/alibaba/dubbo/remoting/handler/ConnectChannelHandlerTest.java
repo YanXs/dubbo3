@@ -16,10 +16,10 @@
 package com.alibaba.dubbo.remoting.handler;
 
 import com.alibaba.dubbo.common.Version;
-import com.alibaba.dubbo.remoting.ExecutionException;
-import com.alibaba.dubbo.remoting.RemotingException;
-import com.alibaba.dubbo.remoting.exchange.Request;
-import com.alibaba.dubbo.remoting.exchange.Response;
+import com.alibaba.dubbo.remoting.exception.ExecutionException;
+import com.alibaba.dubbo.remoting.exception.RemotingException;
+import com.alibaba.dubbo.remoting.message.Request;
+import com.alibaba.dubbo.remoting.message.Response;
 import com.alibaba.dubbo.remoting.transport.dispatcher.connection.ConnectionOrderedChannelHandler;
 import junit.framework.Assert;
 import org.junit.Before;

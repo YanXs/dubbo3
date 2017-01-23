@@ -1,6 +1,7 @@
-package com.alibaba.dubbo.remoting.exchange;
+package com.alibaba.dubbo.remoting.message;
 
-import com.alibaba.dubbo.remoting.RemotingException;
+
+import com.alibaba.dubbo.remoting.exception.RemotingException;
 
 /**
  * @author Xs

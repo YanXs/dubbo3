@@ -415,7 +415,7 @@
                                     <include>com.alibaba:dubbo-container-jetty</include>
                                     <include>com.alibaba:dubbo-container-log4j</include>
                                     <include>com.alibaba:dubbo-container-logback</include>
-
+                                    <!-- tracker -->
                                     <include>com.alibaba:dubbo-tracker-api</include>
                                     <include>com.alibaba:dubbo-tracker-zipkin</include>
                                 </includes>
@@ -457,7 +457,8 @@
                                 </transformer>
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-                                    <resource>META-INF/dubbo/internal/com.alibaba.dubbo.remoting.Transporter</resource>
+                                    <resource>META-INF/dubbo/internal/com.alibaba.dubbo.remoting.transport.Transporter
+                                    </resource>
                                 </transformer>
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">

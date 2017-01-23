@@ -21,8 +21,6 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 import com.alibaba.dubbo.common.logger.Logger;
 import com.alibaba.dubbo.common.logger.LoggerFactory;
-import com.alibaba.dubbo.remoting.Channel;
-import com.alibaba.dubbo.remoting.ChannelHandler;
 
 /**
  * ChannelListenerDispatcher

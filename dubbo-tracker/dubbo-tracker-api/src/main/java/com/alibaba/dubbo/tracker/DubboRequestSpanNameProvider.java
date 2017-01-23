@@ -1,13 +1,19 @@
 package com.alibaba.dubbo.tracker;
 
-import com.alibaba.dubbo.rpc.RpcContext;
-
 /**
  * @author Xs
  */
-public class DubboRequestSpanNameProvider {
+public class DubboRequestSpanNameProvider extends RpcContextMethodNameProvider {
 
-    public String spanName() {
-        return RpcContext.getContext().getMethodName();
+    public String spanName(DubboRequest dubboRequest) {
+        String spanName = getMethodNameFromContext();
+        if (spanName == null) {
+            spanName = getSpanNameFromAttachment(dubboRequest);
+        }
+        return spanName;
+    }
+
+    private String getSpanNameFromAttachment(DubboRequest dubboRequest) {
+        return dubboRequest.getAttachment(RpcAttachment.SpanName.getName());
     }
 }

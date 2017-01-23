@@ -21,6 +21,7 @@ import com.alibaba.dubbo.common.Constants;
 import com.alibaba.dubbo.common.extension.Adaptive;
 import com.alibaba.dubbo.common.extension.SPI;
 import com.alibaba.dubbo.remoting.buffer.ChannelBuffer;
+import com.alibaba.dubbo.remoting.transport.Channel;
 
 /**
  * @author <a href="mailto:gang.lvg@taobao.com">kimi</a>

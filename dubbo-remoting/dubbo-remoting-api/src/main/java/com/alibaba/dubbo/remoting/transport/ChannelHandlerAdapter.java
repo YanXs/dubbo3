@@ -15,9 +15,7 @@
  */
 package com.alibaba.dubbo.remoting.transport;
 
-import com.alibaba.dubbo.remoting.Channel;
-import com.alibaba.dubbo.remoting.ChannelHandler;
-import com.alibaba.dubbo.remoting.RemotingException;
+import com.alibaba.dubbo.remoting.exception.RemotingException;
 
 /**
  * ChannelHandlerAdapter.

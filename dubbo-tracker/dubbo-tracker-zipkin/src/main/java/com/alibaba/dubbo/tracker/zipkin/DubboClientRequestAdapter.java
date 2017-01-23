@@ -30,7 +30,7 @@ public class DubboClientRequestAdapter implements ClientRequestAdapter {
 
     @Override
     public String getSpanName() {
-        return spanNameProvider.spanName();
+        return spanNameProvider.spanName(request);
     }
 
     @Override
@@ -44,12 +44,13 @@ public class DubboClientRequestAdapter implements ClientRequestAdapter {
             if (spanId.nullableParentId() != null) {
                 request.addAttachment(RpcAttachment.ParentSpanId.getName(), IdConversion.convertToString(spanId.parentId));
             }
+            request.addAttachment(RpcAttachment.SpanName.getName(), getSpanName());
         }
     }
 
     @Override
     public Collection<KeyValueAnnotation> requestAnnotations() {
-        KeyValueAnnotation annotation = KeyValueAnnotation.create(TrackerKeys.PROVIDER_ADDR, request.providerAddress());
+        KeyValueAnnotation annotation = KeyValueAnnotation.create(TrackerKeys.PROVIDER_ADDR, request.address());
         return Collections.singletonList(annotation);
     }
 

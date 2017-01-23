@@ -16,8 +16,8 @@
 package com.alibaba.dubbo.remoting.telnet;
 
 import com.alibaba.dubbo.common.extension.SPI;
-import com.alibaba.dubbo.remoting.Channel;
-import com.alibaba.dubbo.remoting.RemotingException;
+import com.alibaba.dubbo.remoting.transport.Channel;
+import com.alibaba.dubbo.remoting.exception.RemotingException;
 
 /**
  * TelnetHandler

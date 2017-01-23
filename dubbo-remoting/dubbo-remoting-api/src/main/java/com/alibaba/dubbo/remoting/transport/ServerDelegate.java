@@ -19,10 +19,7 @@ import java.net.InetSocketAddress;
 import java.util.Collection;
 
 import com.alibaba.dubbo.common.URL;
-import com.alibaba.dubbo.remoting.Channel;
-import com.alibaba.dubbo.remoting.ChannelHandler;
-import com.alibaba.dubbo.remoting.RemotingException;
-import com.alibaba.dubbo.remoting.Server;
+import com.alibaba.dubbo.remoting.exception.RemotingException;
 
 /**
  * ServerDelegate

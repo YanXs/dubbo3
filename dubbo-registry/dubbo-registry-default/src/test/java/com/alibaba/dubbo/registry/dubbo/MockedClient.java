@@ -16,12 +16,15 @@
 package com.alibaba.dubbo.registry.dubbo;
 
 import com.alibaba.dubbo.common.URL;
-import com.alibaba.dubbo.remoting.Channel;
-import com.alibaba.dubbo.remoting.ChannelHandler;
+import com.alibaba.dubbo.remoting.transport.Channel;
+import com.alibaba.dubbo.remoting.transport.ChannelHandler;
 import com.alibaba.dubbo.remoting.Codec;
-import com.alibaba.dubbo.remoting.RemotingException;
+import com.alibaba.dubbo.remoting.exception.RemotingException;
 import com.alibaba.dubbo.remoting.exchange.*;
 import com.alibaba.dubbo.remoting.exchange.support.Replier;
+import com.alibaba.dubbo.remoting.message.Interceptor;
+import com.alibaba.dubbo.remoting.message.Request;
+import com.alibaba.dubbo.remoting.message.Response;
 
 import java.net.InetSocketAddress;
 import java.util.Map;
@@ -91,6 +94,11 @@ public class MockedClient implements ExchangeClient {
 
             public boolean isDone() {
                 return true;
+            }
+
+            @Override
+            public void cancel() {
+
             }
 
             public void setCallback(ResponseCallback callback) {

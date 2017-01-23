@@ -54,12 +54,12 @@ public class DubboServerRequestAdapter implements ServerRequestAdapter {
 
     @Override
     public String getSpanName() {
-        return spanNameProvider.spanName();
+        return spanNameProvider.spanName(request);
     }
 
     @Override
     public Collection<KeyValueAnnotation> requestAnnotations() {
-        KeyValueAnnotation annotation = KeyValueAnnotation.create(TrackerKeys.PROVIDER_ADDR, request.providerAddress());
+        KeyValueAnnotation annotation = KeyValueAnnotation.create(TrackerKeys.PROVIDER_ADDR, request.address());
         return Collections.singletonList(annotation);
     }
 

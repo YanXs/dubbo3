@@ -19,6 +19,7 @@ import java.lang.reflect.InvocationTargetException;
 
 import com.alibaba.dubbo.common.bytecode.NoSuchMethodException;
 import com.alibaba.dubbo.common.bytecode.Wrapper;
+import com.alibaba.dubbo.remoting.exception.RemotingException;
 import com.alibaba.dubbo.remoting.exchange.ExchangeChannel;
 import com.alibaba.dubbo.remoting.exchange.support.Replier;
 

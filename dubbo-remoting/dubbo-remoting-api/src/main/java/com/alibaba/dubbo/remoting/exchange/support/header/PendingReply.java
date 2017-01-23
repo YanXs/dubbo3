@@ -1,6 +1,7 @@
 package com.alibaba.dubbo.remoting.exchange.support.header;
 
-import com.alibaba.dubbo.remoting.exchange.Response;
+
+import com.alibaba.dubbo.remoting.message.Response;
 
 import java.util.concurrent.LinkedBlockingQueue;
 

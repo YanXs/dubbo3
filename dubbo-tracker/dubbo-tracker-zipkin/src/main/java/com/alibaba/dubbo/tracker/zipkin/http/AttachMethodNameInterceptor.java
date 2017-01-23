@@ -14,7 +14,7 @@ public class AttachMethodNameInterceptor implements Interceptor {
     public Response intercept(Chain chain) throws IOException {
         Request request = chain.request();
         Request.Builder builder = request.newBuilder();
-        builder.addHeader(RpcAttachment.Method.getName(), RpcContext.getContext().getMethodName());
+        builder.addHeader(RpcAttachment.SpanName.getName(), RpcContext.getContext().getMethodName());
         return chain.proceed(builder.build());
     }
 }

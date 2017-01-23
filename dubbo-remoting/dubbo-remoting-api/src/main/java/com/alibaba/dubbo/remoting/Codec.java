@@ -22,6 +22,7 @@ import java.io.OutputStream;
 import com.alibaba.dubbo.common.Constants;
 import com.alibaba.dubbo.common.extension.Adaptive;
 import com.alibaba.dubbo.common.extension.SPI;
+import com.alibaba.dubbo.remoting.transport.Channel;
 
 /**
  * Codec. (SPI, Singleton, ThreadSafe)

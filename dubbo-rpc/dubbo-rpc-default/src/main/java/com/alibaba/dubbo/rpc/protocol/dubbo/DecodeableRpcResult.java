@@ -22,19 +22,16 @@ import com.alibaba.dubbo.common.serialize.Cleanable;
 import com.alibaba.dubbo.common.serialize.ObjectInput;
 import com.alibaba.dubbo.common.utils.Assert;
 import com.alibaba.dubbo.common.utils.StringUtils;
-import com.alibaba.dubbo.remoting.Channel;
+import com.alibaba.dubbo.remoting.transport.Channel;
 import com.alibaba.dubbo.remoting.Codec;
 import com.alibaba.dubbo.remoting.Decodeable;
-import com.alibaba.dubbo.remoting.exchange.Response;
+import com.alibaba.dubbo.remoting.message.Response;
 import com.alibaba.dubbo.remoting.transport.CodecSupport;
-import com.alibaba.dubbo.rpc.Invocation;
 import com.alibaba.dubbo.rpc.RpcResult;
-import com.alibaba.dubbo.rpc.support.RpcUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.Type;
 
 /**
  * @author <a href="mailto:gang.lvg@alibaba-inc.com">kimi</a>
@@ -51,18 +48,15 @@ public class DecodeableRpcResult extends RpcResult implements Codec, Decodeable 
 
     private Response response;
 
-    private Invocation invocation;
-
     private volatile boolean hasDecoded;
 
-    public DecodeableRpcResult(Channel channel, Response response, InputStream is, Invocation invocation, byte id) {
+    public DecodeableRpcResult(Channel channel, Response response, InputStream is, byte id) {
         Assert.notNull(channel, "channel == null");
         Assert.notNull(response, "response == null");
         Assert.notNull(is, "inputStream == null");
         this.channel = channel;
         this.response = response;
         this.inputStream = is;
-        this.invocation = invocation;
         this.serializationType = id;
     }
 
@@ -81,10 +75,7 @@ public class DecodeableRpcResult extends RpcResult implements Codec, Decodeable 
                     break;
                 case DubboCodec.RESPONSE_VALUE:
                     try {
-                        Type[] returnType = RpcUtils.getReturnTypes(invocation);
-                        setValue(returnType == null || returnType.length == 0 ? in.readObject() :
-                                (returnType.length == 1 ? in.readObject((Class<?>) returnType[0])
-                                        : in.readObject((Class<?>) returnType[0], returnType[1])));
+                        setValue(in.readObject());
                     } catch (ClassNotFoundException e) {
                         throw new IOException(StringUtils.toString("Read response data failed.", e));
                     }

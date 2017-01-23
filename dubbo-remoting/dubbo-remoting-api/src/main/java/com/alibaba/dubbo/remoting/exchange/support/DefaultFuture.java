@@ -18,13 +18,13 @@ package com.alibaba.dubbo.remoting.exchange.support;
 import com.alibaba.dubbo.common.Constants;
 import com.alibaba.dubbo.common.logger.Logger;
 import com.alibaba.dubbo.common.logger.LoggerFactory;
-import com.alibaba.dubbo.remoting.Channel;
-import com.alibaba.dubbo.remoting.RemotingException;
-import com.alibaba.dubbo.remoting.TimeoutException;
-import com.alibaba.dubbo.remoting.exchange.Request;
-import com.alibaba.dubbo.remoting.exchange.Response;
+import com.alibaba.dubbo.remoting.transport.Channel;
+import com.alibaba.dubbo.remoting.exception.RemotingException;
+import com.alibaba.dubbo.remoting.exception.TimeoutException;
 import com.alibaba.dubbo.remoting.exchange.ResponseCallback;
 import com.alibaba.dubbo.remoting.exchange.ResponseFuture;
+import com.alibaba.dubbo.remoting.message.Request;
+import com.alibaba.dubbo.remoting.message.Response;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -80,10 +80,18 @@ public class DefaultFuture implements ResponseFuture {
         CHANNELS.put(id, channel);
     }
 
+    /**
+     * 同步等待结果
+     *
+     * @return
+     * @throws RemotingException
+     */
+    @Deprecated
     public Object get() throws RemotingException {
         return get(timeout);
     }
 
+    @Deprecated
     public Object get(int timeout) throws RemotingException {
         if (timeout <= 0) {
             timeout = Constants.DEFAULT_TIMEOUT;

@@ -9,13 +9,13 @@ import com.alibaba.dubbo.tracker.*;
  */
 public class DubboRpcTracker implements RpcTracker {
 
-    private final ClientRequestInterceptor clientRequestInterceptor;
+    private final DubboClientRequestInterceptor clientRequestInterceptor;
 
-    private final ClientResponseInterceptor clientResponseInterceptor;
+    private final DubboClientResponseInterceptor clientResponseInterceptor;
 
-    private final ServerRequestInterceptor serverRequestInterceptor;
+    private final DubboServerRequestInterceptor serverRequestInterceptor;
 
-    private final ServerResponseInterceptor serverResponseInterceptor;
+    private final DubboServerResponseInterceptor serverResponseInterceptor;
 
     private final BraveRpcTrackerEngine trackerEngine;
 
@@ -32,22 +32,22 @@ public class DubboRpcTracker implements RpcTracker {
     }
 
     @Override
-    public ClientRequestInterceptor clientRequestInterceptor() {
+    public DubboClientRequestInterceptor clientRequestInterceptor() {
         return clientRequestInterceptor;
     }
 
     @Override
-    public ClientResponseInterceptor clientResponseInterceptor() {
+    public DubboClientResponseInterceptor clientResponseInterceptor() {
         return clientResponseInterceptor;
     }
 
     @Override
-    public ServerRequestInterceptor serverRequestInterceptor() {
+    public DubboServerRequestInterceptor serverRequestInterceptor() {
         return serverRequestInterceptor;
     }
 
     @Override
-    public ServerResponseInterceptor serverResponseInterceptor() {
+    public DubboServerResponseInterceptor serverResponseInterceptor() {
         return serverResponseInterceptor;
     }
 

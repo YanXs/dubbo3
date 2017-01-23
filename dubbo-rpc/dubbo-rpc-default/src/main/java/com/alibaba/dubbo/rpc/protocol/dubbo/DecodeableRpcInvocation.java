@@ -24,10 +24,10 @@ import com.alibaba.dubbo.common.serialize.ObjectInput;
 import com.alibaba.dubbo.common.utils.Assert;
 import com.alibaba.dubbo.common.utils.ReflectUtils;
 import com.alibaba.dubbo.common.utils.StringUtils;
-import com.alibaba.dubbo.remoting.Channel;
+import com.alibaba.dubbo.remoting.transport.Channel;
 import com.alibaba.dubbo.remoting.Codec;
 import com.alibaba.dubbo.remoting.Decodeable;
-import com.alibaba.dubbo.remoting.exchange.Request;
+import com.alibaba.dubbo.remoting.message.Request;
 import com.alibaba.dubbo.remoting.transport.CodecSupport;
 import com.alibaba.dubbo.rpc.RpcInvocation;
 
@@ -98,7 +98,6 @@ public class DecodeableRpcInvocation extends RpcInvocation implements Codec, Dec
             try {
                 Object[] args;
                 Class<?>[] pts;
-
                 // NOTICE modified by lishen
                 int argNum = in.readInt();
                 if (argNum >= 0) {
@@ -165,6 +164,10 @@ public class DecodeableRpcInvocation extends RpcInvocation implements Codec, Dec
             }
         }
         return this;
+    }
+
+    public Channel getChannel(){
+        return channel;
     }
 
 }
