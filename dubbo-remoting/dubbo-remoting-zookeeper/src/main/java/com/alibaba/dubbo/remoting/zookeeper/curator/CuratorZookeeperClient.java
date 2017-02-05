@@ -54,7 +54,7 @@ public class CuratorZookeeperClient extends AbstractZookeeperClient<CuratorWatch
     public void createPersistent(String path) {
         try {
             client.create().forPath(path);
-        } catch (NodeExistsException e) {
+        } catch (NodeExistsException ignored) {
         } catch (Exception e) {
             throw new IllegalStateException(e.getMessage(), e);
         }
@@ -63,7 +63,7 @@ public class CuratorZookeeperClient extends AbstractZookeeperClient<CuratorWatch
     public void createEphemeral(String path) {
         try {
             client.create().withMode(CreateMode.EPHEMERAL).forPath(path);
-        } catch (NodeExistsException e) {
+        } catch (NodeExistsException ignored) {
         } catch (Exception e) {
             throw new IllegalStateException(e.getMessage(), e);
         }
@@ -72,7 +72,7 @@ public class CuratorZookeeperClient extends AbstractZookeeperClient<CuratorWatch
     public void delete(String path) {
         try {
             client.delete().forPath(path);
-        } catch (NoNodeException e) {
+        } catch (NoNodeException ignored) {
         } catch (Exception e) {
             throw new IllegalStateException(e.getMessage(), e);
         }

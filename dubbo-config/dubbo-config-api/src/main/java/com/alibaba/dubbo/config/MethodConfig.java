@@ -40,7 +40,7 @@ public class MethodConfig extends AbstractMethodConfig {
     private Boolean retry;
 
     // 是否开启track,默认开启
-    private Boolean trackOn = Boolean.TRUE;
+    private Boolean enableTrack = Boolean.TRUE;
 
     // 是否为可靠异步
     private Boolean reliable;
@@ -152,12 +152,12 @@ public class MethodConfig extends AbstractMethodConfig {
         this.sticky = sticky;
     }
 
-    public Boolean getTrackOn() {
-        return trackOn;
+    public Boolean getEnableTrack() {
+        return enableTrack;
     }
 
-    public void setTrackOn(Boolean trackOn) {
-        this.trackOn = trackOn;
+    public void setEnableTrack(Boolean enableTrack) {
+        this.enableTrack = enableTrack;
     }
 
     @Parameter(key = Constants.ON_RETURN_INSTANCE_KEY, excluded = true, attribute = true)

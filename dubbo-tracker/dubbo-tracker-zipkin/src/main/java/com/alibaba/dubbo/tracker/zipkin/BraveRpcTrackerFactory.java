@@ -1,10 +1,8 @@
 package com.alibaba.dubbo.tracker.zipkin;
 
 import com.alibaba.dubbo.common.URL;
-import com.alibaba.dubbo.tracker.RpcTracker;
-import com.alibaba.dubbo.tracker.RpcTrackerFactory;
-import com.alibaba.dubbo.tracker.RpcTrackerManager;
-import com.alibaba.dubbo.tracker.zipkin.http.HttpRpcTracker;
+import com.alibaba.dubbo.tracker.*;
+import com.alibaba.dubbo.tracker.zipkin.http.BraveHttpRpcTracker;
 
 /**
  * @author Xs
@@ -13,12 +11,16 @@ public class BraveRpcTrackerFactory implements RpcTrackerFactory {
 
     @Override
     public RpcTracker createRpcTracker(URL url) {
-        String protocol = url.getProtocol();
+        RpcTrackerEngine rpcTrackerEngine = RpcTrackerManager.getRpcTrackerEngine();
+        if (rpcTrackerEngine == null) {
+            return null;
+        }
         RpcTracker rpcTracker = null;
-        if (protocol.equals("dubbo")) {
-            rpcTracker = new DubboRpcTracker((BraveRpcTrackerEngine) RpcTrackerManager.getRpcTrackerEngine());
-        } else if (protocol.equals("http") || protocol.equals("hessian")) {
-            rpcTracker = new HttpRpcTracker((BraveRpcTrackerEngine) RpcTrackerManager.getRpcTrackerEngine());
+        RpcProtocol rpcProtocol = RpcProtocol.valueOf(url.getProtocol());
+        if (rpcProtocol.equals(RpcProtocol.DUBBO)) {
+            rpcTracker = new BraveDubboRpcTracker((BraveRpcTrackerEngine) rpcTrackerEngine);
+        } else if (rpcProtocol.equals(RpcProtocol.HTTP) || rpcProtocol.equals(RpcProtocol.HESSIAN)) {
+            rpcTracker = new BraveHttpRpcTracker(rpcTrackerEngine);
         }
         return rpcTracker;
     }

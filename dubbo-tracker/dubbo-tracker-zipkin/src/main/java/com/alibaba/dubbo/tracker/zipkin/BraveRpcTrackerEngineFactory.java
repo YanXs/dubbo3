@@ -9,18 +9,8 @@ import com.alibaba.dubbo.tracker.RpcTrackerEngineFactory;
  */
 public class BraveRpcTrackerEngineFactory implements RpcTrackerEngineFactory {
 
-    private volatile BraveRpcTrackerEngine braveRpcTrackerEngine;
-
     @Override
     public RpcTrackerEngine createRpcTrackerEngine(URL url) {
-        if (braveRpcTrackerEngine == null) {
-            braveRpcTrackerEngine = BraveRpcTrackerEngine.create(url);
-        }
-        return braveRpcTrackerEngine;
-    }
-
-    @Override
-    public RpcTrackerEngine getTrackerEngine() {
-        return braveRpcTrackerEngine;
+        return BraveRpcTrackerEngine.create(url);
     }
 }

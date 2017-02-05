@@ -5,23 +5,23 @@ import com.alibaba.dubbo.tracker.*;
 public class FacadeHttpRpcTracker implements RpcTracker {
 
     @Override
-    public ClientRequestInterceptor clientRequestInterceptor() {
-        return null;
+    public void trackClientRequest(ClientRequestAdapter clientRequestAdapter) {
+
     }
 
     @Override
-    public ClientResponseInterceptor clientResponseInterceptor() {
-        return null;
+    public void trackClientResponse(ClientResponseAdapter clientResponseAdapter) {
+
     }
 
     @Override
-    public ServerRequestInterceptor serverRequestInterceptor() {
-        return null;
+    public void trackServerRequest(ServerRequestAdapter serverRequestAdapter) {
+
     }
 
     @Override
-    public ServerResponseInterceptor serverResponseInterceptor() {
-        return null;
+    public void trackServerResponse(ServerResponseAdapter serverResponseAdapter) {
+
     }
 
     @Override

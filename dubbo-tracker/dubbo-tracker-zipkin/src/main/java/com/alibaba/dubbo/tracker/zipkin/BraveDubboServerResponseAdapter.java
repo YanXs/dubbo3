@@ -11,11 +11,11 @@ import java.util.Collections;
 /**
  * @author Xs
  */
-public class DubboServerResponseAdapter implements ServerResponseAdapter {
+public class BraveDubboServerResponseAdapter implements ServerResponseAdapter, com.alibaba.dubbo.tracker.ServerResponseAdapter {
 
     private final DubboResponse response;
 
-    public DubboServerResponseAdapter(DubboResponse response) {
+    public BraveDubboServerResponseAdapter(DubboResponse response) {
         this.response = response;
     }
 

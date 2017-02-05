@@ -10,7 +10,7 @@ import com.alibaba.dubbo.common.extension.SPI;
 @SPI("zipkin")
 public interface RpcTrackerFactory {
 
-    @Adaptive("protocol")
+    @Adaptive("tracker")
     RpcTracker createRpcTracker(URL url);
 
 }

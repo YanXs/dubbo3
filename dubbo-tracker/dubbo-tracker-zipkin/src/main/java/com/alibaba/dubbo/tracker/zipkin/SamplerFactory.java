@@ -15,7 +15,7 @@ public class SamplerFactory {
         } else {
             String rate = url.getParameter("rate");
             if (StringUtils.isEmpty(rate)) {
-                throw new IllegalArgumentException("sample rate must not be null");
+                return Sampler.ALWAYS_SAMPLE;
             }
             if (sampler.equals("counting")) {
                 return CountingSampler.create(Float.valueOf(rate));

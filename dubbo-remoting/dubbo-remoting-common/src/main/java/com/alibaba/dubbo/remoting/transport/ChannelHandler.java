@@ -21,9 +21,7 @@ import com.alibaba.dubbo.remoting.exception.RemotingException;
 
 /**
  * ChannelHandler. (API, Prototype, ThreadSafe)
- * 
- * @see com.alibaba.dubbo.remoting.Transporter#bind(com.alibaba.dubbo.common.URL, ChannelHandler)
- * @see com.alibaba.dubbo.remoting.Transporter#connect(com.alibaba.dubbo.common.URL, ChannelHandler)
+ *
  * @author qian.lei
  * @author william.liangf
  */
@@ -32,21 +30,21 @@ public interface ChannelHandler {
 
     /**
      * on channel connected.
-     * 
+     *
      * @param channel channel.
      */
     void connected(Channel channel) throws RemotingException;
 
     /**
      * on channel disconnected.
-     * 
+     *
      * @param channel channel.
      */
     void disconnected(Channel channel) throws RemotingException;
 
     /**
      * on message sent.
-     * 
+     *
      * @param channel channel.
      * @param message message.
      */
@@ -54,7 +52,7 @@ public interface ChannelHandler {
 
     /**
      * on message received.
-     * 
+     *
      * @param channel channel.
      * @param message message.
      */
@@ -62,8 +60,8 @@ public interface ChannelHandler {
 
     /**
      * on exception caught.
-     * 
-     * @param channel channel.
+     *
+     * @param channel   channel.
      * @param exception exception.
      */
     void caught(Channel channel, Throwable exception) throws RemotingException;

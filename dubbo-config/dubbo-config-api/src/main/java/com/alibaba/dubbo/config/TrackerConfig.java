@@ -10,19 +10,23 @@ public class TrackerConfig extends AbstractConfig {
 
     private String address;
 
+    private Integer port;
+
     private String collector;
 
     private String sampler;
 
-    private Float sampleRate;
+    private Float samplerate;
 
-    private Integer flushInterval;
+    private Integer flushinterval;
 
     private String group;
 
     private String version;
 
-    // 自定义参数
+    /**
+     * 自定义参数
+     */
     private Map<String, String> parameters;
 
     public TrackerConfig() {
@@ -52,6 +56,14 @@ public class TrackerConfig extends AbstractConfig {
         this.address = address;
     }
 
+    public Integer getPort() {
+        return port;
+    }
+
+    public void setPort(Integer port) {
+        this.port = port;
+    }
+
     public String getCollector() {
         return collector;
     }
@@ -68,20 +80,20 @@ public class TrackerConfig extends AbstractConfig {
         this.sampler = sampler;
     }
 
-    public Float getSampleRate() {
-        return sampleRate;
+    public Float getSamplerate() {
+        return samplerate;
     }
 
-    public void setSampleRate(Float sampleRate) {
-        this.sampleRate = sampleRate;
+    public void setSamplerate(Float samplerate) {
+        this.samplerate = samplerate;
     }
 
-    public Integer getFlushInterval() {
-        return flushInterval;
+    public Integer getFlushinterval() {
+        return flushinterval;
     }
 
-    public void setFlushInterval(Integer flushInterval) {
-        this.flushInterval = flushInterval;
+    public void setFlushinterval(Integer flushinterval) {
+        this.flushinterval = flushinterval;
     }
 
     public String getGroup() {

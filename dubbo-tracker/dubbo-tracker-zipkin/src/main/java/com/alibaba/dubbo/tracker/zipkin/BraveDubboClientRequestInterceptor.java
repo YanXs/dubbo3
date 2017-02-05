@@ -1,19 +1,20 @@
 package com.alibaba.dubbo.tracker.zipkin;
 
-import com.github.kristofa.brave.ClientRequestInterceptor;
+import com.alibaba.dubbo.tracker.ClientRequestAdapter;
+import com.alibaba.dubbo.tracker.ClientRequestInterceptor;
 
-public class BraveDubboClientRequestInterceptor implements DubboClientRequestInterceptor {
+public class BraveDubboClientRequestInterceptor implements ClientRequestInterceptor {
 
-    private final ClientRequestInterceptor clientRequestInterceptor;
+    private final com.github.kristofa.brave.ClientRequestInterceptor clientRequestInterceptor;
 
-    public BraveDubboClientRequestInterceptor(ClientRequestInterceptor clientRequestInterceptor) {
+    public BraveDubboClientRequestInterceptor(com.github.kristofa.brave.ClientRequestInterceptor clientRequestInterceptor) {
         this.clientRequestInterceptor = clientRequestInterceptor;
     }
 
     @Override
-    public void handle(DubboClientRequestAdapter clientRequestAdapter) {
+    public void handle(ClientRequestAdapter clientRequestAdapter) {
         if (clientRequestAdapter.isTraceable()) {
-            clientRequestInterceptor.handle(clientRequestAdapter);
+            clientRequestInterceptor.handle((com.github.kristofa.brave.ClientRequestAdapter) clientRequestAdapter);
         }
     }
 }

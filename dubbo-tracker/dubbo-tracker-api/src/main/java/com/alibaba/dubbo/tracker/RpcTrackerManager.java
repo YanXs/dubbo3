@@ -1,7 +1,6 @@
 package com.alibaba.dubbo.tracker;
 
 import com.alibaba.dubbo.common.URL;
-import com.alibaba.dubbo.common.extension.ExtensionLoader;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,58 +8,51 @@ import java.util.Map;
 /**
  * @author Xs
  */
-public class RpcTrackerManager {
+public final class RpcTrackerManager {
 
     private static RpcTrackerFactory rpcTrackerFactory;
 
-    private static RpcTrackerEngineFactory rpcTrackerEngineFactory;
-
     private static RpcTrackerEngine rpcTrackerEngine;
 
-    private static Map<String, RpcTracker> rpcTrackerMap = new HashMap<String, RpcTracker>();
-
-    static {
-        rpcTrackerEngineFactory = ExtensionLoader.getExtensionLoader(RpcTrackerEngineFactory.class).getDefaultExtension();
-        rpcTrackerFactory = ExtensionLoader.getExtensionLoader(RpcTrackerFactory.class).getDefaultExtension();
-    }
+    private static Map<RpcProtocol, RpcTracker> rpcTrackerMap = new HashMap<RpcProtocol, RpcTracker>();
 
     public static RpcTrackerFactory getTrackerFactory() {
         return rpcTrackerFactory;
     }
 
-    public static RpcTrackerEngineFactory getRpcTrackerEngineFactory() {
-        return rpcTrackerEngineFactory;
+    public static synchronized void setRpcTrackerFactory(RpcTrackerFactory rpcTrackerFactory) {
+        RpcTrackerManager.rpcTrackerFactory = rpcTrackerFactory;
     }
 
-    public static RpcTrackerEngine getRpcTrackerEngine() {
-        if (rpcTrackerEngine == null) {
-            throw new IllegalStateException("rpcTrackerEngine should create first");
-        }
+    public static synchronized RpcTrackerEngine getRpcTrackerEngine() {
         return rpcTrackerEngine;
     }
 
-    public static synchronized RpcTrackerEngine createRpcTrackerEngine(URL url) {
+    public static synchronized RpcTrackerEngine createRpcTrackerEngine(RpcTrackerEngineFactory factory, URL url) {
         if (rpcTrackerEngine == null) {
-            rpcTrackerEngine = rpcTrackerEngineFactory.createRpcTrackerEngine(url);
+            rpcTrackerEngine = factory.createRpcTrackerEngine(url);
         }
         return rpcTrackerEngine;
     }
 
     public static synchronized RpcTracker createRpcTracker(URL url) {
         String protocol = url.getProtocol();
-        RpcTracker rpcTracker = rpcTrackerMap.get(protocol);
+        if (rpcTrackerEngine == null || rpcTrackerFactory == null) {
+            return null;
+        }
+        RpcTracker rpcTracker = rpcTrackerMap.get(RpcProtocol.valueOf(protocol));
         if (rpcTracker == null) {
             rpcTracker = rpcTrackerFactory.createRpcTracker(url);
             if (rpcTracker == null) {
                 throw new IllegalStateException("rpcTracker should not be null here, url: " + url);
             }
-            rpcTrackerMap.put(protocol, rpcTracker);
+            rpcTrackerMap.put(RpcProtocol.valueOf(protocol), rpcTracker);
         }
         return rpcTracker;
     }
 
     public static RpcTracker getRpcTracker(String protocol) {
-        RpcTracker rpcTracker = rpcTrackerMap.get(protocol);
+        RpcTracker rpcTracker = rpcTrackerMap.get(RpcProtocol.valueOf(protocol));
         if (rpcTracker == null) {
             throw new IllegalStateException("rpcTracker should be create first!");
         }

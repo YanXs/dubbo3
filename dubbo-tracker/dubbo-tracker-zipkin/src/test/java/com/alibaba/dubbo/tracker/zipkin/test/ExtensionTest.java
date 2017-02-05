@@ -16,7 +16,7 @@ public class ExtensionTest {
     @BeforeClass
     public static void before(){
         URL url = URL.valueOf("zipkin://localhost:9411?application=test&collector=http&sampler=counting&rate=0.2");
-        trackerEngine = RpcTrackerManager.createRpcTrackerEngine(url);
+//        trackerEngine = RpcTrackerManager.createRpcTrackerEngine(url);
     }
 
     @Test

@@ -13,13 +13,13 @@ import com.twitter.zipkin.gen.Endpoint;
 import java.util.Collection;
 import java.util.Collections;
 
-public class DubboClientRequestAdapter implements ClientRequestAdapter {
+public class BraveDubboClientRequestAdapter implements ClientRequestAdapter, com.alibaba.dubbo.tracker.ClientRequestAdapter {
 
     private final DubboRequest request;
 
     private final DubboRequestSpanNameProvider spanNameProvider;
 
-    public DubboClientRequestAdapter(DubboRequest request, DubboRequestSpanNameProvider spanNameProvider) {
+    public BraveDubboClientRequestAdapter(DubboRequest request, DubboRequestSpanNameProvider spanNameProvider) {
         this.request = request;
         this.spanNameProvider = spanNameProvider;
     }

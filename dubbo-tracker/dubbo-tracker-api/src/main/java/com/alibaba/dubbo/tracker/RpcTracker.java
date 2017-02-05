@@ -1,19 +1,18 @@
 package com.alibaba.dubbo.tracker;
 
-import com.sun.javafx.scene.traversal.TraversalEngine;
-
 /**
  * @author Xs
  */
 public interface RpcTracker {
 
-    ClientRequestInterceptor clientRequestInterceptor();
 
-    ClientResponseInterceptor clientResponseInterceptor();
+    void trackClientRequest(ClientRequestAdapter clientRequestAdapter);
 
-    ServerRequestInterceptor serverRequestInterceptor();
+    void trackClientResponse(ClientResponseAdapter clientResponseAdapter);
 
-    ServerResponseInterceptor serverResponseInterceptor();
+    void trackServerRequest(ServerRequestAdapter serverRequestAdapter);
+
+    void trackServerResponse(ServerResponseAdapter serverResponseAdapter);
 
     RpcTrackerEngine trackerEngine();
 }

@@ -103,7 +103,7 @@ public class RegistryProtocol implements Protocol {
         final ExporterChangeableWrapper<T> exporter = doLocalExport(originInvoker);
         //registry provider
         final Registry registry = getRegistry(originInvoker);
-        final URL registedProviderUrl = getRegistedProviderUrl(originInvoker);
+        final URL registedProviderUrl = getRegisteredProviderUrl(originInvoker);
         registry.register(registedProviderUrl);
         // 订阅override数据
         // FIXME 提供者订阅时，会影响同一JVM即暴露服务，又引用同一服务的的场景，因为subscribed以服务名为缓存的key，导致订阅信息覆盖。
@@ -146,13 +146,13 @@ public class RegistryProtocol implements Protocol {
             synchronized (bounds) {
                 exporter = (ExporterChangeableWrapper<T>) bounds.get(key);
                 if (exporter == null) {
-                    final Invoker<?> invokerDelegete = new InvokerDelegete<T>(originInvoker, getProviderUrl(originInvoker));
-                    exporter = new ExporterChangeableWrapper<T>((Exporter<T>) protocol.export(invokerDelegete), originInvoker);
+                    final Invoker<?> invokerDelegate = new InvokerDelegate<T>(originInvoker, getProviderUrl(originInvoker));
+                    exporter = new ExporterChangeableWrapper<T>((Exporter<T>) protocol.export(invokerDelegate), originInvoker);
                     bounds.put(key, exporter);
                 }
             }
         }
-        return (ExporterChangeableWrapper<T>) exporter;
+        return exporter;
     }
 
     /**
@@ -168,7 +168,7 @@ public class RegistryProtocol implements Protocol {
         if (exporter == null) {
             logger.warn(new IllegalStateException("error state, exporter should not be null"));
         } else {
-            final Invoker<T> invokerDelegete = new InvokerDelegete<T>(originInvoker, newInvokerUrl);
+            final Invoker<T> invokerDelegete = new InvokerDelegate<T>(originInvoker, newInvokerUrl);
             exporter.setExporter(protocol.export(invokerDelegete));
         }
     }
@@ -194,14 +194,14 @@ public class RegistryProtocol implements Protocol {
      * @param originInvoker
      * @return
      */
-    private URL getRegistedProviderUrl(final Invoker<?> originInvoker) {
+    private URL getRegisteredProviderUrl(final Invoker<?> originInvoker) {
         URL providerUrl = getProviderUrl(originInvoker);
         //注册中心看到的地址
         return providerUrl.removeParameters(getFilteredKeys(providerUrl)).removeParameter(Constants.MONITOR_KEY);
     }
 
-    private URL getSubscribedOverrideUrl(URL registedProviderUrl) {
-        return registedProviderUrl.setProtocol(Constants.PROVIDER_PROTOCOL)
+    private URL getSubscribedOverrideUrl(URL registeredProviderUrl) {
+        return registeredProviderUrl.setProtocol(Constants.PROVIDER_PROTOCOL)
                 .addParameters(Constants.CATEGORY_KEY, Constants.CONFIGURATORS_CATEGORY,
                         Constants.CHECK_KEY, String.valueOf(false));
     }
@@ -247,9 +247,6 @@ public class RegistryProtocol implements Protocol {
             if ((Constants.COMMA_SPLIT_PATTERN.split(group)).length > 1 || Constants.ANY_VALUE.equals(group)) {
                 return doRefer(getCluster("mergeable"), registry, type, url);
             }
-//            else if (Constants.GROUPING.equals(group)) {
-//                return doRefer(getCluster("grouping"), registry, type, url);
-//            }
         }
         return doRefer(cluster, registry, type, url);
     }
@@ -334,7 +331,7 @@ public class RegistryProtocol implements Protocol {
                         result = new ArrayList<URL>(urls);
                     }
                     result.remove(url);
-                    logger.warn("Subsribe category=configurator, but notifed non-configurator urls. may be registry bug. unexcepted url: " + url);
+                    logger.warn("Subscribe category=configurator, but notified non-configurator urls. may be registry bug. unexcepted url: " + url);
                 }
             }
             if (result != null) {
@@ -345,8 +342,8 @@ public class RegistryProtocol implements Protocol {
             for (ExporterChangeableWrapper<?> exporter : exporters) {
                 Invoker<?> invoker = exporter.getOriginInvoker();
                 final Invoker<?> originInvoker;
-                if (invoker instanceof InvokerDelegete) {
-                    originInvoker = ((InvokerDelegete<?>) invoker).getInvoker();
+                if (invoker instanceof InvokerDelegate) {
+                    originInvoker = ((InvokerDelegate<?>) invoker).getInvoker();
                 } else {
                     originInvoker = invoker;
                 }
@@ -372,21 +369,21 @@ public class RegistryProtocol implements Protocol {
         }
     }
 
-    public static class InvokerDelegete<T> extends InvokerWrapper<T> {
+    public static class InvokerDelegate<T> extends InvokerWrapper<T> {
         private final Invoker<T> invoker;
 
         /**
          * @param invoker
          * @param url     invoker.getUrl返回此值
          */
-        public InvokerDelegete(Invoker<T> invoker, URL url) {
+        public InvokerDelegate(Invoker<T> invoker, URL url) {
             super(invoker, url);
             this.invoker = invoker;
         }
 
         public Invoker<T> getInvoker() {
-            if (invoker instanceof InvokerDelegete) {
-                return ((InvokerDelegete<T>) invoker).getInvoker();
+            if (invoker instanceof InvokerDelegate) {
+                return ((InvokerDelegate<T>) invoker).getInvoker();
             } else {
                 return invoker;
             }

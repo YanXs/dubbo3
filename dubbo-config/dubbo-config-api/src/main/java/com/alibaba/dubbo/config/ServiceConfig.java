@@ -266,6 +266,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     private void doExportUrls() {
+        initRpcTrackerManagerIfNeeded();
         List<URL> registryURLs = loadRegistries(true);
         for (ProtocolConfig protocolConfig : protocols) {
             doExportUrlsFor1Protocol(protocolConfig, registryURLs);
@@ -367,11 +368,11 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                             Method[] methods = interfaceClass.getMethods();
                             //遍历所有方法
                             if (methods != null && methods.length > 0) {
-                                for (int i = 0; i < methods.length; i++) {
-                                    String methodName = methods[i].getName();
+                                for (Method mtd : methods) {
+                                    String methodName = mtd.getName();
                                     //匹配方法名称，获取方法签名.
                                     if (methodName.equals(method.getName())) {
-                                        Class<?>[] argtypes = methods[i].getParameterTypes();
+                                        Class<?>[] argtypes = mtd.getParameterTypes();
                                         //一个方法中单个callback
                                         if (argument.getIndex() != -1) {
                                             if (argtypes[argument.getIndex()].getName().equals(argument.getType())) {
@@ -399,10 +400,9 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                         } else {
                             throw new IllegalArgumentException("argument config must set index or type attribute.eg: <dubbo:argument index='0' .../> or <dubbo:argument type=xxx .../>");
                         }
-
                     }
                 }
-            } // end of methods for
+            }
         }
 
         if (ProtocolUtils.isGeneric(generic)) {
@@ -449,7 +449,6 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         String scope = url.getParameter(Constants.SCOPE_KEY);
         //配置为none不暴露
         if (!Constants.SCOPE_NONE.equalsIgnoreCase(scope)) {
-
             //配置不是remote的情况下做本地暴露 (配置为remote，则表示只暴露远程服务)
             if (!Constants.SCOPE_REMOTE.equalsIgnoreCase(scope)) {
                 exportLocal(url);
@@ -470,14 +469,13 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                         if (logger.isInfoEnabled()) {
                             logger.info("Register dubbo service " + interfaceClass.getName() + " url " + url + " to registry " + registryURL);
                         }
-                        Invoker<?> invoker = proxyFactory.getInvoker(ref, (Class) interfaceClass, registryURL.addParameterAndEncoded(Constants.EXPORT_KEY, url.toFullString()));
-
+                        Invoker<?> invoker = proxyFactory.getInvoker(ref,
+                                (Class) interfaceClass, registryURL.addParameterAndEncoded(Constants.EXPORT_KEY, url.toFullString()));
                         Exporter<?> exporter = protocol.export(invoker);
                         exporters.add(exporter);
                     }
                 } else {
                     Invoker<?> invoker = proxyFactory.getInvoker(ref, (Class) interfaceClass, url);
-
                     Exporter<?> exporter = protocol.export(invoker);
                     exporters.add(exporter);
                 }
@@ -652,7 +650,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
     }
 
     @Deprecated
-    private static final List<ProtocolConfig> convertProviderToProtocol(List<ProviderConfig> providers) {
+    private static List<ProtocolConfig> convertProviderToProtocol(List<ProviderConfig> providers) {
         if (providers == null || providers.size() == 0) {
             return null;
         }
@@ -664,7 +662,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
     }
 
     @Deprecated
-    private static final List<ProviderConfig> convertProtocolToProvider(List<ProtocolConfig> protocols) {
+    private static List<ProviderConfig> convertProtocolToProvider(List<ProtocolConfig> protocols) {
         if (protocols == null || protocols.size() == 0) {
             return null;
         }
@@ -676,7 +674,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
     }
 
     @Deprecated
-    private static final ProtocolConfig convertProviderToProtocol(ProviderConfig provider) {
+    private static ProtocolConfig convertProviderToProtocol(ProviderConfig provider) {
         ProtocolConfig protocol = new ProtocolConfig();
         protocol.setName(provider.getProtocol().getName());
         protocol.setServer(provider.getServer());

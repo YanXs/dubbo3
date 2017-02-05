@@ -17,13 +17,13 @@ import static com.github.kristofa.brave.IdConversion.convertToLong;
 /**
  * @author Xs
  */
-public class DubboServerRequestAdapter implements ServerRequestAdapter {
+public class BraveDubboServerRequestAdapter implements ServerRequestAdapter, com.alibaba.dubbo.tracker.ServerRequestAdapter {
 
     private final DubboRequest request;
 
     private final DubboRequestSpanNameProvider spanNameProvider;
 
-    public DubboServerRequestAdapter(DubboRequest request, DubboRequestSpanNameProvider spanNameProvider) {
+    public BraveDubboServerRequestAdapter(DubboRequest request, DubboRequestSpanNameProvider spanNameProvider) {
         this.request = request;
         this.spanNameProvider = spanNameProvider;
     }

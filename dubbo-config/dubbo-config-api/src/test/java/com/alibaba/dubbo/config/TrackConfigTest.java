@@ -12,8 +12,8 @@ public class TrackConfigTest {
         trackerConfig.setApplication("test");
         trackerConfig.setCollector("kafka");
         trackerConfig.setSampler("counting");
-        trackerConfig.setSampleRate(0.1f);
-        trackerConfig.setFlushInterval(2);
+        trackerConfig.setSamplerate(0.1f);
+        trackerConfig.setFlushinterval(2);
         System.out.println(trackerConfig.toString());
     }
 }

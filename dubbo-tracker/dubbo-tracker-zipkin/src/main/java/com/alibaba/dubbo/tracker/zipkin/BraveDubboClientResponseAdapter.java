@@ -8,11 +8,11 @@ import com.github.kristofa.brave.KeyValueAnnotation;
 import java.util.Collection;
 import java.util.Collections;
 
-public class DubboClientResponseAdapter implements ClientResponseAdapter {
+public class BraveDubboClientResponseAdapter implements ClientResponseAdapter, com.alibaba.dubbo.tracker.ClientResponseAdapter {
 
     private final DubboResponse response;
 
-    public DubboClientResponseAdapter(DubboResponse response) {
+    public BraveDubboClientResponseAdapter(DubboResponse response) {
         this.response = response;
     }
 

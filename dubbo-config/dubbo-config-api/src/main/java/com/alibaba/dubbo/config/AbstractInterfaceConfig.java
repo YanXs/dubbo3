@@ -30,6 +30,9 @@ import com.alibaba.dubbo.rpc.InvokerListener;
 import com.alibaba.dubbo.rpc.ProxyFactory;
 import com.alibaba.dubbo.rpc.cluster.Cluster;
 import com.alibaba.dubbo.rpc.support.MockInvoker;
+import com.alibaba.dubbo.tracker.RpcTrackerEngineFactory;
+import com.alibaba.dubbo.tracker.RpcTrackerFactory;
+import com.alibaba.dubbo.tracker.RpcTrackerManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,13 +51,11 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
 
     // 服务接口的本地实现类名
     protected String local;
-
     // 服务接口的本地实现类名
     protected String stub;
-
     // 服务监控
     protected MonitorConfig monitor;
-
+    // 服务追踪
     protected TrackerConfig tracker;
 
     // 代理类型
@@ -219,9 +220,9 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
         }
         appendParameters(map, monitor);
         String address = monitor.getAddress();
-        String sysaddress = System.getProperty("dubbo.monitor.address");
-        if (sysaddress != null && sysaddress.length() > 0) {
-            address = sysaddress;
+        String sysAddress = System.getProperty("dubbo.monitor.address");
+        if (sysAddress != null && sysAddress.length() > 0) {
+            address = sysAddress;
         }
         if (ConfigUtils.isNotEmpty(address)) {
             if (!map.containsKey(Constants.PROTOCOL_KEY)) {
@@ -236,6 +237,39 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
             return registryURL.setProtocol("dubbo").addParameter(Constants.PROTOCOL_KEY, "registry").addParameterAndEncoded(Constants.REFER_KEY, StringUtils.toQueryString(map));
         }
         return null;
+    }
+
+    protected URL loadTracker() {
+        if (tracker != null) {
+            appendProperties(tracker);
+            Map<String, String> map = new HashMap<String, String>();
+            map.put("dubbo", Version.getVersion());
+            map.put("application", application.getName());
+            map.put(Constants.TIMESTAMP_KEY, String.valueOf(System.currentTimeMillis()));
+            if (ConfigUtils.getPid() > 0) {
+                map.put(Constants.PID_KEY, String.valueOf(ConfigUtils.getPid()));
+            }
+            appendParameters(map, tracker);
+            String address = tracker.getAddress();
+            String sysAddress = System.getProperty("dubbo.tracker.address");
+            if (sysAddress != null && sysAddress.length() > 0) {
+                address = sysAddress;
+            }
+            if (ConfigUtils.isNotEmpty(address)) {
+                return UrlUtils.parseURL(address, map);
+            }
+        }
+        return null;
+    }
+
+    protected void initRpcTrackerManagerIfNeeded() {
+        URL url = loadTracker();
+        if (url != null) {
+            RpcTrackerEngineFactory rpcTrackerEngineFactory = ExtensionLoader.getExtensionLoader(RpcTrackerEngineFactory.class).getExtension(url.getProtocol());
+            RpcTrackerFactory rpcTrackerFactory = ExtensionLoader.getExtensionLoader(RpcTrackerFactory.class).getExtension(url.getProtocol());
+            RpcTrackerManager.setRpcTrackerFactory(rpcTrackerFactory);
+            RpcTrackerManager.createRpcTrackerEngine(rpcTrackerEngineFactory, url);
+        }
     }
 
     protected void checkInterfaceAndMethods(Class<?> interfaceClass, List<MethodConfig> methods) {

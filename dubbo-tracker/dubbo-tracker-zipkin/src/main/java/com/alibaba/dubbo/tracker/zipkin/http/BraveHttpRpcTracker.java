@@ -6,11 +6,11 @@ import com.alibaba.dubbo.tracker.zipkin.BraveRpcTrackerEngine;
 /**
  * @author Xs
  */
-public class HttpRpcTracker extends FacadeHttpRpcTracker {
+public class BraveHttpRpcTracker extends FacadeHttpRpcTracker {
 
-    private final BraveRpcTrackerEngine trackerEngine;
+    private final RpcTrackerEngine trackerEngine;
 
-    public HttpRpcTracker(BraveRpcTrackerEngine trackerEngine) {
+    public BraveHttpRpcTracker(RpcTrackerEngine trackerEngine) {
         this.trackerEngine = trackerEngine;
     }
 

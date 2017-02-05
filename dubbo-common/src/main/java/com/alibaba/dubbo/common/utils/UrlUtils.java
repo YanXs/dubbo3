@@ -27,7 +27,7 @@ public class UrlUtils {
             return null;
         }
         String url;
-        if (address.indexOf("://") >= 0) {
+        if (address.contains("://")) {
             url = address;
         } else {
             String[] addresses = Constants.COMMA_SPLIT_PATTERN.split(address);
@@ -69,7 +69,7 @@ public class UrlUtils {
         int port = u.getPort();
         String path = u.getPath();
         Map<String, String> parameters = new HashMap<String, String>(u.getParameters());
-        if ((protocol == null || protocol.length() == 0) && defaultProtocol != null && defaultProtocol.length() > 0) {
+        if ((protocol == null || protocol.length() == 0) && defaultProtocol.length() > 0) {
             changed = true;
             protocol = defaultProtocol;
         }
