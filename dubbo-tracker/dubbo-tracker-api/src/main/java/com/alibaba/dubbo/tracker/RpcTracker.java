@@ -5,7 +5,6 @@ package com.alibaba.dubbo.tracker;
  */
 public interface RpcTracker {
 
-
     void trackClientRequest(ClientRequestAdapter clientRequestAdapter);
 
     void trackClientResponse(ClientResponseAdapter clientResponseAdapter);
@@ -15,4 +14,6 @@ public interface RpcTracker {
     void trackServerResponse(ServerResponseAdapter serverResponseAdapter);
 
     RpcTrackerEngine trackerEngine();
+
+//    boolean isStrict();
 }

@@ -7,6 +7,9 @@ import com.github.kristofa.brave.http.HttpRequest;
 import com.github.kristofa.brave.http.HttpServerRequest;
 import com.github.kristofa.brave.http.SpanNameProvider;
 
+/**
+ * @author Xs.
+ */
 public class HttpSpanNameProvider extends RpcContextMethodNameProvider implements SpanNameProvider {
 
     @Override

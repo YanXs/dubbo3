@@ -11,7 +11,9 @@ import com.alibaba.dubbo.tracker.DubboResponse;
 import com.alibaba.dubbo.tracker.RpcTracker;
 
 /**
- * 对dubbo协议request拦截
+ * dubbo协议client request拦截器
+ *
+ * @author Xs
  */
 public class BraveDubboClientRequestResponseInterceptor implements Interceptor {
 

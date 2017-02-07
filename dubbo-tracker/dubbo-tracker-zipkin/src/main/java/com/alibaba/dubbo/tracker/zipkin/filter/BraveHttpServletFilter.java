@@ -6,6 +6,9 @@ import com.github.kristofa.brave.servlet.BraveServletFilter;
 import javax.servlet.*;
 import java.io.IOException;
 
+/**
+ * @author Xs.
+ */
 public class BraveHttpServletFilter implements ServletFilter {
 
     private final BraveServletFilter servletFilter;

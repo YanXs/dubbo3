@@ -59,8 +59,7 @@ public class BraveDubboServerRequestAdapter implements ServerRequestAdapter, com
 
     @Override
     public Collection<KeyValueAnnotation> requestAnnotations() {
-        KeyValueAnnotation annotation = KeyValueAnnotation.create(TrackerKeys.PROVIDER_ADDR, request.address());
-        return Collections.singletonList(annotation);
+        return Collections.emptyList();
     }
 
     private SpanId getSpanId(String traceId, String spanId, String parentSpanId) {

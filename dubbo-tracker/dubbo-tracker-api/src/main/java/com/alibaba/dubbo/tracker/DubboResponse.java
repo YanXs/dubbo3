@@ -3,6 +3,9 @@ package com.alibaba.dubbo.tracker;
 import com.alibaba.dubbo.remoting.message.Response;
 import com.alibaba.dubbo.rpc.RpcResult;
 
+/**
+ * @author Xs.
+ */
 public class DubboResponse {
 
     private final Response response;

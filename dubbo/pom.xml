@@ -19,15 +19,17 @@
     <parent>
         <groupId>com.alibaba</groupId>
         <artifactId>dubbo-parent</artifactId>
-        <version>2.8.4</version>
+        <version>3.0.0</version>
     </parent>
     <artifactId>dubbo</artifactId>
     <packaging>jar</packaging>
     <name>${project.artifactId}</name>
     <description>The all in one project of dubbo</description>
+
     <properties>
         <skip_maven_deploy>false</skip_maven_deploy>
     </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.alibaba</groupId>
@@ -380,6 +382,7 @@
                                     <include>com.alibaba:hessian-lite</include>
                                     <include>com.alibaba:dubbo-common</include>
                                     <include>com.alibaba:dubbo-remoting-api</include>
+                                    <include>com.alibaba:dubbo-remoting-common</include>
                                     <include>com.alibaba:dubbo-remoting-netty</include>
                                     <include>com.alibaba:dubbo-remoting-mina</include>
                                     <include>com.alibaba:dubbo-remoting-grizzly</include>
@@ -574,6 +577,13 @@
                                     <resource>META-INF/dubbo/internal/com.alibaba.dubbo.tracker.RpcTrackerFactory
                                     </resource>
                                 </transformer>
+
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                    <resource>META-INF/dubbo/internal/com.alibaba.dubbo.tracker.RpcTrackerEngineFactory
+                                    </resource>
+                                </transformer>
+
                             </transformers>
                         </configuration>
                     </execution>

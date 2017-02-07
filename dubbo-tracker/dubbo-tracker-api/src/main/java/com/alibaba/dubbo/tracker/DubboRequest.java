@@ -1,11 +1,15 @@
 package com.alibaba.dubbo.tracker;
 
 
-import com.alibaba.dubbo.common.utils.NetUtils;
+import com.alibaba.dubbo.common.utils.StringUtils;
 import com.alibaba.dubbo.remoting.message.Request;
 import com.alibaba.dubbo.rpc.Invoker;
 import com.alibaba.dubbo.rpc.RpcInvocation;
+import com.alibaba.dubbo.tracker.exceptions.RequestIllegalException;
 
+/**
+ * @author Xs.
+ */
 public class DubboRequest {
 
     private final Request request;
@@ -38,16 +42,37 @@ public class DubboRequest {
         return invocation.getAttachment(key);
     }
 
-    public String address() {
+    public String providerAddress() {
         Invoker invoker = invocation.getInvoker();
-        if (invoker != null) {
-            return invoker.getUrl().getAddress();
+        if (invoker == null) {
+            throw new RequestIllegalException("Invoker must not be null, request { " + request + " }");
         }
-//        if (invocation instanceof DecodeableRpcInvocation){
-//            Channel channel = ((DecodeableRpcInvocation) invocation).getChannel();
-//            return channel.getUrl().getAddress();
-//        }
-        return NetUtils.getLocalHost();
+        return invoker.getUrl().getAddress();
+    }
+
+    public String remoteMethod() {
+        String interfaceStr = invocation.getAttachment("interface");
+        if (StringUtils.isEmpty(interfaceStr)) {
+            return invocation.getMethodName();
+        } else {
+            StringBuilder builder = new StringBuilder();
+            builder.append(interfaceStr).append(".");
+            builder.append(invocation.getMethodName()).append("(");
+            Class<?>[] parameterTypes = invocation.getParameterTypes();
+            int len = parameterTypes.length;
+            for (int i = 0; i < len - 1; i++) {
+                builder.append(parameterTypes[i].getCanonicalName()).append(" ,");
+            }
+            if (len > 0) {
+                builder.append(parameterTypes[len - 1].getCanonicalName());
+            }
+            builder.append(")");
+            return builder.toString();
+        }
+    }
+
+    public String serviceVersion() {
+        return invocation.getAttachment("version");
     }
 
     public Request getRequest() {

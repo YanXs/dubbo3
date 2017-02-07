@@ -10,9 +10,13 @@ import com.github.kristofa.brave.KeyValueAnnotation;
 import com.github.kristofa.brave.SpanId;
 import com.twitter.zipkin.gen.Endpoint;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 
+/**
+ * @author Xs
+ */
 public class BraveDubboClientRequestAdapter implements ClientRequestAdapter, com.alibaba.dubbo.tracker.ClientRequestAdapter {
 
     private final DubboRequest request;
@@ -50,8 +54,14 @@ public class BraveDubboClientRequestAdapter implements ClientRequestAdapter, com
 
     @Override
     public Collection<KeyValueAnnotation> requestAnnotations() {
-        KeyValueAnnotation annotation = KeyValueAnnotation.create(TrackerKeys.PROVIDER_ADDR, request.address());
-        return Collections.singletonList(annotation);
+        List<KeyValueAnnotation> requestAnnotations = new ArrayList<KeyValueAnnotation>();
+        KeyValueAnnotation annotation = KeyValueAnnotation.create(TrackerKeys.PROVIDER_ADDRESS, request.providerAddress());
+        requestAnnotations.add(annotation);
+        annotation = KeyValueAnnotation.create(TrackerKeys.REMOTE_METHOD, request.remoteMethod());
+        requestAnnotations.add(annotation);
+        annotation = KeyValueAnnotation.create(TrackerKeys.SERVICE_VERSION, request.serviceVersion());
+        requestAnnotations.add(annotation);
+        return requestAnnotations;
     }
 
     @Override

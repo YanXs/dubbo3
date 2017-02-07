@@ -6,6 +6,9 @@ import com.github.kristofa.brave.BoundarySampler;
 import com.github.kristofa.brave.CountingSampler;
 import com.github.kristofa.brave.Sampler;
 
+/**
+ * @author Xs.
+ */
 public class SamplerFactory {
 
     public static Sampler create(URL url) {

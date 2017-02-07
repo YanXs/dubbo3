@@ -20,14 +20,17 @@ import com.alibaba.dubbo.common.URL;
 import com.alibaba.dubbo.common.logger.Logger;
 import com.alibaba.dubbo.common.logger.LoggerFactory;
 import com.alibaba.dubbo.common.utils.NamedThreadFactory;
-import com.alibaba.dubbo.remoting.transport.Channel;
-import com.alibaba.dubbo.remoting.transport.ChannelHandler;
-import com.alibaba.dubbo.remoting.transport.Client;
 import com.alibaba.dubbo.remoting.exception.RemotingException;
-import com.alibaba.dubbo.remoting.exchange.*;
+import com.alibaba.dubbo.remoting.exchange.ExchangeChannel;
+import com.alibaba.dubbo.remoting.exchange.ExchangeClient;
+import com.alibaba.dubbo.remoting.exchange.ExchangeHandler;
+import com.alibaba.dubbo.remoting.exchange.ResponseFuture;
 import com.alibaba.dubbo.remoting.message.Interceptor;
 import com.alibaba.dubbo.remoting.message.Request;
 import com.alibaba.dubbo.remoting.message.Response;
+import com.alibaba.dubbo.remoting.transport.Channel;
+import com.alibaba.dubbo.remoting.transport.ChannelHandler;
+import com.alibaba.dubbo.remoting.transport.Client;
 
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
@@ -54,9 +57,9 @@ public class HeaderExchangeClient implements ExchangeClient {
     private ScheduledFuture<?> heartbeatTimer;
 
     // 心跳超时，毫秒。缺省0，不会执行心跳。
-    private int heartbeat;
+    private final int heartbeat;
 
-    private int heartbeatTimeout;
+    private final int heartbeatTimeout;
 
     private final Client client;
 
@@ -238,8 +241,7 @@ public class HeaderExchangeClient implements ExchangeClient {
                 Interceptor interceptor = interceptors.get(index);
                 Response response = interceptor.intercept(chain);
                 if (response == null) {
-                    throw new NullPointerException("interceptor " + interceptor
-                            + " returned null");
+                    throw new NullPointerException("interceptor " + interceptor + " returned null");
                 }
                 return response;
             }

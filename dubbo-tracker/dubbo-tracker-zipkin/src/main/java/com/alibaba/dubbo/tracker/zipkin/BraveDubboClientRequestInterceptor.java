@@ -3,6 +3,9 @@ package com.alibaba.dubbo.tracker.zipkin;
 import com.alibaba.dubbo.tracker.ClientRequestAdapter;
 import com.alibaba.dubbo.tracker.ClientRequestInterceptor;
 
+/**
+ * @author Xs.
+ */
 public class BraveDubboClientRequestInterceptor implements ClientRequestInterceptor {
 
     private final com.github.kristofa.brave.ClientRequestInterceptor clientRequestInterceptor;

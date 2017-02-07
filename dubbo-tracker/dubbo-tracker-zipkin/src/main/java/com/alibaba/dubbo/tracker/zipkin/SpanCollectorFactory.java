@@ -8,11 +8,14 @@ import com.github.kristofa.brave.kafka.KafkaSpanCollector;
 import com.github.kristofa.brave.scribe.ScribeSpanCollector;
 import com.github.kristofa.brave.scribe.ScribeSpanCollectorParams;
 
+/**
+ * @author Xs.
+ */
 public class SpanCollectorFactory {
 
     private static final SpanCollectorMetricsHandler DEFAULT_HANDLER = new LoggingSpanCollectorMetricsHandler();
 
-    public static SpanCollector create(URL url){
+    public static SpanCollector create(URL url) {
         String collector = url.getParameter("collector", "http");
         if (collector.equals("http")) {
             HttpSpanCollector.Config config = HttpSpanCollector.Config.builder().build();

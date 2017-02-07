@@ -9,6 +9,9 @@ import com.alibaba.dubbo.tracker.DubboRequestSpanNameProvider;
 import com.alibaba.dubbo.tracker.DubboResponse;
 import com.alibaba.dubbo.tracker.RpcTracker;
 
+/**
+ * @author Xs.
+ */
 public class BraveDubboServerRequestResponseInterceptor implements Interceptor {
 
     private final RpcTracker rpcTracker;

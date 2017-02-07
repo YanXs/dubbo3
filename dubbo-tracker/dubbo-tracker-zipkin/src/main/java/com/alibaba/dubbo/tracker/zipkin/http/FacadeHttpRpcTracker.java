@@ -2,6 +2,9 @@ package com.alibaba.dubbo.tracker.zipkin.http;
 
 import com.alibaba.dubbo.tracker.*;
 
+/**
+ * @author Xs.
+ */
 public class FacadeHttpRpcTracker implements RpcTracker {
 
     @Override
