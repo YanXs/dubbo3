@@ -1,6 +1,7 @@
-package com.alibaba.dubbo.tracker.zipkin;
+package com.alibaba.dubbo.tracker.zipkin.dubbo;
 
 import com.alibaba.dubbo.tracker.*;
+import com.alibaba.dubbo.tracker.zipkin.BraveRpcTrackerEngine;
 
 /**
  * 追踪dubbo协议同步调用

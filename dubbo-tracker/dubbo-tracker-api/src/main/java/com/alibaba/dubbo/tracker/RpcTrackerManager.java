@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author Xs
+ * @author Xs.
  */
 public final class RpcTrackerManager {
 
@@ -51,10 +51,11 @@ public final class RpcTrackerManager {
         return rpcTracker;
     }
 
-    public static RpcTracker getRpcTracker(String protocol) {
+    public static synchronized RpcTracker getRpcTracker(URL url) {
+        String protocol = url.getProtocol();
         RpcTracker rpcTracker = rpcTrackerMap.get(RpcProtocol.valueOf(protocol));
         if (rpcTracker == null) {
-            throw new IllegalStateException("rpcTracker should be create first!");
+            rpcTracker = createRpcTracker(url);
         }
         return rpcTracker;
     }

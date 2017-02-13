@@ -1,6 +1,6 @@
-package com.alibaba.dubbo.tracker.zipkin;
+package com.alibaba.dubbo.tracker.zipkin.dubbo;
 
-import com.alibaba.dubbo.tracker.DubboResponse;
+import com.alibaba.dubbo.tracker.dubbo.DubboResponse;
 import com.alibaba.dubbo.tracker.TrackerKeys;
 import com.github.kristofa.brave.KeyValueAnnotation;
 import com.github.kristofa.brave.ServerResponseAdapter;

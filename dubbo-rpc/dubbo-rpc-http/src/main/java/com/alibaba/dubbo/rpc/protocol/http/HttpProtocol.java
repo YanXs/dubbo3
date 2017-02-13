@@ -24,6 +24,7 @@ import com.alibaba.dubbo.remoting.http.HttpServer;
 import com.alibaba.dubbo.rpc.RpcContext;
 import com.alibaba.dubbo.rpc.RpcException;
 import com.alibaba.dubbo.rpc.protocol.AbstractProxyProtocol;
+import com.alibaba.dubbo.tracker.http.HttpRequestResponseInterceptorBuilder;
 import org.springframework.remoting.RemoteAccessException;
 import org.springframework.remoting.httpinvoker.CommonsHttpInvokerRequestExecutor;
 import org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean;
@@ -54,6 +55,8 @@ public class HttpProtocol extends AbstractProxyProtocol {
 
     private HttpBinder httpBinder;
 
+    private HttpRequestResponseInterceptorBuilder httpRequestResponseInterceptorBuilder;
+
     public HttpProtocol() {
         super(RemoteAccessException.class);
     }
@@ -62,12 +65,15 @@ public class HttpProtocol extends AbstractProxyProtocol {
         this.httpBinder = httpBinder;
     }
 
+    public void setHttpRequestResponseInterceptorBuilder(HttpRequestResponseInterceptorBuilder httpRequestResponseInterceptorBuilder) {
+        this.httpRequestResponseInterceptorBuilder = httpRequestResponseInterceptorBuilder;
+    }
+
     public int getDefaultPort() {
         return DEFAULT_PORT;
     }
 
     private class InternalHandler implements HttpHandler {
-
         public void handle(HttpServletRequest request, HttpServletResponse response)
                 throws IOException, ServletException {
             String uri = request.getRequestURI();
@@ -83,7 +89,6 @@ public class HttpProtocol extends AbstractProxyProtocol {
                 }
             }
         }
-
     }
 
     protected <T> Runnable doExport(final T impl, Class<T> type, URL url) throws RpcException {
@@ -117,7 +122,7 @@ public class HttpProtocol extends AbstractProxyProtocol {
         httpProxyFactoryBean.setServiceInterface(serviceType);
         String client = url.getParameter(Constants.CLIENT_KEY);
         if (StringUtils.isEmpty(client) || "okHttpClient".equals(client)) {
-            httpProxyFactoryBean.setHttpInvokerRequestExecutor(new OkHttpInvokerRequestExecutor(url));
+            httpProxyFactoryBean.setHttpInvokerRequestExecutor(new OkHttpInvokerRequestExecutor(url, httpRequestResponseInterceptorBuilder));
         } else if ("simple".equals(client)) {
             SimpleHttpInvokerRequestExecutor httpInvokerRequestExecutor = new SimpleHttpInvokerRequestExecutor() {
                 protected void prepareConnection(HttpURLConnection con,

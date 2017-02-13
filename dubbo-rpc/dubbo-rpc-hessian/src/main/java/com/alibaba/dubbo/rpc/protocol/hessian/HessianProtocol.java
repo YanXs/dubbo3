@@ -23,6 +23,7 @@ import com.alibaba.dubbo.remoting.http.HttpServer;
 import com.alibaba.dubbo.rpc.RpcContext;
 import com.alibaba.dubbo.rpc.RpcException;
 import com.alibaba.dubbo.rpc.protocol.AbstractProxyProtocol;
+import com.alibaba.dubbo.tracker.http.HttpRequestResponseInterceptorBuilder;
 import com.caucho.hessian.HessianException;
 import com.caucho.hessian.client.HessianConnectionException;
 import com.caucho.hessian.client.HessianProxyFactory;
@@ -51,6 +52,8 @@ public class HessianProtocol extends AbstractProxyProtocol {
 
     private HttpBinder httpBinder;
 
+    private HttpRequestResponseInterceptorBuilder httpRequestResponseInterceptorBuilder;
+
     public HessianProtocol() {
         super(HessianException.class);
     }
@@ -59,12 +62,15 @@ public class HessianProtocol extends AbstractProxyProtocol {
         this.httpBinder = httpBinder;
     }
 
+    public void setHttpRequestResponseInterceptorBuilder(HttpRequestResponseInterceptorBuilder httpRequestResponseInterceptorBuilder) {
+        this.httpRequestResponseInterceptorBuilder = httpRequestResponseInterceptorBuilder;
+    }
+
     public int getDefaultPort() {
         return 80;
     }
 
     private class HessianHandler implements HttpHandler {
-
         public void handle(HttpServletRequest request, HttpServletResponse response)
                 throws IOException, ServletException {
             String uri = request.getRequestURI();
@@ -106,7 +112,7 @@ public class HessianProtocol extends AbstractProxyProtocol {
         if ("httpclient".equalsIgnoreCase(client)) {
             hessianProxyFactory.setConnectionFactory(new HttpClientConnectionFactory());
         } else if ("okHttpClient".equalsIgnoreCase(client)) {
-            hessianProxyFactory.setConnectionFactory(new OkHttpConnectionFactory(url));
+            hessianProxyFactory.setConnectionFactory(new OkHttpConnectionFactory(url, httpRequestResponseInterceptorBuilder));
         } else if (client != null && client.length() > 0 && !Constants.DEFAULT_HTTP_CLIENT.equals(client)) {
             throw new IllegalStateException("Unsupported http protocol client=\"" + client + "\"!");
         }

@@ -13,6 +13,15 @@ import java.io.IOException;
  */
 public class AttachMethodNameInterceptor implements Interceptor {
 
+    private static final AttachMethodNameInterceptor instance = new AttachMethodNameInterceptor();
+
+    private AttachMethodNameInterceptor() {
+    }
+
+    public static AttachMethodNameInterceptor getInstance() {
+        return instance;
+    }
+
     @Override
     public Response intercept(Chain chain) throws IOException {
         Request request = chain.request();

@@ -1,7 +1,7 @@
-package com.alibaba.dubbo.tracker.zipkin;
+package com.alibaba.dubbo.tracker.zipkin.dubbo;
 
-import com.alibaba.dubbo.tracker.DubboRequest;
-import com.alibaba.dubbo.tracker.DubboRequestSpanNameProvider;
+import com.alibaba.dubbo.tracker.dubbo.DubboRequest;
+import com.alibaba.dubbo.tracker.dubbo.DubboRequestSpanNameProvider;
 import com.alibaba.dubbo.tracker.RpcAttachment;
 import com.alibaba.dubbo.tracker.TrackerKeys;
 import com.github.kristofa.brave.ClientRequestAdapter;

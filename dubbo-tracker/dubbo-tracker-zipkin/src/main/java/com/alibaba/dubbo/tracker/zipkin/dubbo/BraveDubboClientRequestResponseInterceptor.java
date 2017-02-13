@@ -1,13 +1,13 @@
-package com.alibaba.dubbo.tracker.zipkin;
+package com.alibaba.dubbo.tracker.zipkin.dubbo;
 
 
 import com.alibaba.dubbo.remoting.exception.RemotingException;
 import com.alibaba.dubbo.remoting.message.Interceptor;
 import com.alibaba.dubbo.remoting.message.Request;
 import com.alibaba.dubbo.remoting.message.Response;
-import com.alibaba.dubbo.tracker.DubboRequest;
-import com.alibaba.dubbo.tracker.DubboRequestSpanNameProvider;
-import com.alibaba.dubbo.tracker.DubboResponse;
+import com.alibaba.dubbo.tracker.dubbo.DubboRequest;
+import com.alibaba.dubbo.tracker.dubbo.DubboRequestSpanNameProvider;
+import com.alibaba.dubbo.tracker.dubbo.DubboResponse;
 import com.alibaba.dubbo.tracker.RpcTracker;
 
 /**

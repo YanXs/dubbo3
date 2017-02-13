@@ -12,6 +12,15 @@ import com.github.kristofa.brave.http.SpanNameProvider;
  */
 public class HttpSpanNameProvider extends RpcContextMethodNameProvider implements SpanNameProvider {
 
+    private static final HttpSpanNameProvider instance = new HttpSpanNameProvider();
+
+    private HttpSpanNameProvider() {
+    }
+
+    public static HttpSpanNameProvider getInstance() {
+        return instance;
+    }
+
     @Override
     public String spanName(HttpRequest request) {
         String spanName;

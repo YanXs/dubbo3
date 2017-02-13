@@ -5,30 +5,25 @@ import com.alibaba.dubbo.tracker.*;
 /**
  * @author Xs.
  */
-public class FacadeHttpRpcTracker implements RpcTracker {
+public abstract class FacadeHttpRpcTracker implements RpcTracker {
 
     @Override
     public void trackClientRequest(ClientRequestAdapter clientRequestAdapter) {
-
+        // NOP
     }
 
     @Override
     public void trackClientResponse(ClientResponseAdapter clientResponseAdapter) {
-
+        // NOP
     }
 
     @Override
     public void trackServerRequest(ServerRequestAdapter serverRequestAdapter) {
-
+        // NOP
     }
 
     @Override
     public void trackServerResponse(ServerResponseAdapter serverResponseAdapter) {
-
-    }
-
-    @Override
-    public RpcTrackerEngine trackerEngine() {
-        return null;
+        // NOP
     }
 }

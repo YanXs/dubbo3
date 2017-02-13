@@ -1,14 +1,14 @@
 package com.alibaba.dubbo.rpc.protocol.hessian;
 
 import com.alibaba.dubbo.common.Constants;
-import com.alibaba.dubbo.common.extension.ExtensionLoader;
-import com.alibaba.dubbo.tracker.RpcTracker;
+import com.alibaba.dubbo.tracker.RpcTrackerManager;
+import com.alibaba.dubbo.tracker.http.HttpRequestResponseInterceptorBuilder;
+import com.alibaba.dubbo.tracker.zipkin.http.AttachMethodNameInterceptor;
 import com.caucho.hessian.client.HessianConnection;
 import com.caucho.hessian.client.HessianConnectionFactory;
 import com.caucho.hessian.client.HessianProxyFactory;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
-import okhttp3.Response;
 
 import java.io.IOException;
 import java.net.URL;
@@ -21,10 +21,17 @@ public class OkHttpConnectionFactory implements HessianConnectionFactory {
 
     private final OkHttpClient client;
 
-    public OkHttpConnectionFactory(com.alibaba.dubbo.common.URL url) {
+    public OkHttpConnectionFactory(com.alibaba.dubbo.common.URL url, HttpRequestResponseInterceptorBuilder requestResponseInterceptorBuilder) {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
         builder.readTimeout(url.getParameter(Constants.TIMEOUT_KEY, Constants.DEFAULT_TIMEOUT), TimeUnit.MILLISECONDS);
         builder.connectTimeout(url.getParameter(Constants.TIMEOUT_KEY, Constants.DEFAULT_TIMEOUT), TimeUnit.MILLISECONDS);
+        Interceptor interceptor = requestResponseInterceptorBuilder.build(url);
+        if (interceptor != null) {
+            builder.addInterceptor(interceptor);
+            if (RpcTrackerManager.getRpcTracker(url) != null) {
+                builder.addInterceptor(AttachMethodNameInterceptor.getInstance());
+            }
+        }
         client = builder.build();
     }
 

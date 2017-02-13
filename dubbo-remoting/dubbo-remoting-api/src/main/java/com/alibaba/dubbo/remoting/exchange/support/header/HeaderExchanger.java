@@ -22,13 +22,13 @@ import com.alibaba.dubbo.remoting.exchange.ExchangeClient;
 import com.alibaba.dubbo.remoting.exchange.ExchangeHandler;
 import com.alibaba.dubbo.remoting.exchange.ExchangeServer;
 import com.alibaba.dubbo.remoting.exchange.Exchanger;
+import com.alibaba.dubbo.remoting.message.Interceptor;
 import com.alibaba.dubbo.remoting.transport.DecodeHandler;
-import com.alibaba.dubbo.tracker.DubboRequestSpanNameProvider;
 import com.alibaba.dubbo.tracker.RpcTracker;
-import com.alibaba.dubbo.tracker.RpcTrackerFactory;
 import com.alibaba.dubbo.tracker.RpcTrackerManager;
-import com.alibaba.dubbo.tracker.zipkin.BraveDubboClientRequestResponseInterceptor;
-import com.alibaba.dubbo.tracker.zipkin.BraveDubboServerRequestResponseInterceptor;
+import com.alibaba.dubbo.tracker.dubbo.DubboRequestInterceptorBuilder;
+import com.alibaba.dubbo.tracker.dubbo.DubboRequestSpanNameProvider;
+import com.alibaba.dubbo.tracker.zipkin.dubbo.BraveDubboServerRequestResponseInterceptor;
 
 /**
  * DefaultMessenger
@@ -39,11 +39,16 @@ public class HeaderExchanger implements Exchanger {
 
     public static final String NAME = "header";
 
+    private DubboRequestInterceptorBuilder dubboRequestInterceptorBuilder;
+
+    public void setDubboRequestInterceptorBuilder(DubboRequestInterceptorBuilder dubboRequestInterceptorBuilder) {
+        this.dubboRequestInterceptorBuilder = dubboRequestInterceptorBuilder;
+    }
+
     public ExchangeClient connect(URL url, ExchangeHandler handler) throws RemotingException {
         HeaderExchangeClient headerExchangeClient = new HeaderExchangeClient(Transporters.connect(url, new DecodeHandler(new HeaderExchangeHandler(handler))));
-        RpcTracker rpcTracker = RpcTrackerManager.createRpcTracker(url);
-        if (rpcTracker != null) {
-            BraveDubboClientRequestResponseInterceptor interceptor = new BraveDubboClientRequestResponseInterceptor(rpcTracker, new DubboRequestSpanNameProvider());
+        Interceptor interceptor = dubboRequestInterceptorBuilder.build(url, DubboRequestSpanNameProvider.getInstance());
+        if (interceptor != null) {
             headerExchangeClient.addInterceptor(interceptor);
         }
         return headerExchangeClient;
@@ -51,9 +56,8 @@ public class HeaderExchanger implements Exchanger {
 
     public ExchangeServer bind(URL url, ExchangeHandler handler) throws RemotingException {
         HeaderExchangeHandler exchangeHandler = new HeaderExchangeHandler(handler);
-        RpcTracker rpcTracker = RpcTrackerManager.createRpcTracker(url);
-        if (rpcTracker != null) {
-            BraveDubboServerRequestResponseInterceptor interceptor = new BraveDubboServerRequestResponseInterceptor(rpcTracker, new DubboRequestSpanNameProvider());
+        Interceptor interceptor = dubboRequestInterceptorBuilder.build(url, DubboRequestSpanNameProvider.getInstance());
+        if (interceptor != null){
             exchangeHandler.addInterceptor(interceptor);
         }
         return new HeaderExchangeServer(Transporters.bind(url, new DecodeHandler(exchangeHandler)));

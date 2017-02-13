@@ -2,10 +2,11 @@ package com.alibaba.dubbo.tracker.zipkin;
 
 import com.alibaba.dubbo.common.URL;
 import com.alibaba.dubbo.tracker.*;
+import com.alibaba.dubbo.tracker.zipkin.dubbo.BraveDubboRpcTracker;
 import com.alibaba.dubbo.tracker.zipkin.http.BraveHttpRpcTracker;
 
 /**
- * @author Xs
+ * @author Xs.
  */
 public class BraveRpcTrackerFactory implements RpcTrackerFactory {
 

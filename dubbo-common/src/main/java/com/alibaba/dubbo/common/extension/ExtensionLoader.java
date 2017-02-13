@@ -774,7 +774,6 @@ public class ExtensionLoader<T> {
                 // 参数没有URL类型
                 else {
                     String attribMethod = null;
-
                     // 找到参数的URL属性
                     LBL_PTS:
                     for (int i = 0; i < pts.length; ++i) {

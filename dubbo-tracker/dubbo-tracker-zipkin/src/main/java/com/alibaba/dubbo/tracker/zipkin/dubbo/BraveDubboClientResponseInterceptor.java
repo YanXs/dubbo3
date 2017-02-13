@@ -1,4 +1,4 @@
-package com.alibaba.dubbo.tracker.zipkin;
+package com.alibaba.dubbo.tracker.zipkin.dubbo;
 
 
 import com.alibaba.dubbo.tracker.ClientResponseAdapter;

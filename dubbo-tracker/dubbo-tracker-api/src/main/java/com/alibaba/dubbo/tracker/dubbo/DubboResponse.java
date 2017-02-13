@@ -1,4 +1,4 @@
-package com.alibaba.dubbo.tracker;
+package com.alibaba.dubbo.tracker.dubbo;
 
 import com.alibaba.dubbo.remoting.message.Response;
 import com.alibaba.dubbo.rpc.RpcResult;
