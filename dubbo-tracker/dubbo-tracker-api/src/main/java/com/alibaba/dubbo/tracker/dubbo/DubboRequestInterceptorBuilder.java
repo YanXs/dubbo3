@@ -11,7 +11,7 @@ import com.alibaba.dubbo.remoting.message.Interceptor;
 @SPI("zipkin")
 public interface DubboRequestInterceptorBuilder {
 
-    @Adaptive
+    @Adaptive({"tracker"})
     Interceptor build(URL url, DubboRequestSpanNameProvider spanNameProvider);
 
 }

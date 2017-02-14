@@ -593,8 +593,9 @@ public class Constants {
 
     public static final String GENERIC_SERIALIZATION_BEAN = "bean";
 
-    //--------------------------------trace-------------------------------------------------------//
+    //--------------------------------tracker-------------------------------------------------------//
 
     public static final String ENABLE_TRACE_KEY = "enableTrace";
 
+    public static final String TRACKER_KEY = "tracker";
 }

@@ -1,6 +1,6 @@
 package com.alibaba.dubbo.tracker.zipkin.filter;
 
-import com.alibaba.dubbo.tracker.filter.ServletFilter;
+import com.alibaba.dubbo.tracker.http.ServletFilter;
 import com.github.kristofa.brave.servlet.BraveServletFilter;
 
 import javax.servlet.*;

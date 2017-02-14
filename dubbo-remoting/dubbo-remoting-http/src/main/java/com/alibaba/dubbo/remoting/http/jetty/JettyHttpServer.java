@@ -24,14 +24,19 @@ import com.alibaba.dubbo.remoting.http.HttpHandler;
 import com.alibaba.dubbo.remoting.http.servlet.DispatcherServlet;
 import com.alibaba.dubbo.remoting.http.servlet.ServletManager;
 import com.alibaba.dubbo.remoting.http.support.AbstractHttpServer;
+import com.alibaba.dubbo.tracker.http.ServletFilterBuilder;
+import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.nio.SelectChannelConnector;
 import org.mortbay.jetty.servlet.Context;
+import org.mortbay.jetty.servlet.FilterHolder;
 import org.mortbay.jetty.servlet.ServletHandler;
 import org.mortbay.jetty.servlet.ServletHolder;
 import org.mortbay.log.Log;
 import org.mortbay.log.StdErrLog;
 import org.mortbay.thread.QueuedThreadPool;
+
+import javax.servlet.Filter;
 
 public class JettyHttpServer extends AbstractHttpServer {
 
@@ -41,7 +46,7 @@ public class JettyHttpServer extends AbstractHttpServer {
 
     private final URL url;
 
-    public JettyHttpServer(URL url, final HttpHandler handler) {
+    public JettyHttpServer(URL url, final HttpHandler handler, ServletFilterBuilder servletFilterBuilder) {
         super(url, handler);
         this.url = url;
         Log.setLog(new StdErrLog());
@@ -59,17 +64,21 @@ public class JettyHttpServer extends AbstractHttpServer {
             connector.setHost(url.getHost());
         }
         connector.setPort(url.getPort());
-
         server = new Server();
         server.setThreadPool(threadPool);
         server.addConnector(connector);
+        Context context = new Context(server, "/", Context.SESSIONS);
 
         ServletHandler servletHandler = new ServletHandler();
         ServletHolder servletHolder = servletHandler.addServletWithMapping(DispatcherServlet.class, "/*");
         servletHolder.setInitOrder(2);
-
-        Context context = new Context(server, "/", Context.SESSIONS);
         context.setServletHandler(servletHandler);
+
+        Filter filter = servletFilterBuilder.build(url);
+        if (filter != null) {
+            FilterHolder filterHolder = new FilterHolder(filter);
+            context.addFilter(filterHolder, "/*", Handler.REQUEST);
+        }
         ServletManager.getInstance().addServletContext(url.getPort(), context.getServletContext());
 
         try {

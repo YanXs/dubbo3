@@ -19,14 +19,12 @@ public class BraveOkHttpRequestResponseInterceptor implements Interceptor {
 
     public BraveOkHttpRequestResponseInterceptor(RpcTracker rpcTracker, SpanNameProvider spanNameProvider) {
         RpcTrackerEngine trackerEngine = rpcTracker.trackerEngine();
-        delegate = new com.github.kristofa.brave.okhttp.BraveOkHttpRequestResponseInterceptor((ClientRequestInterceptor)trackerEngine.clientRequestInterceptor(),
-                (ClientResponseInterceptor)trackerEngine.clientResponseInterceptor(), spanNameProvider);
+        delegate = new com.github.kristofa.brave.okhttp.BraveOkHttpRequestResponseInterceptor((ClientRequestInterceptor) trackerEngine.clientRequestInterceptor(),
+                (ClientResponseInterceptor) trackerEngine.clientResponseInterceptor(), spanNameProvider);
     }
 
     @Override
     public Response intercept(Chain chain) throws IOException {
         return delegate.intercept(chain);
     }
-
-
 }

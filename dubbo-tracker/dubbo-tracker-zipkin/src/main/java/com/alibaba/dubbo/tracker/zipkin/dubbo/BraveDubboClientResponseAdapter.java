@@ -25,10 +25,12 @@ public class BraveDubboClientResponseAdapter implements ClientResponseAdapter, c
 
     @Override
     public Collection<KeyValueAnnotation> responseAnnotations() {
-        if (!response.returnOK()) {
-            KeyValueAnnotation statusAnnotation = KeyValueAnnotation.create(TrackerKeys.RETURN_STATUS, response.exceptionMessage());
-            return Collections.singletonList(statusAnnotation);
+        KeyValueAnnotation statusAnnotation;
+        if (response.returnOK()) {
+            statusAnnotation = KeyValueAnnotation.create(TrackerKeys.RETURN_STATUS, "OK");
+        } else {
+            statusAnnotation = KeyValueAnnotation.create(TrackerKeys.RETURN_STATUS, response.exceptionMessage());
         }
-        return Collections.emptyList();
+        return Collections.singletonList(statusAnnotation);
     }
 }

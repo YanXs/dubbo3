@@ -3,15 +3,11 @@ package com.alibaba.dubbo.tracker.http;
 import com.alibaba.dubbo.common.URL;
 import com.alibaba.dubbo.common.extension.Adaptive;
 import com.alibaba.dubbo.common.extension.SPI;
-import okhttp3.Interceptor;
 
-/**
- * @author Xs.
- */
 @SPI("zipkin")
-public interface HttpRequestResponseInterceptorBuilder {
+public interface ServletFilterBuilder {
 
-    @Adaptive({"tracker"})
-    Interceptor build(URL url);
+    @Adaptive("tracker")
+    ServletFilter build(URL url);
 
 }

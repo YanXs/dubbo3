@@ -1,7 +1,6 @@
 package com.alibaba.dubbo.tracker.zipkin.dubbo;
 
 import com.alibaba.dubbo.tracker.dubbo.DubboResponse;
-import com.alibaba.dubbo.tracker.TrackerKeys;
 import com.github.kristofa.brave.KeyValueAnnotation;
 import com.github.kristofa.brave.ServerResponseAdapter;
 
@@ -25,13 +24,7 @@ public class BraveDubboServerResponseAdapter implements ServerResponseAdapter, c
 
     @Override
     public Collection<KeyValueAnnotation> responseAnnotations() {
-        KeyValueAnnotation statusAnnotation;
-        if (response.returnOK()) {
-            statusAnnotation = KeyValueAnnotation.create(TrackerKeys.RETURN_STATUS, "OK");
-        } else {
-            statusAnnotation = KeyValueAnnotation.create(TrackerKeys.RETURN_STATUS, response.exceptionMessage());
-        }
-        return Collections.singletonList(statusAnnotation);
+        return Collections.emptyList();
     }
 
 }

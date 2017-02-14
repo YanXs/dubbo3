@@ -19,6 +19,7 @@ import com.alibaba.dubbo.common.URL;
 import com.alibaba.dubbo.remoting.http.HttpBinder;
 import com.alibaba.dubbo.remoting.http.HttpHandler;
 import com.alibaba.dubbo.remoting.http.HttpServer;
+import com.alibaba.dubbo.tracker.http.ServletFilterBuilder;
 
 /**
  * JettyHttpTransporter
@@ -27,8 +28,14 @@ import com.alibaba.dubbo.remoting.http.HttpServer;
  */
 public class JettyHttpBinder implements HttpBinder {
 
+    private ServletFilterBuilder servletFilterBuilder;
+
+    public void setServletFilterBuilder(ServletFilterBuilder servletFilterBuilder) {
+        this.servletFilterBuilder = servletFilterBuilder;
+    }
+
     public HttpServer bind(URL url, HttpHandler handler) {
-        return new JettyHttpServer(url, handler);
+        return new JettyHttpServer(url, handler, servletFilterBuilder);
     }
 
 }
