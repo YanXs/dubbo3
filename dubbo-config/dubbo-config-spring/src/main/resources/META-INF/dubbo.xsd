@@ -566,9 +566,9 @@
                 <xsd:documentation><![CDATA[ The registry password. ]]></xsd:documentation>
             </xsd:annotation>
         </xsd:attribute>
-        <xsd:attribute name="collector" type="xsd:string" use="optional">
+        <xsd:attribute name="transport" type="xsd:string" use="optional">
             <xsd:annotation>
-                <xsd:documentation><![CDATA[ The tracker collector. ]]></xsd:documentation>
+                <xsd:documentation><![CDATA[ The tracker transport. ]]></xsd:documentation>
             </xsd:annotation>
         </xsd:attribute>
         <xsd:attribute name="sampler" type="xsd:string" use="optional">

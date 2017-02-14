@@ -16,7 +16,7 @@ public class SpanCollectorFactory {
     private static final SpanCollectorMetricsHandler DEFAULT_HANDLER = new LoggingSpanCollectorMetricsHandler();
 
     public static SpanCollector create(URL url) {
-        String collector = url.getParameter("collector", "http");
+        String collector = url.getParameter("transport", "http");
         if (collector.equals("http")) {
             HttpSpanCollector.Config config = HttpSpanCollector.Config.builder().build();
             String baseUrl = "http://" + url.getHost() + ":" + url.getPort();

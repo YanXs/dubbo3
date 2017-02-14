@@ -12,7 +12,7 @@ public class TrackerConfig extends AbstractConfig {
 
     private Integer port;
 
-    private String collector;
+    private String transport;
 
     private String sampler;
 
@@ -64,12 +64,12 @@ public class TrackerConfig extends AbstractConfig {
         this.port = port;
     }
 
-    public String getCollector() {
-        return collector;
+    public String getTransport() {
+        return transport;
     }
 
-    public void setCollector(String collector) {
-        this.collector = collector;
+    public void setTransport(String transport) {
+        this.transport = transport;
     }
 
     public String getSampler() {

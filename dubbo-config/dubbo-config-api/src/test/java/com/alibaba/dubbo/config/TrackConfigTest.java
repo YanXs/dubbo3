@@ -10,7 +10,7 @@ public class TrackConfigTest {
         trackerConfig.setProtocol("zipkin");
         trackerConfig.setAddress("localhost:9411");
         trackerConfig.setApplication("test");
-        trackerConfig.setCollector("kafka");
+        trackerConfig.setTransport("kafka");
         trackerConfig.setSampler("counting");
         trackerConfig.setSamplerate(0.1f);
         trackerConfig.setFlushinterval(2);
