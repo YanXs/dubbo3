@@ -12,15 +12,17 @@ dubbo3 fork [dubbox 2.8.4] (https://github.com/dangdangdotcom/dubbox)，具体�
 
 ## 如何开启tracker
 
-目前tracker的使用方式只支持基于spring xml配置
+目前tracker的使用方式只支持spring xml配置，如下
 
+```xml
 <dubbo:tracker address="zipkin://127.0.0.1:9411" transport="http" sampler="counting" samplerate="1.0" flushinterval="2"/>
+```
 
-address: zipkin transport address
-collector(transport): http\kafka\scribe
-sampler:采样器
-samplerate:采样率
-flushinterval:数据刷新频率
+* address: zipkin transport address
+* collector(transport): http\kafka\scribe
+* sampler:采样器
+* samplerate:采样率
+* flushinterval:数据刷新频率
 
 ## 依赖
 
