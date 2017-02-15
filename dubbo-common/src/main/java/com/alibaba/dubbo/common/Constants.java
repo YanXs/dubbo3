@@ -595,7 +595,6 @@ public class Constants {
 
     //--------------------------------tracker-------------------------------------------------------//
 
-    public static final String ENABLE_TRACE_KEY = "enableTrace";
-
     public static final String TRACKER_KEY = "tracker";
+
 }

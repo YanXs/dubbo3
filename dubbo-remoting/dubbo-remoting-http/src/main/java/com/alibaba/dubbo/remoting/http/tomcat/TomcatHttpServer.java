@@ -24,10 +24,14 @@ import com.alibaba.dubbo.remoting.http.HttpHandler;
 import com.alibaba.dubbo.remoting.http.servlet.DispatcherServlet;
 import com.alibaba.dubbo.remoting.http.servlet.ServletManager;
 import com.alibaba.dubbo.remoting.http.support.AbstractHttpServer;
+import com.alibaba.dubbo.tracker.http.ServletFilterBuilder;
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.startup.Tomcat;
+import org.apache.tomcat.util.descriptor.web.FilterDef;
+import org.apache.tomcat.util.descriptor.web.FilterMap;
 
+import javax.servlet.Filter;
 import java.io.File;
 
 
@@ -42,7 +46,7 @@ public class TomcatHttpServer extends AbstractHttpServer {
 
     private final URL url;
 
-    public TomcatHttpServer(URL url, final HttpHandler handler) {
+    public TomcatHttpServer(URL url, final HttpHandler handler, ServletFilterBuilder servletFilterBuilder) {
         super(url, handler);
         this.url = url;
         DispatcherServlet.addHttpHandler(url.getPort(), handler);
@@ -52,19 +56,28 @@ public class TomcatHttpServer extends AbstractHttpServer {
         tomcat.setPort(url.getPort());
         tomcat.getConnector().setProperty(
                 "maxThreads", String.valueOf(url.getParameter(Constants.THREADS_KEY, Constants.DEFAULT_THREADS)));
-
         tomcat.getConnector().setProperty(
                 "maxConnections", String.valueOf(url.getParameter(Constants.ACCEPTS_KEY, -1)));
-
         tomcat.getConnector().setProperty("URIEncoding", "UTF-8");
         tomcat.getConnector().setProperty("connectionTimeout", "60000");
-
         tomcat.getConnector().setProperty("maxKeepAliveRequests", "-1");
         tomcat.getConnector().setProtocol("org.apache.coyote.http11.Http11NioProtocol");
-
         Context context = tomcat.addContext("/", baseDir);
         Tomcat.addServlet(context, "dispatcher", new DispatcherServlet());
         context.addServletMapping("/*", "dispatcher");
+        Filter filter = servletFilterBuilder.build(url);
+        if (filter != null) {
+            FilterDef filterDef = new FilterDef();
+            filterDef.setFilter(filter);
+            filterDef.setFilterName("servletFilter");
+            context.addFilterDef(filterDef);
+
+            FilterMap filterMap = new FilterMap();
+            filterMap.addServletName("dispatcher");
+            filterMap.setFilterName("servletFilter");
+            filterMap.addURLPattern("*");
+            context.addFilterMap(filterMap);
+        }
         ServletManager.getInstance().addServletContext(url.getPort(), context.getServletContext());
         try {
             tomcat.start();
