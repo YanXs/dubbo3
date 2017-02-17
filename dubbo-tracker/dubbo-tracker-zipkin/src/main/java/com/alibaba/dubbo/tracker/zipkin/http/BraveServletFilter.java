@@ -1,5 +1,6 @@
 package com.alibaba.dubbo.tracker.zipkin.http;
 
+import com.alibaba.dubbo.tracker.RpcAttachment;
 import com.alibaba.dubbo.tracker.RpcTracker;
 import com.alibaba.dubbo.tracker.RpcTrackerEngine;
 import com.alibaba.dubbo.tracker.http.ServletFilter;
@@ -8,6 +9,7 @@ import com.github.kristofa.brave.ServerResponseInterceptor;
 import com.github.kristofa.brave.http.SpanNameProvider;
 
 import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 public class BraveServletFilter implements ServletFilter {
@@ -27,7 +29,15 @@ public class BraveServletFilter implements ServletFilter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        delegate.doFilter(request, response, chain);
+        if (isSampleNeeded(request)) {
+            delegate.doFilter(request, response, chain);
+        } else {
+            chain.doFilter(request, response);
+        }
+    }
+
+    private boolean isSampleNeeded(ServletRequest request) {
+        return ((HttpServletRequest) request).getHeader(RpcAttachment.Sampled.getName()) != null;
     }
 
     @Override

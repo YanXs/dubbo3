@@ -345,7 +345,9 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         if (ConfigUtils.getPid() > 0) {
             map.put(Constants.PID_KEY, String.valueOf(ConfigUtils.getPid()));
         }
-        map.put(Constants.TRACKER_KEY, tracker.getProtocol());
+        if (tracker != null) {
+            map.put(Constants.TRACKER_KEY, tracker.getProtocol());
+        }
         appendParameters(map, application);
         appendParameters(map, module);
         appendParameters(map, provider, Constants.DEFAULT_KEY);
@@ -691,7 +693,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
     }
 
     @Deprecated
-    private static final ProviderConfig convertProtocolToProvider(ProtocolConfig protocol) {
+    private static ProviderConfig convertProtocolToProvider(ProtocolConfig protocol) {
         ProviderConfig provider = new ProviderConfig();
         provider.setProtocol(protocol);
         provider.setServer(protocol.getServer());

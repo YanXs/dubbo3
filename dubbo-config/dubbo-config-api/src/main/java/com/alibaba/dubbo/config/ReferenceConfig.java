@@ -256,6 +256,9 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
         if (ConfigUtils.getPid() > 0) {
             map.put(Constants.PID_KEY, String.valueOf(ConfigUtils.getPid()));
         }
+        if (tracker != null) {
+            map.put(Constants.TRACKER_KEY, tracker.getProtocol());
+        }
         if (!isGeneric()) {
             String revision = Version.getVersion(interfaceClass, version);
             if (revision != null && revision.length() > 0) {
@@ -271,7 +274,6 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
             }
         }
         map.put(Constants.INTERFACE_KEY, interfaceName);
-        map.put(Constants.TRACKER_KEY, tracker.getProtocol());
         appendParameters(map, application);
         appendParameters(map, module);
         appendParameters(map, consumer, Constants.DEFAULT_KEY);

@@ -24,9 +24,6 @@ public class TrackerConfig extends AbstractConfig {
 
     private String version;
 
-    /**
-     * 自定义参数
-     */
     private Map<String, String> parameters;
 
     public TrackerConfig() {
