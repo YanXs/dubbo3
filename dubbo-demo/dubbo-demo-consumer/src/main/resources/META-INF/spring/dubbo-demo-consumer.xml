@@ -9,7 +9,7 @@
 
     <dubbo:registry address="zookeeper://127.0.0.1:2181"/>
 
-    <dubbo:tracker address="zipkin://127.0.0.1:9411" transport="http" sampler="counting" samplerate="1.0" flushinterval="2"/>
+    <dubbo:tracker address="zipkin://192.168.150.132:9411" transport="http" sampler="counting" samplerate="1.0" flushinterval="2"/>
 
     <!--uncomment this if you want to test dubbo's monitor-->
     <!--<dubbo:monitor protocol="registry"/>-->

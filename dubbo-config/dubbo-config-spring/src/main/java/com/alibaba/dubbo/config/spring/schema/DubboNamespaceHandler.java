@@ -45,7 +45,6 @@ public class DubboNamespaceHandler extends NamespaceHandlerSupport {
         registerBeanDefinitionParser("service", new DubboBeanDefinitionParser(ServiceBean.class, true));
         registerBeanDefinitionParser("reference", new DubboBeanDefinitionParser(ReferenceBean.class, false));
         registerBeanDefinitionParser("annotation", new DubboBeanDefinitionParser(AnnotationBean.class, true));
-        registerBeanDefinitionParser("tracker", new DubboBeanDefinitionParser(TrackerConfig.class, true));
+        registerBeanDefinitionParser("tracker", new DubboBeanDefinitionParser(RpcTrackerEngineConfig.class, true));
     }
-
 }

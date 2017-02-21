@@ -1,2 +1,0 @@
-clientTracker=com.alibaba.dubbo.tracker.zipkin.filter.BraveClientRpcTrackerFilter
-serverTracker=com.alibaba.dubbo.tracker.zipkin.filter.BraveServerRpcTrackerFilter

@@ -1,9 +1,7 @@
 package com.alibaba.dubbo.rpc.protocol.hessian;
 
 import com.alibaba.dubbo.common.Constants;
-import com.alibaba.dubbo.tracker.RpcTrackerManager;
 import com.alibaba.dubbo.tracker.http.HttpRequestResponseInterceptorBuilder;
-import com.alibaba.dubbo.tracker.zipkin.http.AttachMethodNameInterceptor;
 import com.caucho.hessian.client.HessianConnection;
 import com.caucho.hessian.client.HessianConnectionFactory;
 import com.caucho.hessian.client.HessianProxyFactory;
@@ -28,9 +26,6 @@ public class OkHttpConnectionFactory implements HessianConnectionFactory {
         Interceptor interceptor = requestResponseInterceptorBuilder.build(url);
         if (interceptor != null) {
             builder.addInterceptor(interceptor);
-            if (RpcTrackerManager.getRpcTracker(url) != null) {
-                builder.addInterceptor(AttachMethodNameInterceptor.getInstance());
-            }
         }
         client = builder.build();
     }

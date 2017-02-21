@@ -24,7 +24,9 @@
 
     <dubbo:registry address="zookeeper://127.0.0.1:2181"/>
 
-    <dubbo:tracker address="zipkin://127.0.0.1:9411" transport="http" sampler="counting" samplerate="1.0"/>
+    <dubbo:tracker address="zipkin://192.168.150.132:9411" transport="http" sampler="counting" samplerate="1.0"/>
+
+    <!--<dubbo:tracker protocol="zipkin" ref="braveRpcTrackerEngine"/>-->
 
     <!--uncomment this if you want to test dubbo's monitor-->
     <!--<dubbo:monitor protocol="registry"/>-->
@@ -61,10 +63,10 @@
     <!--<dubbo:protocol name="rest" port="8888" contextpath="services" server="servlet"/>-->
 
     <!--<dubbo:protocol name="http" port="8887" client="okHttpClient"/>-->
-    <dubbo:protocol name="hessian" port="8890" client="okHttpClient"/>
+    <!--<dubbo:protocol name="hessian" port="8890" client="okHttpClient"/>-->
     <!--<dubbo:protocol name="webservice" port="8892"/>-->
 
-    <dubbo:service interface="com.alibaba.dubbo.demo.bid.BidService" ref="bidService" protocol="hessian" timeout="10000"
+    <dubbo:service interface="com.alibaba.dubbo.demo.bid.BidService" ref="bidService" protocol="dubbo" timeout="10000"
                    connections="2" group="02"/>
 
     <!-- we add the group property since there's another annotation-configured service impl: com.alibaba.dubbo.demo.user.facade.AnnotationDrivenUserRestServiceImpl -->
@@ -84,4 +86,11 @@
     <bean id="anotherUserRestService" class="com.alibaba.dubbo.demo.user.facade.AnotherUserRestServiceImpl">
         <property name="userService" ref="userService"/>
     </bean>
+
+    <!--<bean id="brave" class="com.alibaba.dubbo.demo.BraveFactoryBean"/>-->
+
+    <!--<bean id="braveRpcTrackerEngine" class="com.alibaba.dubbo.demo.BraveRpcTrackerEngineFactoryBean">-->
+        <!--<property name="brave" ref="brave"/>-->
+    <!--</bean>-->
+
 </beans>

@@ -162,15 +162,15 @@ public class ReferenceBean<T> extends ReferenceConfig<T> implements FactoryBean,
         if (getTracker() == null &&
                 (getConsumer() == null || getConsumer().getTracker() == null) &&
                 (getApplication() == null || getApplication().getTracker() == null)) {
-            Map<String, TrackerConfig> trackerConfigMap = applicationContext == null ? null :
-                    BeanFactoryUtils.beansOfTypeIncludingAncestors(applicationContext, TrackerConfig.class, false, false);
+            Map<String, RpcTrackerEngineConfig> trackerConfigMap = applicationContext == null ? null :
+                    BeanFactoryUtils.beansOfTypeIncludingAncestors(applicationContext, RpcTrackerEngineConfig.class, false, false);
             if (trackerConfigMap != null && trackerConfigMap.size() > 0) {
-                TrackerConfig trackerConfig = null;
-                for (TrackerConfig config : trackerConfigMap.values()) {
-                    trackerConfig = config;
+                RpcTrackerEngineConfig trackerEngineConfig = null;
+                for (RpcTrackerEngineConfig config : trackerConfigMap.values()) {
+                    trackerEngineConfig = config;
                 }
-                if (trackerConfig != null) {
-                    setTracker(trackerConfig);
+                if (trackerEngineConfig != null) {
+                    setTracker(trackerEngineConfig);
                 }
             }
         }

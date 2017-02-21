@@ -251,11 +251,11 @@ public abstract class AbstractConfig implements Serializable {
                             str = URL.encode(str);
                         }
                         if (parameter != null && parameter.append()) {
-                            String pre = (String) parameters.get(Constants.DEFAULT_KEY + "." + key);
+                            String pre = parameters.get(Constants.DEFAULT_KEY + "." + key);
                             if (pre != null && pre.length() > 0) {
                                 str = pre + "," + str;
                             }
-                            pre = (String) parameters.get(key);
+                            pre = parameters.get(key);
                             if (pre != null && pre.length() > 0) {
                                 str = pre + "," + str;
                             }
@@ -474,7 +474,7 @@ public abstract class AbstractConfig implements Serializable {
                             && isPrimitive(method.getReturnType())) {
                         int i = name.startsWith("get") ? 3 : 2;
                         String key = name.substring(i, i + 1).toLowerCase() + name.substring(i + 1);
-                        Object value = method.invoke(this, new Object[0]);
+                        Object value = method.invoke(this);
                         if (value != null) {
                             buf.append(" ");
                             buf.append(key);

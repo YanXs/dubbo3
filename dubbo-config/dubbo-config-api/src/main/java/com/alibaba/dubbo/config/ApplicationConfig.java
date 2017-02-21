@@ -64,7 +64,7 @@ public class ApplicationConfig extends AbstractConfig {
     // 服务监控
     private MonitorConfig monitor;
 
-    private TrackerConfig tracker;
+    private RpcTrackerEngineConfig tracker;
 
     // 是否为缺省
     private Boolean isDefault;
@@ -172,11 +172,11 @@ public class ApplicationConfig extends AbstractConfig {
         this.monitor = new MonitorConfig(monitor);
     }
 
-    public TrackerConfig getTracker() {
+    public RpcTrackerEngineConfig getTracker() {
         return tracker;
     }
 
-    public void setTracker(TrackerConfig tracker) {
+    public void setTracker(RpcTrackerEngineConfig tracker) {
         this.tracker = tracker;
     }
 

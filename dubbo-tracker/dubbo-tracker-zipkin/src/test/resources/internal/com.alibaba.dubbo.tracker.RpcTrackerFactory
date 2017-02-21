@@ -1,1 +1,0 @@
-zipkin=com.alibaba.dubbo.tracker.zipkin.BraveRpcTrackerFactory

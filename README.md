@@ -12,8 +12,9 @@ dubbo3 fork [dubbox 2.8.4] (https://github.com/dangdangdotcom/dubbox)，具体�
 
 ## 如何开启tracker
 
-目前tracker的使用方式只支持spring xml配置，如下
+目前tracker的使用方式只支持spring xml配置,目前有如下两种方式
 
+方式一：
 ```xml
 <dubbo:tracker address="zipkin://127.0.0.1:9411" transport="http" sampler="counting" samplerate="1.0" flushinterval="2"/>
 ```
@@ -23,6 +24,23 @@ dubbo3 fork [dubbox 2.8.4] (https://github.com/dangdangdotcom/dubbox)，具体�
 * sampler:采样器
 * samplerate:采样率
 * flushinterval:数据刷新频率
+
+方式二：
+使用方式一在dubbo内部创建tracker对象，因为目前只支持zipkin，tracker对应Brave，没有办法同其他系统，比如数据库的监控结合起来，推荐使用下面的方式
+配置
+```xml
+<dubbo:tracker id="trackerEngine" protocol="zipkin" ref="braveRpcTrackerEngine"/>
+
+<bean id="braveRpcTrackerEngine" class="brave.spring.BraveRpcTrackerEngineFactoryBean">
+    <property name="brave" ref="brave"/>
+</bean>
+
+<bean id="brave" class="brave.spring.BraveFactoryBean">
+    <property name="serviceName" value="demo-provider"/>
+    <property name="transport" value="http"/>
+    <property name="transportAddress" value="127.0.0.1:9411"/>
+</bean>
+```xml
 
 ## 依赖
 

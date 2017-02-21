@@ -24,11 +24,8 @@ import com.alibaba.dubbo.remoting.exchange.ExchangeServer;
 import com.alibaba.dubbo.remoting.exchange.Exchanger;
 import com.alibaba.dubbo.remoting.message.Interceptor;
 import com.alibaba.dubbo.remoting.transport.DecodeHandler;
-import com.alibaba.dubbo.tracker.RpcTracker;
-import com.alibaba.dubbo.tracker.RpcTrackerManager;
 import com.alibaba.dubbo.tracker.dubbo.DubboRequestInterceptorBuilder;
 import com.alibaba.dubbo.tracker.dubbo.DubboRequestSpanNameProvider;
-import com.alibaba.dubbo.tracker.zipkin.dubbo.BraveDubboServerRequestResponseInterceptor;
 
 /**
  * DefaultMessenger
@@ -57,7 +54,7 @@ public class HeaderExchanger implements Exchanger {
     public ExchangeServer bind(URL url, ExchangeHandler handler) throws RemotingException {
         HeaderExchangeHandler exchangeHandler = new HeaderExchangeHandler(handler);
         Interceptor interceptor = dubboRequestInterceptorBuilder.build(url, DubboRequestSpanNameProvider.getInstance());
-        if (interceptor != null){
+        if (interceptor != null) {
             exchangeHandler.addInterceptor(interceptor);
         }
         return new HeaderExchangeServer(Transporters.bind(url, new DecodeHandler(exchangeHandler)));

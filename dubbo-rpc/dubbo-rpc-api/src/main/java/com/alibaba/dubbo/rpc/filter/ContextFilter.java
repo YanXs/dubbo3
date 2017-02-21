@@ -44,7 +44,6 @@ public class ContextFilter implements Filter {
         RpcContext.getContext()
                 .setInvoker(invoker)
                 .setInvocation(invocation)
-//                .setAttachments(attachments)  // modified by lishen
                 .setLocalAddress(invoker.getUrl().getHost(),
                         invoker.getUrl().getPort());
 

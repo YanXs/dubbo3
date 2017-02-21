@@ -35,6 +35,10 @@ public final class RpcTrackerManager {
         return rpcTrackerEngine;
     }
 
+    public static synchronized void setRpcTrackerEngine(RpcTrackerEngine engine) {
+        rpcTrackerEngine = engine;
+    }
+
     public static synchronized RpcTracker createRpcTracker(URL url) {
         String protocol = url.getProtocol();
         if (rpcTrackerEngine == null || rpcTrackerFactory == null) {

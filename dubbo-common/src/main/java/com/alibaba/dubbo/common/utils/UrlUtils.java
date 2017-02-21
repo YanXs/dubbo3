@@ -81,10 +81,6 @@ public class UrlUtils {
             changed = true;
             password = defaultPassword;
         }
-        /*if (u.isAnyHost() || u.isLocalHost()) {
-            changed = true;
-            host = NetUtils.getLocalHost();
-        }*/
         if (port <= 0) {
             if (defaultPort > 0) {
                 changed = true;
@@ -146,8 +142,6 @@ public class UrlUtils {
                     Map<String, String> params = StringUtils.parseQueryString(serviceQuery);
                     String group = params.get("group");
                     String version = params.get("version");
-                    //params.remove("group");
-                    //params.remove("version");
                     String name = serviceName;
                     if (group != null && group.length() > 0) {
                         name = group + "/" + name;
@@ -178,8 +172,6 @@ public class UrlUtils {
                 Map<String, String> params = StringUtils.parseQueryString(serviceQuery);
                 String group = params.get("group");
                 String version = params.get("version");
-                //params.remove("group");
-                //params.remove("version");
                 String name = serviceName;
                 if (group != null && group.length() > 0) {
                     name = group + "/" + name;
@@ -270,8 +262,6 @@ public class UrlUtils {
                             Map<String, String> params = StringUtils.parseQueryString(query);
                             String group = params.get("group");
                             String version = params.get("version");
-                            // params.remove("group");
-                            // params.remove("version");
                             String name = serviceName;
                             if (group != null && group.length() > 0) {
                                 name = group + "/" + name;

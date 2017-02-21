@@ -30,6 +30,7 @@ import com.alibaba.dubbo.rpc.InvokerListener;
 import com.alibaba.dubbo.rpc.ProxyFactory;
 import com.alibaba.dubbo.rpc.cluster.Cluster;
 import com.alibaba.dubbo.rpc.support.MockInvoker;
+import com.alibaba.dubbo.tracker.RpcTrackerEngine;
 import com.alibaba.dubbo.tracker.RpcTrackerEngineFactory;
 import com.alibaba.dubbo.tracker.RpcTrackerFactory;
 import com.alibaba.dubbo.tracker.RpcTrackerManager;
@@ -56,7 +57,7 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
     // 服务监控
     protected MonitorConfig monitor;
     // 服务追踪
-    protected TrackerConfig tracker;
+    protected RpcTrackerEngineConfig tracker;
 
     // 代理类型
     protected String proxy;
@@ -239,7 +240,23 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
         return null;
     }
 
-    protected URL loadTracker() {
+
+    protected void initRpcTrackerManagerIfNeeded() {
+        URL url = loadTracker();
+        if (url != null) {
+            tracker.setProtocol(url.getProtocol() == null ? "zipkin" : url.getProtocol());
+            RpcTrackerEngineFactory rpcTrackerEngineFactory = ExtensionLoader.getExtensionLoader(RpcTrackerEngineFactory.class).getExtension(url.getProtocol());
+            RpcTrackerFactory rpcTrackerFactory = ExtensionLoader.getExtensionLoader(RpcTrackerFactory.class).getExtension(url.getProtocol());
+            RpcTrackerManager.setRpcTrackerFactory(rpcTrackerFactory);
+            if (tracker.getRef() != null) {
+                RpcTrackerManager.setRpcTrackerEngine((RpcTrackerEngine) tracker.getRef());
+            } else {
+                RpcTrackerManager.createRpcTrackerEngine(rpcTrackerEngineFactory, url);
+            }
+        }
+    }
+
+    private URL loadTracker() {
         if (tracker != null) {
             appendProperties(tracker);
             Map<String, String> map = new HashMap<String, String>();
@@ -251,26 +268,13 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
             }
             appendParameters(map, tracker);
             String address = tracker.getAddress();
-            String sysAddress = System.getProperty("dubbo.tracker.address");
-            if (sysAddress != null && sysAddress.length() > 0) {
-                address = sysAddress;
-            }
             if (ConfigUtils.isNotEmpty(address)) {
                 return UrlUtils.parseURL(address, map);
+            } else {
+                return UrlUtils.parseURL(NetUtils.ANYHOST, map);
             }
         }
         return null;
-    }
-
-    protected void initRpcTrackerManagerIfNeeded() {
-        URL url = loadTracker();
-        if (url != null) {
-            tracker.setProtocol(url.getProtocol() == null ? "zipkin" : url.getProtocol());
-            RpcTrackerEngineFactory rpcTrackerEngineFactory = ExtensionLoader.getExtensionLoader(RpcTrackerEngineFactory.class).getExtension(url.getProtocol());
-            RpcTrackerFactory rpcTrackerFactory = ExtensionLoader.getExtensionLoader(RpcTrackerFactory.class).getExtension(url.getProtocol());
-            RpcTrackerManager.setRpcTrackerFactory(rpcTrackerFactory);
-            RpcTrackerManager.createRpcTrackerEngine(rpcTrackerEngineFactory, url);
-        }
     }
 
     protected void checkInterfaceAndMethods(Class<?> interfaceClass, List<MethodConfig> methods) {
@@ -500,11 +504,11 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
         this.monitor = new MonitorConfig(monitor);
     }
 
-    public TrackerConfig getTracker() {
+    public RpcTrackerEngineConfig getTracker() {
         return tracker;
     }
 
-    public void setTracker(TrackerConfig tracker) {
+    public void setTracker(RpcTrackerEngineConfig tracker) {
         this.tracker = tracker;
     }
 

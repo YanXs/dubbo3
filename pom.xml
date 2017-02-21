@@ -497,6 +497,12 @@
             </dependency>
 
             <dependency>
+                <groupId>com.squareup.retrofit2</groupId>
+                <artifactId>retrofit</artifactId>
+                <version>2.1.0</version>
+            </dependency>
+
+            <dependency>
                 <groupId>io.zipkin.brave</groupId>
                 <artifactId>brave-spancollector-http</artifactId>
                 <version>3.9.0</version>
@@ -511,6 +517,18 @@
             <dependency>
                 <groupId>io.zipkin.brave</groupId>
                 <artifactId>brave-spancollector-scribe</artifactId>
+                <version>3.9.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.zipkin.brave</groupId>
+                <artifactId>brave-jaxrs2</artifactId>
+                <version>3.9.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.zipkin.brave</groupId>
+                <artifactId>brave-jersey2</artifactId>
                 <version>3.9.0</version>
             </dependency>
 

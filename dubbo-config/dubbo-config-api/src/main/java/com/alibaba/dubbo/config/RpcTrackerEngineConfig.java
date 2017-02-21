@@ -2,7 +2,7 @@ package com.alibaba.dubbo.config;
 
 import java.util.Map;
 
-public class TrackerConfig extends AbstractConfig {
+public class RpcTrackerEngineConfig<T> extends AbstractConfig {
 
     private String application;
 
@@ -24,9 +24,11 @@ public class TrackerConfig extends AbstractConfig {
 
     private String version;
 
+    private T ref;
+
     private Map<String, String> parameters;
 
-    public TrackerConfig() {
+    public RpcTrackerEngineConfig() {
     }
 
     public String getApplication() {
@@ -107,6 +109,14 @@ public class TrackerConfig extends AbstractConfig {
 
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    public T getRef() {
+        return ref;
+    }
+
+    public void setRef(T ref) {
+        this.ref = ref;
     }
 
     public Map<String, String> getParameters() {
