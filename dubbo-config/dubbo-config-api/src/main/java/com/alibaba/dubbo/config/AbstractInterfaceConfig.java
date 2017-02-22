@@ -245,14 +245,14 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
         URL url = loadTracker();
         if (url != null) {
             tracker.setProtocol(url.getProtocol() == null ? "zipkin" : url.getProtocol());
-            RpcTrackerEngineFactory rpcTrackerEngineFactory = ExtensionLoader.getExtensionLoader(RpcTrackerEngineFactory.class).getExtension(url.getProtocol());
-            RpcTrackerFactory rpcTrackerFactory = ExtensionLoader.getExtensionLoader(RpcTrackerFactory.class).getExtension(url.getProtocol());
-            RpcTrackerManager.setRpcTrackerFactory(rpcTrackerFactory);
             if (tracker.getRef() != null) {
                 RpcTrackerManager.setRpcTrackerEngine((RpcTrackerEngine) tracker.getRef());
             } else {
+                RpcTrackerEngineFactory rpcTrackerEngineFactory = ExtensionLoader.getExtensionLoader(RpcTrackerEngineFactory.class).getExtension(url.getProtocol());
                 RpcTrackerManager.createRpcTrackerEngine(rpcTrackerEngineFactory, url);
             }
+            RpcTrackerFactory rpcTrackerFactory = ExtensionLoader.getExtensionLoader(RpcTrackerFactory.class).getExtension(url.getProtocol());
+            RpcTrackerManager.setRpcTrackerFactory(rpcTrackerFactory);
         }
     }
 
