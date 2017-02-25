@@ -42,63 +42,33 @@ dubbo3 fork [dubbox 2.8.4] (https://github.com/dangdangdotcom/dubbox)，具体�
 </bean>
 ```xml
 
+
 ## 依赖
 
-服务链路追踪主要基于Zipkin的[brave](https://github.com/openzipkin/brave)
+服务链路追踪主要基于Zipkin的[brave] (https://github.com/openzipkin/brave),
+
+链路追踪功能分离到另一个项目中[nightawk] (https://github.com/YanXs/nighthawk)中，项目中需要引用
 
 ```xml
 <dependency>
-    <groupId>com.squareup.okhttp3</groupId>
-    <artifactId>okhttp</artifactId>
-    <version>3.2.0</version>
+    <groupId>com.alibaba</groupId>
+    <artifactId>dubbo</artifactId>
+    <version>3.0.0</version>
 </dependency>
 
 <dependency>
-    <groupId>io.zipkin.brave</groupId>
-    <artifactId>brave-core</artifactId>
-    <version>3.9.0</version>
+    <groupId>xs</groupId>
+    <artifactId>nightawk-core</artifactId>
+    <version>x.x.x</version>
 </dependency>
 
 <dependency>
-    <groupId>io.zipkin.brave</groupId>
-    <artifactId>brave-http</artifactId>
-    <version>3.9.0</version>
-</dependency>
-
-<dependency>
-    <groupId>io.zipkin.brave</groupId>
-    <artifactId>brave-web-servlet-filter</artifactId>
-    <version>3.9.0</version>
-</dependency>
-
-<dependency>
-    <groupId>io.zipkin.brave</groupId>
-    <artifactId>brave-okhttp</artifactId>
-    <version>3.9.0</version>
-</dependency>
-
-<dependency>
-    <groupId>io.zipkin.brave</groupId>
-    <artifactId>brave-spancollector-http</artifactId>
-    <version>3.9.0</version>
-</dependency>
-
-<dependency>
-    <groupId>io.zipkin.brave</groupId>
-    <artifactId>brave-spancollector-kafka</artifactId>
-    <version>3.9.0</version>
-</dependency>
-
-<dependency>
-    <groupId>io.zipkin.brave</groupId>
-    <artifactId>brave-spancollector-scribe</artifactId>
-    <version>3.9.0</version>
-</dependency>
-
-<dependency>
-    <groupId>com.google.auto.value</groupId>
-    <artifactId>auto-value</artifactId>
-    <version>1.3</version>
+    <groupId>xs</groupId>
+    <artifactId>nightawk-dubbo</artifactId>
+    <version>x.x.x</version>
 </dependency>
 ```
+以上依赖需要自己使用maven编译打包
+
+
 
