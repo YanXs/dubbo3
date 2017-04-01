@@ -1,6 +1,6 @@
 # dubbo3
 
-dubbo3 fork [dubbox 2.8.4] (https://github.com/dangdangdotcom/dubbox)，具体的使用方法请参考[dubbox 2.8.4] (https://github.com/dangdangdotcom/dubbox)
+dubbo3 fork [dubbox 2.8.4] (https://github.com/dangdangdotcom/dubbox) , 具体的使用方法请参考[dubbox 2.8.4] (https://github.com/dangdangdotcom/dubbox)
 
 ## dubbo3修改和增加的功能
 
@@ -28,6 +28,7 @@ dubbo3 fork [dubbox 2.8.4] (https://github.com/dangdangdotcom/dubbox)，具体�
 方式二：
 使用方式一在dubbo内部创建tracker对象，因为目前只支持zipkin，tracker对应Brave，没有办法同其他系统，比如数据库的监控结合起来，推荐使用下面的方式
 配置
+
 ```xml
 <dubbo:tracker id="trackerEngine" protocol="zipkin" ref="braveRpcTrackerEngine"/>
 
@@ -40,14 +41,13 @@ dubbo3 fork [dubbox 2.8.4] (https://github.com/dangdangdotcom/dubbox)，具体�
     <property name="transport" value="http"/>
     <property name="transportAddress" value="127.0.0.1:9411"/>
 </bean>
-```xml
+```
 
 
 ## 依赖
 
-服务链路追踪主要基于Zipkin的[brave] (https://github.com/openzipkin/brave),
-
-链路追踪功能分离到另一个项目中[nightawk] (https://github.com/YanXs/nighthawk)中，项目中需要引用
+服务链路追踪主要基于Zipkin的 [brave] (https://github.com/openzipkin/brave),链路追踪功能分离到另一个项目中[nightawk] (https://github.com/YanXs/nighthawk),
+项目中需要引用
 
 ```xml
 <dependency>
@@ -57,17 +57,18 @@ dubbo3 fork [dubbox 2.8.4] (https://github.com/dangdangdotcom/dubbox)，具体�
 </dependency>
 
 <dependency>
-    <groupId>xs</groupId>
+    <groupId>net.nightawk</groupId>
     <artifactId>nightawk-core</artifactId>
-    <version>x.x.x</version>
+    <version>1.0.0.RELEASE</version>
 </dependency>
 
 <dependency>
-    <groupId>xs</groupId>
+    <groupId>net.nightawk</groupId>
     <artifactId>nightawk-dubbo</artifactId>
-    <version>x.x.x</version>
+    <version>1.0.0.RELEASE</version>
 </dependency>
 ```
+
 以上依赖需要自己使用maven编译打包
 
 
