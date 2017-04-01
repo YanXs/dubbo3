@@ -1,6 +1,7 @@
 # dubbo3
 
-dubbo3 fork [dubbox 2.8.4] (https://github.com/dangdangdotcom/dubbox) , 具体的使用方法请参考[dubbox 2.8.4] (https://github.com/dangdangdotcom/dubbox)
+dubbo3 fork [dubbox 2.8.4] (https://github.com/dangdangdotcom/dubbox) 
+具体的使用方法请参考[dubbox 2.8.4] (https://github.com/dangdangdotcom/dubbox)
 
 ## dubbo3修改和增加的功能
 
@@ -46,7 +47,8 @@ dubbo3 fork [dubbox 2.8.4] (https://github.com/dangdangdotcom/dubbox) , 具体�
 
 ## 依赖
 
-服务链路追踪主要基于Zipkin的 [brave] (https://github.com/openzipkin/brave),链路追踪功能分离到另一个项目中[nightawk] (https://github.com/YanXs/nighthawk),
+服务链路追踪主要基于Zipkin的 [brave] (https://github.com/openzipkin/brave)
+链路追踪功能分离到另一个项目 [nightawk] (https://github.com/YanXs/nighthawk)
 项目中需要引用
 
 ```xml
