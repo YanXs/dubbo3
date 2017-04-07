@@ -23,9 +23,11 @@ public class OkHttpConnectionFactory implements HessianConnectionFactory {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
         builder.readTimeout(url.getParameter(Constants.TIMEOUT_KEY, Constants.DEFAULT_TIMEOUT), TimeUnit.MILLISECONDS);
         builder.connectTimeout(url.getParameter(Constants.TIMEOUT_KEY, Constants.DEFAULT_TIMEOUT), TimeUnit.MILLISECONDS);
-        Interceptor interceptor = requestResponseInterceptorBuilder.build(url);
-        if (interceptor != null) {
-            builder.addInterceptor(interceptor);
+        if (requestResponseInterceptorBuilder != null) {
+            Interceptor interceptor = requestResponseInterceptorBuilder.build(url);
+            if (interceptor != null) {
+                builder.addInterceptor(interceptor);
+            }
         }
         client = builder.build();
     }

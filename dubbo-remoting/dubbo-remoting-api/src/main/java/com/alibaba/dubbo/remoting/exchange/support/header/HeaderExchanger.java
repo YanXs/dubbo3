@@ -44,18 +44,22 @@ public class HeaderExchanger implements Exchanger {
 
     public ExchangeClient connect(URL url, ExchangeHandler handler) throws RemotingException {
         HeaderExchangeClient headerExchangeClient = new HeaderExchangeClient(Transporters.connect(url, new DecodeHandler(new HeaderExchangeHandler(handler))));
-        Interceptor interceptor = dubboRequestInterceptorBuilder.build(url, DubboRequestSpanNameProvider.getInstance());
-        if (interceptor != null) {
-            headerExchangeClient.addInterceptor(interceptor);
+        if (dubboRequestInterceptorBuilder != null) {
+            Interceptor interceptor = dubboRequestInterceptorBuilder.build(url, DubboRequestSpanNameProvider.getInstance());
+            if (interceptor != null) {
+                headerExchangeClient.addInterceptor(interceptor);
+            }
         }
         return headerExchangeClient;
     }
 
     public ExchangeServer bind(URL url, ExchangeHandler handler) throws RemotingException {
         HeaderExchangeHandler exchangeHandler = new HeaderExchangeHandler(handler);
-        Interceptor interceptor = dubboRequestInterceptorBuilder.build(url, DubboRequestSpanNameProvider.getInstance());
-        if (interceptor != null) {
-            exchangeHandler.addInterceptor(interceptor);
+        if (dubboRequestInterceptorBuilder != null) {
+            Interceptor interceptor = dubboRequestInterceptorBuilder.build(url, DubboRequestSpanNameProvider.getInstance());
+            if (interceptor != null) {
+                exchangeHandler.addInterceptor(interceptor);
+            }
         }
         return new HeaderExchangeServer(Transporters.bind(url, new DecodeHandler(exchangeHandler)));
     }

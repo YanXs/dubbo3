@@ -2,8 +2,6 @@ package com.alibaba.dubbo.rpc.protocol.http;
 
 import com.alibaba.dubbo.common.Constants;
 import com.alibaba.dubbo.common.URL;
-import com.alibaba.dubbo.tracker.RpcTracker;
-import com.alibaba.dubbo.tracker.RpcTrackerManager;
 import com.alibaba.dubbo.tracker.http.HttpRequestResponseInterceptorBuilder;
 import okhttp3.*;
 import org.springframework.context.i18n.LocaleContext;
@@ -24,18 +22,12 @@ public class OkHttpInvokerRequestExecutor extends AbstractHttpInvokerRequestExec
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
         builder.readTimeout(url.getParameter(Constants.TIMEOUT_KEY, Constants.DEFAULT_TIMEOUT), TimeUnit.MILLISECONDS);
         builder.connectTimeout(url.getParameter(Constants.TIMEOUT_KEY, Constants.DEFAULT_TIMEOUT), TimeUnit.MILLISECONDS);
-        RpcTracker rpcTracker = RpcTrackerManager.createRpcTracker(url);
-//        if (rpcTracker != null) {
-//            builder.addInterceptor(new BraveOkHttpRequestResponseInterceptor(rpcTracker, HttpSpanNameProvider.getInstance()));
-//            builder.addInterceptor(AttachMethodNameInterceptor.getInstance());
-//        }
-//        Interceptor interceptor = requestResponseInterceptorBuilder.build(url);
-//        if (interceptor != null) {
-//            builder.addInterceptor(interceptor);
-//            if (RpcTrackerManager.getRpcTracker(url) != null) {
-//                builder.addInterceptor(AttachMethodNameInterceptor.getInstance());
-//            }
-//        }
+        if (requestResponseInterceptorBuilder != null) {
+            Interceptor interceptor = requestResponseInterceptorBuilder.build(url);
+            if (interceptor != null) {
+                builder.addInterceptor(interceptor);
+            }
+        }
         client = builder.build();
     }
 
