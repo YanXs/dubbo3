@@ -17,9 +17,14 @@ package com.alibaba.dubbo.rpc.proxy;
 
 import com.alibaba.dubbo.rpc.Invoker;
 import com.alibaba.dubbo.rpc.RpcInvocation;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * InvokerHandler
@@ -28,13 +33,16 @@ import java.lang.reflect.Method;
  */
 public class InvokerInvocationHandler implements InvocationHandler {
 
+    private static final ListeningExecutorService asyncExecutor =
+            MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(32));
+
     private final Invoker<?> invoker;
 
     public InvokerInvocationHandler(Invoker<?> handler) {
         this.invoker = handler;
     }
 
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+    public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
         String methodName = method.getName();
         Class<?>[] parameterTypes = method.getParameterTypes();
         if (method.getDeclaringClass() == Object.class) {
@@ -49,7 +57,26 @@ public class InvokerInvocationHandler implements InvocationHandler {
         if ("equals".equals(methodName) && parameterTypes.length == 1) {
             return invoker.equals(args[0]);
         }
-        return invoker.invoke(new RpcInvocation(method, args)).recreate();
+        if (isAsyncMethod(method)) {
+            return asyncExecutor.submit(new Callable<Object>() {
+                @Override
+                public Object call() throws Exception {
+                    return getCorrespondingSyncMethod(proxy.getClass(), method).invoke(proxy, args);
+                }
+            });
+        } else {
+            return invoker.invoke(new RpcInvocation(method, args)).recreate();
+        }
     }
 
+    private boolean isAsyncMethod(Method method) {
+        return Future.class.isAssignableFrom(method.getReturnType());
+    }
+
+    private Method getCorrespondingSyncMethod(Class<?> clazz, Method method) throws Exception {
+        String methodName = method.getName();
+        Class<?>[] parameterTypes = method.getParameterTypes();
+        String syncMethodName = methodName.substring(methodName.indexOf("async_") + "async_".length());
+        return clazz.getDeclaredMethod(syncMethodName, parameterTypes);
+    }
 }
