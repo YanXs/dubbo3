@@ -21,14 +21,13 @@ import com.alibaba.dubbo.common.Version;
 import com.alibaba.dubbo.common.logger.Logger;
 import com.alibaba.dubbo.common.logger.LoggerFactory;
 import com.alibaba.dubbo.common.utils.NamedThreadFactory;
-import com.alibaba.dubbo.remoting.transport.Channel;
-import com.alibaba.dubbo.remoting.transport.ChannelHandler;
 import com.alibaba.dubbo.remoting.exception.RemotingException;
-import com.alibaba.dubbo.remoting.transport.Server;
 import com.alibaba.dubbo.remoting.exchange.ExchangeChannel;
 import com.alibaba.dubbo.remoting.exchange.ExchangeServer;
-import com.alibaba.dubbo.remoting.exchange.support.DefaultFuture;
 import com.alibaba.dubbo.remoting.message.Request;
+import com.alibaba.dubbo.remoting.transport.Channel;
+import com.alibaba.dubbo.remoting.transport.ChannelHandler;
+import com.alibaba.dubbo.remoting.transport.Server;
 
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
@@ -87,13 +86,7 @@ public class HeaderExchangeServer implements ExchangeServer {
     }
 
     private boolean isRunning() {
-        Collection<Channel> channels = getChannels();
-        for (Channel channel : channels) {
-            if (DefaultFuture.hasFuture(channel)) {
-                return true;
-            }
-        }
-        return false;
+        return !HeaderExchangeChannel.REPLY_HOLDER.isEmpty();
     }
 
     public void close() {

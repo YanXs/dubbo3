@@ -42,7 +42,6 @@ public class RpcContext {
             return new RpcContext();
         }
     };
-
     /**
      * get context.
      *
@@ -60,8 +59,6 @@ public class RpcContext {
     public static void removeContext() {
         LOCAL.remove();
     }
-
-    private Future<?> future;
 
     private List<URL> urls;
 
@@ -86,14 +83,6 @@ public class RpcContext {
     private Object request;
     private Object response;
 
-    @Deprecated
-    private List<Invoker<?>> invokers;
-
-    @Deprecated
-    private Invoker<?> invoker;
-
-    @Deprecated
-    private Invocation invocation;
 
     protected RpcContext() {
     }
@@ -143,74 +132,6 @@ public class RpcContext {
 
     public void setResponse(Object response) {
         this.response = response;
-    }
-
-    /**
-     * is provider side.
-     *
-     * @return provider side.
-     */
-    public boolean isProviderSide() {
-        URL url = getUrl();
-        if (url == null) {
-            return false;
-        }
-        InetSocketAddress address = getRemoteAddress();
-        if (address == null) {
-            return false;
-        }
-        String host;
-        if (address.getAddress() == null) {
-            host = address.getHostName();
-        } else {
-            host = address.getAddress().getHostAddress();
-        }
-        return url.getPort() != address.getPort() ||
-                !NetUtils.filterLocalHost(url.getIp()).equals(NetUtils.filterLocalHost(host));
-    }
-
-    /**
-     * is consumer side.
-     *
-     * @return consumer side.
-     */
-    public boolean isConsumerSide() {
-        URL url = getUrl();
-        if (url == null) {
-            return false;
-        }
-        InetSocketAddress address = getRemoteAddress();
-        if (address == null) {
-            return false;
-        }
-        String host;
-        if (address.getAddress() == null) {
-            host = address.getHostName();
-        } else {
-            host = address.getAddress().getHostAddress();
-        }
-        return url.getPort() == address.getPort() &&
-                NetUtils.filterLocalHost(url.getIp()).equals(NetUtils.filterLocalHost(host));
-    }
-
-    /**
-     * get future.
-     *
-     * @param <T>
-     * @return future
-     */
-    @SuppressWarnings("unchecked")
-    public <T> Future<T> getFuture() {
-        return (Future<T>) future;
-    }
-
-    /**
-     * set future.
-     *
-     * @param future
-     */
-    public void setFuture(Future<?> future) {
-        this.future = future;
     }
 
     public List<URL> getUrls() {
@@ -528,7 +449,6 @@ public class RpcContext {
     }
 
     public RpcContext setInvokers(List<Invoker<?>> invokers) {
-        this.invokers = invokers;
         if (invokers != null && invokers.size() > 0) {
             List<URL> urls = new ArrayList<URL>(invokers.size());
             for (Invoker<?> invoker : invokers) {
@@ -540,7 +460,6 @@ public class RpcContext {
     }
 
     public RpcContext setInvoker(Invoker<?> invoker) {
-        this.invoker = invoker;
         if (invoker != null) {
             setUrl(invoker.getUrl());
         }
@@ -548,7 +467,6 @@ public class RpcContext {
     }
 
     public RpcContext setInvocation(Invocation invocation) {
-        this.invocation = invocation;
         if (invocation != null) {
             setMethodName(invocation.getMethodName());
             setParameterTypes(invocation.getParameterTypes());
@@ -557,116 +475,4 @@ public class RpcContext {
         return this;
     }
 
-    /**
-     * @deprecated Replace to isProviderSide()
-     */
-    @Deprecated
-    public boolean isServerSide() {
-        return isProviderSide();
-    }
-
-    /**
-     * @deprecated Replace to isConsumerSide()
-     */
-    @Deprecated
-    public boolean isClientSide() {
-        return isConsumerSide();
-    }
-
-    /**
-     * @deprecated Replace to getUrls()
-     */
-    @Deprecated
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    public List<Invoker<?>> getInvokers() {
-        return invokers == null && invoker != null ? (List) Collections.singletonList(invoker) : invokers;
-    }
-
-    /**
-     * @deprecated Replace to getUrl()
-     */
-    @Deprecated
-    public Invoker<?> getInvoker() {
-        return invoker;
-    }
-
-    /**
-     * @deprecated Replace to getMethodName(), getParameterTypes(), getArguments()
-     */
-    @Deprecated
-    public Invocation getInvocation() {
-        return invocation;
-    }
-
-    /**
-     * 异步调用 ，需要返回值，即使步调用Future.get方法，也会处理调用超时问题.
-     *
-     * @param callable
-     * @return 通过future.get()获取返回结果.
-     */
-    @SuppressWarnings("unchecked")
-    public <T> Future<T> asyncCall(Callable<T> callable) {
-        try {
-            try {
-                setAttachment(Constants.ASYNC_KEY, Boolean.TRUE.toString());
-                final T o = callable.call();
-                //local调用会直接返回结果.
-                if (o != null) {
-                    FutureTask<T> f = new FutureTask<T>(new Callable<T>() {
-                        public T call() throws Exception {
-                            return o;
-                        }
-                    });
-                    f.run();
-                    return f;
-                }
-            } catch (Exception e) {
-                throw new RpcException(e);
-            } finally {
-                removeAttachment(Constants.ASYNC_KEY);
-            }
-        } catch (final RpcException e) {
-            return new Future<T>() {
-                public boolean cancel(boolean mayInterruptIfRunning) {
-                    return false;
-                }
-
-                public boolean isCancelled() {
-                    return false;
-                }
-
-                public boolean isDone() {
-                    return true;
-                }
-
-                public T get() throws InterruptedException, ExecutionException {
-                    throw new ExecutionException(e.getCause());
-                }
-
-                public T get(long timeout, TimeUnit unit)
-                        throws InterruptedException, ExecutionException,
-                        TimeoutException {
-                    return get();
-                }
-            };
-        }
-        return ((Future<T>) getContext().getFuture());
-    }
-
-    /**
-     * oneway调用，只发送请求，不接收返回结果.
-     *
-     * @param runnable
-     */
-    public void asyncCall(Runnable runnable) {
-        try {
-            setAttachment(Constants.RETURN_KEY, Boolean.FALSE.toString());
-            runnable.run();
-        } catch (Throwable e) {
-            //FIXME 异常是否应该放在future中？
-            throw new RpcException("oneway call error ." + e.getMessage(), e);
-        } finally {
-            removeAttachment(Constants.RETURN_KEY);
-        }
-    }
 }

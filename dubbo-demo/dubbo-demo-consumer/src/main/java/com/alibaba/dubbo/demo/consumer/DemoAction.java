@@ -15,13 +15,11 @@
  */
 package com.alibaba.dubbo.demo.consumer;
 
+import com.alibaba.dubbo.demo.bid.*;
+import com.alibaba.dubbo.demo.user.facade.AnotherUserRestService;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import com.alibaba.dubbo.demo.bid.*;
-import com.alibaba.dubbo.demo.user.User;
-import com.alibaba.dubbo.demo.user.facade.AnotherUserRestService;
-import com.alibaba.dubbo.rpc.RpcContext;
 
 public class DemoAction {
 
@@ -38,7 +36,7 @@ public class DemoAction {
     }
 
     public void start() throws Exception {
-        BidRequest request = new BidRequest();
+        final BidRequest request = new BidRequest();
 
         Impression imp = new Impression();
         imp.setBidFloor(1.1);
@@ -62,14 +60,7 @@ public class DemoAction {
         device.setGeo(geo);
         request.setDevice(device);
 
-//        long start = System.currentTimeMillis();
-
-//        for (int i = 0; i < 10000; i ++) {
-//        System.out.println(bidService.bid(request).getId());
         System.out.println("SUCCESS: got bid response id: " + bidService.bid(request).getId());
-//        }
-
-//        System.out.println(">>>>> Total time consumed:" + (System.currentTimeMillis() - start));
 
         try {
             bidService.throwNPE();
@@ -77,13 +68,7 @@ public class DemoAction {
         } catch (NullPointerException e) {
             System.out.println("SUCCESS: caught exception " + e.getClass());
         }
-
-//        User user = new User(1L, "larrypage");
-//        System.out.println("SUCCESS: registered user with id " + anotherUserRestService.registerUser(user).getId());
-//
-//        RpcContext.getContext().setAttachment("clientName", "demo");
-//        RpcContext.getContext().setAttachment("clientImpl", "dubbox");
-//        System.out.println("SUCCESS: got user " + anotherUserRestService.getUser(1L));
+        Thread.sleep(2000);
     }
 
 }

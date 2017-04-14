@@ -41,8 +41,6 @@ public class ConsumerContextFilterTest {
         Invoker<DemoService> invoker = new MyInvoker<DemoService>(url);
         Invocation invocation = new MockInvocation();
         consumerContextFilter.invoke(invoker, invocation);
-        assertEquals(invoker,RpcContext.getContext().getInvoker());
-        assertEquals(invocation,RpcContext.getContext().getInvocation());
         assertEquals(NetUtils.getLocalHost() + ":0",RpcContext.getContext().getLocalAddressString());
         assertEquals("test:11",RpcContext.getContext().getRemoteAddressString());
         

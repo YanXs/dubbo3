@@ -321,12 +321,6 @@
             </exclusions>
         </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>com.alibaba</groupId>-->
-            <!--<artifactId>dubbo-tracker-zipkin</artifactId>-->
-            <!--<version>${project.parent.version}</version>-->
-        <!--</dependency>-->
-
     </dependencies>
     <build>
         <plugins>
@@ -420,7 +414,6 @@
                                     <include>com.alibaba:dubbo-container-logback</include>
                                     <!-- tracker -->
                                     <include>com.alibaba:dubbo-tracker-api</include>
-                                    <!--<include>com.alibaba:dubbo-tracker-zipkin</include>-->
                                 </includes>
                             </artifactSet>
                             <transformers>
@@ -583,7 +576,6 @@
                                     <resource>META-INF/dubbo/internal/com.alibaba.dubbo.tracker.RpcTrackerEngineFactory
                                     </resource>
                                 </transformer>
-
                             </transformers>
                         </configuration>
                     </execution>

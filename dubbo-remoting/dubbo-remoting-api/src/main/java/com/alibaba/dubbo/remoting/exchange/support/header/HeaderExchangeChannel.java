@@ -20,14 +20,14 @@ import com.alibaba.dubbo.common.URL;
 import com.alibaba.dubbo.common.Version;
 import com.alibaba.dubbo.common.logger.Logger;
 import com.alibaba.dubbo.common.logger.LoggerFactory;
-import com.alibaba.dubbo.remoting.transport.Channel;
-import com.alibaba.dubbo.remoting.transport.ChannelHandler;
 import com.alibaba.dubbo.remoting.exception.RemotingException;
 import com.alibaba.dubbo.remoting.exception.TimeoutException;
-import com.alibaba.dubbo.remoting.exchange.*;
-import com.alibaba.dubbo.remoting.exchange.support.DefaultFuture;
+import com.alibaba.dubbo.remoting.exchange.ExchangeChannel;
+import com.alibaba.dubbo.remoting.exchange.ExchangeHandler;
 import com.alibaba.dubbo.remoting.message.Request;
 import com.alibaba.dubbo.remoting.message.Response;
+import com.alibaba.dubbo.remoting.transport.Channel;
+import com.alibaba.dubbo.remoting.transport.ChannelHandler;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.ConcurrentHashMap;
@@ -45,7 +45,7 @@ final class HeaderExchangeChannel implements ExchangeChannel {
 
     private static final String CHANNEL_KEY = HeaderExchangeChannel.class.getName() + ".CHANNEL";
 
-    private static final ConcurrentHashMap<Long, PendingReply> REPLY_HOLDER = new ConcurrentHashMap<Long, PendingReply>();
+    public static final ConcurrentHashMap<Long, PendingReply> REPLY_HOLDER = new ConcurrentHashMap<Long, PendingReply>();
 
     private final Channel channel;
 
@@ -99,36 +99,13 @@ final class HeaderExchangeChannel implements ExchangeChannel {
         }
     }
 
-    public ResponseFuture request(Object request) throws RemotingException {
+    @Override
+    public Response request(Request request) throws RemotingException {
         return request(request, channel.getUrl().getPositiveParameter(Constants.TIMEOUT_KEY, Constants.DEFAULT_TIMEOUT));
     }
 
-    public ResponseFuture request(Object request, int timeout) throws RemotingException {
-        if (closed) {
-            throw new RemotingException(this.getLocalAddress(), null, "Failed to send request " + request +
-                    ", cause: The channel " + this + " is closed!");
-        }
-        // create request.
-        Request.Builder builder = new Request.Builder();
-        builder.newId().version(Version.getVersion()).twoWay(true).data(request);
-        Request req = builder.build();
-        ResponseFuture future = new DefaultFuture(channel, req, timeout);
-        try {
-            channel.send(req);
-        } catch (RemotingException e) {
-            future.cancel();
-            throw e;
-        }
-        return future;
-    }
-
     @Override
-    public Response execute(Request request) throws RemotingException {
-        return execute(request, channel.getUrl().getPositiveParameter(Constants.TIMEOUT_KEY, Constants.DEFAULT_TIMEOUT));
-    }
-
-    @Override
-    public Response execute(Request request, int timeout) throws RemotingException {
+    public Response request(Request request, int timeout) throws RemotingException {
         if (closed) {
             throw new RemotingException(this.getLocalAddress(), null, "Failed to send request " + request +
                     ", cause: The channel " + this + " is closed!");
@@ -215,8 +192,7 @@ final class HeaderExchangeChannel implements ExchangeChannel {
     }
 
     private boolean shouldWait(long start, long timeout) {
-        return (System.currentTimeMillis() - start < timeout) &&
-                (DefaultFuture.hasFuture(HeaderExchangeChannel.this) || !REPLY_HOLDER.isEmpty());
+        return (System.currentTimeMillis() - start < timeout) && !REPLY_HOLDER.isEmpty();
     }
 
     public InetSocketAddress getLocalAddress() {

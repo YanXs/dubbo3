@@ -22,14 +22,12 @@ import com.alibaba.dubbo.common.bytecode.Wrapper;
 import com.alibaba.dubbo.common.extension.ExtensionLoader;
 import com.alibaba.dubbo.common.utils.ConfigUtils;
 import com.alibaba.dubbo.common.utils.NetUtils;
-import com.alibaba.dubbo.common.utils.ReflectUtils;
 import com.alibaba.dubbo.common.utils.StringUtils;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.dubbo.config.support.Parameter;
 import com.alibaba.dubbo.rpc.Invoker;
 import com.alibaba.dubbo.rpc.Protocol;
 import com.alibaba.dubbo.rpc.ProxyFactory;
-import com.alibaba.dubbo.rpc.StaticContext;
 import com.alibaba.dubbo.rpc.cluster.Cluster;
 import com.alibaba.dubbo.rpc.cluster.directory.StaticDirectory;
 import com.alibaba.dubbo.rpc.cluster.support.AvailableCluster;
@@ -41,7 +39,6 @@ import com.alibaba.dubbo.rpc.support.ProtocolUtils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.*;
 
 /**
@@ -290,45 +287,9 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
                     }
                 }
                 appendAttributes(attributes, method, prifix + "." + method.getName());
-                checkAndConvertImplicitConfig(method, map, attributes);
             }
         }
-        //attributes通过系统context进行存储.
-        StaticContext.getSystemContext().putAll(attributes);
         ref = createProxy(map);
-    }
-
-    private static void checkAndConvertImplicitConfig(MethodConfig method, Map<String, String> map, Map<Object, Object> attributes) {
-        //check config conflict
-        if (Boolean.FALSE.equals(method.isReturn()) && (method.getOnreturn() != null || method.getOnthrow() != null)) {
-            throw new IllegalStateException("method config error : return attribute must be set true when onreturn or onthrow has been setted.");
-        }
-        //convert onreturn methodName to Method
-        String onReturnMethodKey = StaticContext.getKey(map, method.getName(), Constants.ON_RETURN_METHOD_KEY);
-        Object onReturnMethod = attributes.get(onReturnMethodKey);
-        if (onReturnMethod != null && onReturnMethod instanceof String) {
-            attributes.put(onReturnMethodKey, getMethodByName(method.getOnreturn().getClass(), onReturnMethod.toString()));
-        }
-        //convert onthrow methodName to Method
-        String onThrowMethodKey = StaticContext.getKey(map, method.getName(), Constants.ON_THROW_METHOD_KEY);
-        Object onThrowMethod = attributes.get(onThrowMethodKey);
-        if (onThrowMethod != null && onThrowMethod instanceof String) {
-            attributes.put(onThrowMethodKey, getMethodByName(method.getOnthrow().getClass(), onThrowMethod.toString()));
-        }
-        //convert oninvoke methodName to Method
-        String onInvokeMethodKey = StaticContext.getKey(map, method.getName(), Constants.ON_INVOKE_METHOD_KEY);
-        Object onInvokeMethod = attributes.get(onInvokeMethodKey);
-        if (onInvokeMethod != null && onInvokeMethod instanceof String) {
-            attributes.put(onInvokeMethodKey, getMethodByName(method.getOninvoke().getClass(), onInvokeMethod.toString()));
-        }
-    }
-
-    private static Method getMethodByName(Class<?> clazz, String methodName) {
-        try {
-            return ReflectUtils.findMethodByMethodName(clazz, methodName);
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
-        }
     }
 
     @SuppressWarnings({"unchecked", "rawtypes", "deprecation"})
@@ -336,13 +297,9 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
         URL tmpUrl = new URL("temp", "localhost", 0, map);
         final boolean isJvmRefer;
         if (isInjvm() == null) {
-            if (url != null && url.length() > 0) {
-                //指定URL的情况下，不做本地引用
-                isJvmRefer = false;
-            } else {
-                //默认情况下如果本地有服务暴露，则引用本地服务.
-                isJvmRefer = InjvmProtocol.getInjvmProtocol().isInjvmRefer(tmpUrl);
-            }
+            //指定URL的情况下，不做本地引用
+            isJvmRefer = !(url != null && url.length() > 0) && InjvmProtocol.getInjvmProtocol().isInjvmRefer(tmpUrl);
+            //默认情况下如果本地有服务暴露，则引用本地服务.
         } else {
             isJvmRefer = isInjvm();
         }

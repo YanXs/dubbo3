@@ -64,29 +64,18 @@ public class MockChannel implements ExchangeChannel {
         return null;
     }
 
-    public ResponseFuture send(Object request, int timeout) throws RemotingException {
-        return null;
-    }
-
+    @Override
     public ChannelHandler getChannelHandler() {
         return null;
     }
 
-    public ResponseFuture request(Object request) throws RemotingException {
-        return null;
-    }
-
-    public ResponseFuture request(Object request, int timeout) throws RemotingException {
+    @Override
+    public Response request(Request request) throws RemotingException {
         return null;
     }
 
     @Override
-    public Response execute(Request request) throws RemotingException {
-        return null;
-    }
-
-    @Override
-    public Response execute(Request request, int timeout) throws RemotingException {
+    public Response request(Request request, int timeout) throws RemotingException {
         return null;
     }
 

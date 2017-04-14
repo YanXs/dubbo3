@@ -21,12 +21,14 @@ import com.alibaba.dubbo.common.URL;
 import com.alibaba.dubbo.common.logger.Logger;
 import com.alibaba.dubbo.common.logger.LoggerFactory;
 import com.alibaba.dubbo.common.utils.NetUtils;
-import com.alibaba.dubbo.remoting.transport.ChannelHandler;
 import com.alibaba.dubbo.remoting.exception.RemotingException;
-import com.alibaba.dubbo.remoting.exchange.*;
+import com.alibaba.dubbo.remoting.exchange.ExchangeClient;
+import com.alibaba.dubbo.remoting.exchange.ExchangeHandler;
+import com.alibaba.dubbo.remoting.exchange.Exchangers;
 import com.alibaba.dubbo.remoting.message.Interceptor;
 import com.alibaba.dubbo.remoting.message.Request;
 import com.alibaba.dubbo.remoting.message.Response;
+import com.alibaba.dubbo.remoting.transport.ChannelHandler;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.atomic.AtomicLong;
@@ -82,12 +84,6 @@ final class LazyConnectExchangeClient implements ExchangeClient {
         }
     }
 
-    public ResponseFuture request(Object request) throws RemotingException {
-        warning(request);
-        initClient();
-        return client.request(request);
-    }
-
     public URL getUrl() {
         return url;
     }
@@ -100,20 +96,14 @@ final class LazyConnectExchangeClient implements ExchangeClient {
         }
     }
 
-    public ResponseFuture request(Object request, int timeout) throws RemotingException {
-        warning(request);
-        initClient();
+    @Override
+    public Response request(Request request) throws RemotingException {
+        return client.request(request);
+    }
+
+    @Override
+    public Response request(Request request, int timeout) throws RemotingException {
         return client.request(request, timeout);
-    }
-
-    @Override
-    public Response execute(Request request) throws RemotingException {
-        return client.execute(request);
-    }
-
-    @Override
-    public Response execute(Request request, int timeout) throws RemotingException {
-        return client.execute(request, timeout);
     }
 
     /**

@@ -66,9 +66,9 @@ class ChannelWrappedInvoker<T> extends AbstractInvoker<T> {
             Request request = new Request.Builder().newId().version(Version.getVersion()).data(inv).build();
             Response response;
             if (timeout > 0) {
-                response = currentClient.execute(request, timeout);
+                response = currentClient.request(request, timeout);
             } else {
-                response = currentClient.execute(request);
+                response = currentClient.request(request);
             }
             return (Result) response.getResult();
         } catch (RpcException e) {

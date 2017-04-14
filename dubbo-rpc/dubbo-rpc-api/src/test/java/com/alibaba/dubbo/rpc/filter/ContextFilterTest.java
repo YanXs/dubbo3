@@ -61,7 +61,6 @@ public class ContextFilterTest {
         EasyMock.expect(invoker.getUrl()).andReturn(url).anyTimes();
         EasyMock.replay(invoker);
         contextFilter.invoke(invoker, invocation);
-        assertNull(RpcContext.getContext().getInvoker());
     }
 
     @Test
@@ -70,6 +69,5 @@ public class ContextFilterTest {
         Invoker<DemoService> invoker = new MyInvoker<DemoService>(url);
         Invocation invocation = new MockInvocation();
         Result result = contextFilter.invoke(invoker, invocation);
-        assertNull(RpcContext.getContext().getInvoker());
     }
 }

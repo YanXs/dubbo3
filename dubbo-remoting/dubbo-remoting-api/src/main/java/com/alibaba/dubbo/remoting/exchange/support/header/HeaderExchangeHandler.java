@@ -21,15 +21,15 @@ import com.alibaba.dubbo.common.logger.Logger;
 import com.alibaba.dubbo.common.logger.LoggerFactory;
 import com.alibaba.dubbo.common.utils.NetUtils;
 import com.alibaba.dubbo.common.utils.StringUtils;
-import com.alibaba.dubbo.remoting.transport.Channel;
-import com.alibaba.dubbo.remoting.transport.ChannelHandler;
 import com.alibaba.dubbo.remoting.exception.ExecutionException;
 import com.alibaba.dubbo.remoting.exception.RemotingException;
-import com.alibaba.dubbo.remoting.exchange.*;
-import com.alibaba.dubbo.remoting.exchange.support.DefaultFuture;
+import com.alibaba.dubbo.remoting.exchange.ExchangeChannel;
+import com.alibaba.dubbo.remoting.exchange.ExchangeHandler;
 import com.alibaba.dubbo.remoting.message.Interceptor;
 import com.alibaba.dubbo.remoting.message.Request;
 import com.alibaba.dubbo.remoting.message.Response;
+import com.alibaba.dubbo.remoting.transport.Channel;
+import com.alibaba.dubbo.remoting.transport.ChannelHandler;
 import com.alibaba.dubbo.remoting.transport.ChannelHandlerDelegate;
 
 import java.net.InetSocketAddress;
@@ -132,10 +132,6 @@ public class HeaderExchangeHandler implements ChannelHandlerDelegate {
             }
         } catch (Throwable t) {
             exception = t;
-        }
-        if (message instanceof Request) {
-            Request request = (Request) message;
-            DefaultFuture.sent(channel, request);
         }
         if (exception != null) {
             if (exception instanceof RuntimeException) {

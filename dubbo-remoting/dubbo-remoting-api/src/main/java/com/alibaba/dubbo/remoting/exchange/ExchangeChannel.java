@@ -15,10 +15,10 @@
  */
 package com.alibaba.dubbo.remoting.exchange;
 
-import com.alibaba.dubbo.remoting.transport.Channel;
 import com.alibaba.dubbo.remoting.exception.RemotingException;
 import com.alibaba.dubbo.remoting.message.Request;
 import com.alibaba.dubbo.remoting.message.Response;
+import com.alibaba.dubbo.remoting.transport.Channel;
 
 /**
  * ExchangeChannel. (API/SPI, Prototype, ThreadSafe)
@@ -28,32 +28,13 @@ import com.alibaba.dubbo.remoting.message.Response;
 public interface ExchangeChannel extends Channel {
 
     /**
-     * send request and receive response async
-     *
-     * @param request
-     * @return response future
-     * @throws RemotingException
-     */
-    ResponseFuture request(Object request) throws RemotingException;
-
-    /**
-     * send request and receive response async
-     *
-     * @param request
-     * @param timeout
-     * @return response future
-     * @throws RemotingException
-     */
-    ResponseFuture request(Object request, int timeout) throws RemotingException;
-
-    /**
      * send request and receive response sync
      *
      * @param request
      * @return
      * @throws RemotingException
      */
-    Response execute(Request request) throws RemotingException;
+    Response request(Request request) throws RemotingException;
 
     /**
      * send request and receive response sync
@@ -63,7 +44,7 @@ public interface ExchangeChannel extends Channel {
      * @return
      * @throws RemotingException
      */
-    Response execute(Request request, int timeout) throws RemotingException;
+    Response request(Request request, int timeout) throws RemotingException;
 
     /**
      * get message handler.

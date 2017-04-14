@@ -108,7 +108,6 @@ public class SimpleProcessorBenchmarkClientRunnable implements ClientRunnable {
             }
             try {
                 Object response = null;
-                response = clientFactory.get(targetIP, targetPort, rpcTimeout, clientNums).request(requestObject).get();
                 long currentTime = System.nanoTime();
                 if (beginTime <= startTime) {
                     continue;

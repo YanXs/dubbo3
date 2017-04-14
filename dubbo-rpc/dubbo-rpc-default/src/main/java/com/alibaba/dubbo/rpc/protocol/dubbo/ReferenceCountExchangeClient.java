@@ -18,12 +18,13 @@ package com.alibaba.dubbo.rpc.protocol.dubbo;
 import com.alibaba.dubbo.common.Constants;
 import com.alibaba.dubbo.common.Parameters;
 import com.alibaba.dubbo.common.URL;
-import com.alibaba.dubbo.remoting.transport.ChannelHandler;
 import com.alibaba.dubbo.remoting.exception.RemotingException;
-import com.alibaba.dubbo.remoting.exchange.*;
+import com.alibaba.dubbo.remoting.exchange.ExchangeClient;
+import com.alibaba.dubbo.remoting.exchange.ExchangeHandler;
 import com.alibaba.dubbo.remoting.message.Interceptor;
 import com.alibaba.dubbo.remoting.message.Request;
 import com.alibaba.dubbo.remoting.message.Response;
+import com.alibaba.dubbo.remoting.transport.ChannelHandler;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.ConcurrentMap;
@@ -59,9 +60,6 @@ final class ReferenceCountExchangeClient implements ExchangeClient {
         client.reset(url);
     }
 
-    public ResponseFuture request(Object request) throws RemotingException {
-        return client.request(request);
-    }
 
     public URL getUrl() {
         return client.getUrl();
@@ -75,18 +73,14 @@ final class ReferenceCountExchangeClient implements ExchangeClient {
         return client.getChannelHandler();
     }
 
-    public ResponseFuture request(Object request, int timeout) throws RemotingException {
+    @Override
+    public Response request(Request request) throws RemotingException {
+        return client.request(request);
+    }
+
+    @Override
+    public Response request(Request request, int timeout) throws RemotingException {
         return client.request(request, timeout);
-    }
-
-    @Override
-    public Response execute(Request request) throws RemotingException {
-        return client.execute(request);
-    }
-
-    @Override
-    public Response execute(Request request, int timeout) throws RemotingException {
-        return client.execute(request, timeout);
     }
 
     public boolean isConnected() {

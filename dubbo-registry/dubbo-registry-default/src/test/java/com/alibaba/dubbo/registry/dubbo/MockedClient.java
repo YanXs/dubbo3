@@ -16,15 +16,16 @@
 package com.alibaba.dubbo.registry.dubbo;
 
 import com.alibaba.dubbo.common.URL;
-import com.alibaba.dubbo.remoting.transport.Channel;
-import com.alibaba.dubbo.remoting.transport.ChannelHandler;
 import com.alibaba.dubbo.remoting.Codec;
 import com.alibaba.dubbo.remoting.exception.RemotingException;
-import com.alibaba.dubbo.remoting.exchange.*;
+import com.alibaba.dubbo.remoting.exchange.ExchangeClient;
+import com.alibaba.dubbo.remoting.exchange.ExchangeHandler;
 import com.alibaba.dubbo.remoting.exchange.support.Replier;
 import com.alibaba.dubbo.remoting.message.Interceptor;
 import com.alibaba.dubbo.remoting.message.Request;
 import com.alibaba.dubbo.remoting.message.Response;
+import com.alibaba.dubbo.remoting.transport.Channel;
+import com.alibaba.dubbo.remoting.transport.ChannelHandler;
 
 import java.net.InetSocketAddress;
 import java.util.Map;
@@ -77,42 +78,13 @@ public class MockedClient implements ExchangeClient {
         this.sent = msg;
     }
 
-    public ResponseFuture request(Object msg) throws RemotingException {
-        return request(msg, 0);
-    }
-
-    public ResponseFuture request(Object msg, int timeout) throws RemotingException {
-        this.invoked = msg;
-        return new ResponseFuture() {
-            public Object get() throws RemotingException {
-                return received;
-            }
-
-            public Object get(int timeoutInMillis) throws RemotingException {
-                return received;
-            }
-
-            public boolean isDone() {
-                return true;
-            }
-
-            @Override
-            public void cancel() {
-
-            }
-
-            public void setCallback(ResponseCallback callback) {
-            }
-        };
-    }
-
     @Override
-    public Response execute(Request request) throws RemotingException {
+    public Response request(Request request) throws RemotingException {
         return null;
     }
 
     @Override
-    public Response execute(Request request, int timeout) throws RemotingException {
+    public Response request(Request request, int timeout) throws RemotingException {
         return null;
     }
 

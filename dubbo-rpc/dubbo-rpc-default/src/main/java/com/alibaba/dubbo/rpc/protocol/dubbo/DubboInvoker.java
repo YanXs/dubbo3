@@ -21,7 +21,6 @@ import com.alibaba.dubbo.common.utils.AtomicPositiveInteger;
 import com.alibaba.dubbo.remoting.exception.RemotingException;
 import com.alibaba.dubbo.remoting.exception.TimeoutException;
 import com.alibaba.dubbo.remoting.exchange.ExchangeClient;
-import com.alibaba.dubbo.remoting.exchange.ResponseFuture;
 import com.alibaba.dubbo.remoting.message.Request;
 import com.alibaba.dubbo.remoting.message.Response;
 import com.alibaba.dubbo.rpc.*;
@@ -81,16 +80,10 @@ public class DubboInvoker<T> extends AbstractInvoker<T> {
             if (isOneway) {
                 boolean isSent = getUrl().getMethodParameter(methodName, Constants.SENT_KEY, false);
                 currentClient.send(inv, isSent);
-                RpcContext.getContext().setFuture(null);
-                return new RpcResult();
-            } else if (isAsync) {
-                ResponseFuture future = currentClient.request(inv, timeout);
-                RpcContext.getContext().setFuture(new FutureAdapter<Object>(future));
                 return new RpcResult();
             } else {
-                RpcContext.getContext().setFuture(null);
                 Request request = new Request.Builder().newId().data(inv).build();
-                Response response = currentClient.execute(request, timeout);
+                Response response = currentClient.request(request, timeout);
                 return (Result) response.getResult();
             }
         } catch (TimeoutException e) {

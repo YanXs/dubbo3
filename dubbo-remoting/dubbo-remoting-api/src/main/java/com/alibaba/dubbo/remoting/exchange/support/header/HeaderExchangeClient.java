@@ -24,7 +24,6 @@ import com.alibaba.dubbo.remoting.exception.RemotingException;
 import com.alibaba.dubbo.remoting.exchange.ExchangeChannel;
 import com.alibaba.dubbo.remoting.exchange.ExchangeClient;
 import com.alibaba.dubbo.remoting.exchange.ExchangeHandler;
-import com.alibaba.dubbo.remoting.exchange.ResponseFuture;
 import com.alibaba.dubbo.remoting.message.Interceptor;
 import com.alibaba.dubbo.remoting.message.Request;
 import com.alibaba.dubbo.remoting.message.Response;
@@ -184,21 +183,13 @@ public class HeaderExchangeClient implements ExchangeClient {
         heartbeatTimer = null;
     }
 
-    public ResponseFuture request(Object request) throws RemotingException {
+    @Override
+    public Response request(Request request) throws RemotingException {
         return request(request, channel.getUrl().getPositiveParameter(Constants.TIMEOUT_KEY, Constants.DEFAULT_TIMEOUT));
     }
 
-    public ResponseFuture request(Object request, int timeout) throws RemotingException {
-        return channel.request(request, timeout);
-    }
-
     @Override
-    public Response execute(Request request) throws RemotingException {
-        return execute(request, channel.getUrl().getPositiveParameter(Constants.TIMEOUT_KEY, Constants.DEFAULT_TIMEOUT));
-    }
-
-    @Override
-    public Response execute(Request request, int timeout) throws RemotingException {
+    public Response request(Request request, int timeout) throws RemotingException {
         Interceptor.Chain chain = new ExchangeClientInterceptorChain(0, request, timeout);
         return chain.proceed(request, timeout);
     }
@@ -245,7 +236,7 @@ public class HeaderExchangeClient implements ExchangeClient {
                 }
                 return response;
             }
-            return channel.execute(request, timeout);
+            return channel.request(request, timeout);
         }
 
         @Override

@@ -16,11 +16,11 @@
 
 package com.alibaba.dubbo.examples.heartbeat;
 
+import com.alibaba.dubbo.remoting.message.Request;
+import com.alibaba.dubbo.remoting.message.Response;
 import com.alibaba.dubbo.remoting.transport.Channel;
 import com.alibaba.dubbo.remoting.exception.RemotingException;
 import com.alibaba.dubbo.remoting.exchange.ExchangeHandler;
-import com.alibaba.dubbo.remoting.exchange.Request;
-import com.alibaba.dubbo.remoting.exchange.Response;
 import com.alibaba.dubbo.remoting.exchange.support.header.HeaderExchangeHandler;
 
 import java.util.concurrent.atomic.AtomicInteger;
