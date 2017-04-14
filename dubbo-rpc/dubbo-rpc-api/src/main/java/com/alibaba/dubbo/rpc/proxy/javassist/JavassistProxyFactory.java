@@ -21,6 +21,7 @@ import com.alibaba.dubbo.common.bytecode.Wrapper;
 import com.alibaba.dubbo.rpc.Invoker;
 import com.alibaba.dubbo.rpc.proxy.AbstractProxyFactory;
 import com.alibaba.dubbo.rpc.proxy.AbstractProxyInvoker;
+import com.alibaba.dubbo.rpc.proxy.AsyncableInvocationHandler;
 import com.alibaba.dubbo.rpc.proxy.InvokerInvocationHandler;
 
 /**
@@ -32,7 +33,7 @@ public class JavassistProxyFactory extends AbstractProxyFactory {
 
     @SuppressWarnings("unchecked")
     public <T> T getProxy(Invoker<T> invoker, Class<?>[] interfaces) {
-        return (T) Proxy.getProxy(interfaces).newInstance(new InvokerInvocationHandler(invoker));
+        return (T) Proxy.getProxy(interfaces).newInstance(new AsyncableInvocationHandler(invoker));
     }
 
     public <T> Invoker<T> getInvoker(T proxy, Class<T> type, URL url) {

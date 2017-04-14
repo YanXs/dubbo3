@@ -15,7 +15,6 @@
  */
 package com.alibaba.dubbo.config;
 
-import com.alibaba.dubbo.common.Constants;
 import com.alibaba.dubbo.config.support.Parameter;
 
 import java.util.List;
@@ -39,9 +38,6 @@ public class MethodConfig extends AbstractMethodConfig {
     // 是否重试
     private Boolean retry;
 
-    // 是否开启track,默认开启
-    private Boolean enableTrack = Boolean.TRUE;
-
     // 是否为可靠异步
     private Boolean reliable;
 
@@ -53,27 +49,6 @@ public class MethodConfig extends AbstractMethodConfig {
 
     // 是否需要开启stiky策略
     private Boolean sticky;
-
-    // 是否需要返回
-    private Boolean isReturn;
-
-    //异步调用回调实例
-    private Object oninvoke;
-
-    //异步调用回调方法
-    private String oninvokeMethod;
-
-    //异步调用回调实例
-    private Object onreturn;
-
-    //异步调用回调方法
-    private String onreturnMethod;
-
-    //异步调用异常回调实例
-    private Object onthrow;
-
-    //异步调用异常回调方法
-    private String onthrowMethod;
 
     private List<ArgumentConfig> arguments;
 
@@ -150,76 +125,6 @@ public class MethodConfig extends AbstractMethodConfig {
 
     public void setSticky(Boolean sticky) {
         this.sticky = sticky;
-    }
-
-    public Boolean getEnableTrack() {
-        return enableTrack;
-    }
-
-    public void setEnableTrack(Boolean enableTrack) {
-        this.enableTrack = enableTrack;
-    }
-
-    @Parameter(key = Constants.ON_RETURN_INSTANCE_KEY, excluded = true, attribute = true)
-    public Object getOnreturn() {
-        return onreturn;
-    }
-
-    public void setOnreturn(Object onreturn) {
-        this.onreturn = onreturn;
-    }
-
-    @Parameter(key = Constants.ON_RETURN_METHOD_KEY, excluded = true, attribute = true)
-    public String getOnreturnMethod() {
-        return onreturnMethod;
-    }
-
-    public void setOnreturnMethod(String onreturnMethod) {
-        this.onreturnMethod = onreturnMethod;
-    }
-
-    @Parameter(key = Constants.ON_THROW_INSTANCE_KEY, excluded = true, attribute = true)
-    public Object getOnthrow() {
-        return onthrow;
-    }
-
-    public void setOnthrow(Object onthrow) {
-        this.onthrow = onthrow;
-    }
-
-    @Parameter(key = Constants.ON_THROW_METHOD_KEY, excluded = true, attribute = true)
-    public String getOnthrowMethod() {
-        return onthrowMethod;
-    }
-
-    public void setOnthrowMethod(String onthrowMethod) {
-        this.onthrowMethod = onthrowMethod;
-    }
-
-    @Parameter(key = Constants.ON_INVOKE_INSTANCE_KEY, excluded = true, attribute = true)
-    public Object getOninvoke() {
-        return oninvoke;
-    }
-
-    public void setOninvoke(Object oninvoke) {
-        this.oninvoke = oninvoke;
-    }
-
-    @Parameter(key = Constants.ON_INVOKE_METHOD_KEY, excluded = true, attribute = true)
-    public String getOninvokeMethod() {
-        return oninvokeMethod;
-    }
-
-    public void setOninvokeMethod(String oninvokeMethod) {
-        this.oninvokeMethod = oninvokeMethod;
-    }
-
-    public Boolean isReturn() {
-        return isReturn;
-    }
-
-    public void setReturn(Boolean isReturn) {
-        this.isReturn = isReturn;
     }
 
 }
