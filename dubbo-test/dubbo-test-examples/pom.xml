@@ -19,7 +19,7 @@
 	<parent>
 		<groupId>com.alibaba</groupId>
 		<artifactId>dubbo-test</artifactId>
-		<version>3.0.0</version>
+		<version>3.0.1</version>
 	</parent>
 	<artifactId>dubbo-test-examples</artifactId>
 	<packaging>jar</packaging>
@@ -92,11 +92,6 @@
 		<dependency>
 			<groupId>com.alibaba</groupId>
 			<artifactId>dubbo-rpc-webservice</artifactId>
-			<version>${project.parent.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.alibaba</groupId>
-			<artifactId>dubbo-rpc-thrift</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
 		<dependency>

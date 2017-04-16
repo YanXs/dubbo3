@@ -14,4 +14,6 @@ public interface RpcTrackerEngine {
     Object serverRequestInterceptor();
 
     Object serverResponseInterceptor();
+
+    TraceIdReporter traceIdReporter();
 }

@@ -14,6 +14,4 @@ public interface RpcTracker {
     void trackServerResponse(ServerResponseAdapter serverResponseAdapter);
 
     RpcTrackerEngine trackerEngine();
-
-//    boolean isStrict();
 }

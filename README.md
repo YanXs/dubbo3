@@ -1,17 +1,24 @@
 # dubbo3
 
-dubbo3 fork [dubbox 2.8.4] (https://github.com/dangdangdotcom/dubbox) 
+dubbo3 基于 [dubbox 2.8.4] (https://github.com/dangdangdotcom/dubbox) 修改
 具体的使用方法请参考[dubbox 2.8.4] (https://github.com/dangdangdotcom/dubbox)
 
 ## dubbo3修改和增加的功能
 
+* 修改consumer端的异步实现方式，支持guava的ListenableFuture，使用异步调用api更加简单
+
 * 实现基于dubbo、hessian、http协议的分布式服务链路监控和追踪功能，可以将服务链路信息报告给[Zipkin](http://zipkin.io/),Zipkin的用户界面可以浏览全链路每一个服务的延迟
 
-* 修改了ExchangeChannel中基于dubbo协议同步调用的接口，便于添加Interceptor拦截request记录服务调用信息
+* 修改了ExchangeChannel中同步调用的接口，增加Interceptor接口拦截request记录服务调用信息
 
 * 添加了okhttp3支持hessian协议、http协议，目前对这两种协议的拦截基于OkhttpClient的Interceptor机制
 
-## 如何开启tracker
+### consumer异步调用
+
+
+
+
+### rpcTracker分布式链路追踪
 
 目前tracker的使用方式只支持spring xml配置,目前有如下两种方式
 

@@ -39,11 +39,11 @@ public final class RpcTrackerManager {
         rpcTrackerEngine = engine;
     }
 
-    public static synchronized RpcTracker createRpcTracker(URL url) {
-        String protocol = url.getProtocol();
+    public static synchronized RpcTracker getRpcTracker(URL url) {
         if (rpcTrackerEngine == null || rpcTrackerFactory == null) {
             return null;
         }
+        String protocol = url.getProtocol();
         RpcTracker rpcTracker = rpcTrackerMap.get(RpcProtocol.valueOf(protocol));
         if (rpcTracker == null) {
             rpcTracker = rpcTrackerFactory.createRpcTracker(url);
@@ -55,18 +55,9 @@ public final class RpcTrackerManager {
         return rpcTracker;
     }
 
-    public static synchronized RpcTracker getRpcTracker(URL url) {
-        String protocol = url.getProtocol();
-        RpcTracker rpcTracker = rpcTrackerMap.get(RpcProtocol.valueOf(protocol));
-        if (rpcTracker == null) {
-            rpcTracker = createRpcTracker(url);
-        }
-        return rpcTracker;
-    }
-
     public static RpcTracker mockRpcTracker(String address, String application) {
         String urlStr = "zipkin://" + address + "?application=" + application + "&collector=http";
         URL url = URL.valueOf(urlStr);
-        return createRpcTracker(url);
+        return getRpcTracker(url);
     }
 }
