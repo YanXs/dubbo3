@@ -15,8 +15,45 @@ dubbo3 基于 [dubbox 2.8.4] (https://github.com/dangdangdotcom/dubbox) 修改
 
 ### consumer异步调用
 
+#### Example 1: 基于guava ListenableFuture示例
+```java
+ListenableFuture<Complex> future = simpleService.async_getComplex("abc");
+Futures.addCallback(future, new FutureCallback<Complex>() {
+       @Override
+       public void onSuccess(Complex result) {
+                
+       }
 
+       @Override
+       public void onFailure(Throwable t) {
 
+       }
+});
+```
+dubbo3中异步实现思路是为同步接口生成对应的异步接口，consumer和provider使用生成的接口
+origin interface：
+```java
+public interface SimpleService {
+    Complex getComplex(String id);  
+}
+```
+async interface:
+```java
+public interface Unified_SimpleService extends SimpleService {
+  ListenableFuture<Complex> async_getComplex(String id);
+}
+```
+consumer配置
+```xml
+<dubbo:reference id="service" interface="Unified_SimpleService"/>
+```
+provider配置
+```xml
+<dubbo:service id="service" interface="Unified_SimpleService"/>
+```
+
+#### auto-async自动生成异步接口
+自动生成async interface需要使用[auto-async] (https://github.com/YanXs/auto-async)库
 
 ### rpcTracker分布式链路追踪
 
