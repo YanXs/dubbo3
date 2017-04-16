@@ -53,7 +53,8 @@ provider配置
 ```
 
 #### auto-async自动生成异步接口
-自动生成async interface需要使用[auto-async] (https://github.com/YanXs/auto-async)库
+自动生成async interface需要使用[auto-async] (https://github.com/YanXs/auto-async)
+
 
 ### rpcTracker分布式链路追踪
 
