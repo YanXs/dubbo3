@@ -1,5 +1,6 @@
 package com.alibaba.dubbo.rpc;
 
+import com.alibaba.dubbo.common.utils.NamedThreadFactory;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 
@@ -13,7 +14,8 @@ import java.util.concurrent.Future;
  */
 public class AsyncContext {
 
-    private static final ListeningExecutorService asyncExecutor = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(32));
+    private static final ListeningExecutorService asyncExecutor =
+            MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(16, new NamedThreadFactory("asyncContext", Boolean.TRUE)));
 
     private final AsyncMethodWrapper asyncMethodWrapper;
 
