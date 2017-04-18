@@ -23,9 +23,9 @@ import com.alibaba.dubbo.config.support.Parameter;
 import com.alibaba.dubbo.registry.support.AbstractRegistryFactory;
 import com.alibaba.dubbo.remoting.Codec;
 import com.alibaba.dubbo.remoting.Dispatcher;
-import com.alibaba.dubbo.remoting.transport.Transporter;
 import com.alibaba.dubbo.remoting.exchange.Exchanger;
 import com.alibaba.dubbo.remoting.telnet.TelnetHandler;
+import com.alibaba.dubbo.remoting.transport.Transporter;
 import com.alibaba.dubbo.rpc.Protocol;
 
 import java.util.Map;
@@ -453,13 +453,6 @@ public class ProtocolConfig extends AbstractConfig {
 
     public void setExtension(String extension) {
         this.extension = extension;
-    }
-
-    public void destory() {
-        if (name != null) {
-            ExtensionLoader.getExtensionLoader(Protocol.class).getExtension(name).destroy();
-            ;
-        }
     }
 
     public static void destroyAll() {

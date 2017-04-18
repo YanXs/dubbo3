@@ -8,10 +8,8 @@ import java.util.concurrent.Future;
 
 public class AsyncableInvocationHandler extends InvokerInvocationHandler {
 
-
     public AsyncableInvocationHandler(Invoker<?> handler) {
         super(handler);
-
     }
 
     public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
@@ -25,6 +23,7 @@ public class AsyncableInvocationHandler extends InvokerInvocationHandler {
     }
 
     private boolean isAsyncMethod(Method method) {
-        return Future.class.isAssignableFrom(method.getReturnType());
+        return Future.class.isAssignableFrom(method.getReturnType()) &&
+                method.getName().startsWith("async_");
     }
 }

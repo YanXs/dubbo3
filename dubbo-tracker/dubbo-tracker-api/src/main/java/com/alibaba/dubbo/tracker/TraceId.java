@@ -20,7 +20,22 @@ public class TraceId {
         return sampled;
     }
 
-    public String getTraceId() {
+    public String get() {
         return traceId;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+        TraceId that = (TraceId) object;
+        return traceId.equals(that.traceId);
+    }
+
+    @Override
+    public int hashCode() {
+        return traceId.hashCode();
     }
 }
