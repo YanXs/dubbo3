@@ -25,7 +25,6 @@ import com.alibaba.dubbo.common.utils.ConfigUtils;
 import com.alibaba.dubbo.common.utils.ReflectUtils;
 import com.alibaba.dubbo.common.utils.StringUtils;
 import com.alibaba.dubbo.config.support.Parameter;
-import com.alibaba.dubbo.rpc.AsyncContext;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;

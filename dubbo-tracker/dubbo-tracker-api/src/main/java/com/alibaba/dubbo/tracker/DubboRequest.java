@@ -1,4 +1,4 @@
-package com.alibaba.dubbo.tracker.dubbo;
+package com.alibaba.dubbo.tracker;
 
 
 import com.alibaba.dubbo.common.utils.StringUtils;
@@ -21,7 +21,7 @@ public class DubboRequest {
     public DubboRequest(Request request) {
         this.request = request;
         if (request.getData() instanceof RpcInvocation) {
-            isTraceable = true;
+            isTraceable = getAttachment(RpcAttachment.Sampled.getName()) != null;
             invocation = (RpcInvocation) request.getData();
         }
     }

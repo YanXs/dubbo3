@@ -1,4 +1,4 @@
-package com.alibaba.dubbo.tracker.dubbo;
+package com.alibaba.dubbo.tracker;
 
 import com.alibaba.dubbo.common.URL;
 import com.alibaba.dubbo.common.extension.Adaptive;

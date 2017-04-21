@@ -1,7 +1,4 @@
-package com.alibaba.dubbo.tracker.dubbo;
-
-import com.alibaba.dubbo.tracker.RpcAttachment;
-import com.alibaba.dubbo.tracker.RpcContextMethodNameProvider;
+package com.alibaba.dubbo.tracker;
 
 /**
  * @author Xs

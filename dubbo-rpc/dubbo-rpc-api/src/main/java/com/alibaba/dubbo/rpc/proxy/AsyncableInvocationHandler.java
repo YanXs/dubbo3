@@ -1,6 +1,7 @@
 package com.alibaba.dubbo.rpc.proxy;
 
 import com.alibaba.dubbo.rpc.AsyncContext;
+import com.alibaba.dubbo.rpc.AsyncTarget;
 import com.alibaba.dubbo.rpc.Invoker;
 
 import java.lang.reflect.Method;
@@ -16,8 +17,8 @@ public class AsyncableInvocationHandler extends InvokerInvocationHandler {
         if (!isAsyncMethod(method)) {
             return super.invoke(proxy, method, args);
         } else {
-            AsyncContext.AsyncMethodWrapper methodWrapper = new AsyncContext.AsyncMethodWrapper(proxy, method, args);
-            AsyncContext asyncContext = methodWrapper.startAsync();
+            AsyncTarget asyncTarget = new AsyncMethodWrapper(proxy, method, args);
+            AsyncContext asyncContext = asyncTarget.startAsync();
             return asyncContext.start();
         }
     }
@@ -25,5 +26,40 @@ public class AsyncableInvocationHandler extends InvokerInvocationHandler {
     private boolean isAsyncMethod(Method method) {
         return Future.class.isAssignableFrom(method.getReturnType()) &&
                 method.getName().startsWith("async_");
+    }
+
+    /**
+     * async method wrapper
+     */
+    public static class AsyncMethodWrapper implements AsyncTarget<Object> {
+
+        private final Object proxy;
+
+        private final Method wrapped;
+
+        private final Object[] args;
+
+        public AsyncMethodWrapper(Object proxy, Method wrapped, Object[] args) {
+            this.proxy = proxy;
+            this.wrapped = wrapped;
+            this.args = args;
+        }
+
+        private Method getCorrespondingSyncMethod() throws Exception {
+            String methodName = wrapped.getName();
+            Class<?>[] parameterTypes = wrapped.getParameterTypes();
+            String syncMethodName = methodName.substring(methodName.indexOf("async_") + "async_".length());
+            return proxy.getClass().getDeclaredMethod(syncMethodName, parameterTypes);
+        }
+
+        public AsyncContext<Object> startAsync() {
+            return new AsyncContext<Object>(this);
+        }
+
+        @Override
+        public Object invoke() throws Exception {
+            return getCorrespondingSyncMethod().invoke(proxy, args);
+        }
+
     }
 }

@@ -24,8 +24,8 @@ import com.alibaba.dubbo.remoting.exchange.ExchangeServer;
 import com.alibaba.dubbo.remoting.exchange.Exchanger;
 import com.alibaba.dubbo.remoting.message.Interceptor;
 import com.alibaba.dubbo.remoting.transport.DecodeHandler;
-import com.alibaba.dubbo.tracker.dubbo.DubboRequestInterceptorBuilder;
-import com.alibaba.dubbo.tracker.dubbo.DubboRequestSpanNameProvider;
+import com.alibaba.dubbo.tracker.DubboRequestInterceptorBuilder;
+import com.alibaba.dubbo.tracker.DubboRequestSpanNameProvider;
 
 /**
  * DefaultMessenger

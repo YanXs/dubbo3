@@ -1,67 +1,60 @@
 package com.alibaba.dubbo.rpc;
 
 import com.alibaba.dubbo.common.utils.NamedThreadFactory;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 
-import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 /**
  * @author Xs
  */
-public class AsyncContext {
+public class AsyncContext<T> {
 
     private static final ListeningExecutorService asyncExecutor =
             MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(16, new NamedThreadFactory("asyncContext", Boolean.TRUE)));
 
-    private final AsyncMethodWrapper asyncMethodWrapper;
+    private final AsyncTarget<T> asyncTarget;
 
-    public AsyncContext(AsyncMethodWrapper asyncMethodWrapper) {
-        this.asyncMethodWrapper = asyncMethodWrapper;
+    private final List<AsyncListener> listeners = new ArrayList<AsyncListener>();
+
+    private volatile boolean started;
+
+    public AsyncContext(AsyncTarget<T> asyncTarget) {
+        this.asyncTarget = asyncTarget;
     }
 
-    public Future start() {
-        return asyncExecutor.submit(new Callable<Object>() {
+    public ListenableFuture<T> start() {
+        ListenableFuture<T> future = asyncExecutor.submit(new Callable<T>() {
             @Override
-            public Object call() throws Exception {
-                return asyncMethodWrapper.invokeSyncMethod();
+            public T call() throws Exception {
+                return asyncTarget.invoke();
             }
         });
+        for (AsyncListener asyncListener : listeners) {
+            Futures.addCallback(future, asyncListener);
+        }
+        started = true;
+        return future;
     }
 
-    /**
-     * async method wrapper
-     */
-    public static class AsyncMethodWrapper {
+    public void addListener(ListenableFuture future, AsyncListener asyncListener) {
+        Futures.addCallback(future, asyncListener);
+    }
 
-        private final Object proxy;
+    public void addListener(AsyncListener listener) {
+        check();
+        listeners.add(listener);
+    }
 
-        private final Method wrapped;
-
-        private final Object[] args;
-
-        public AsyncMethodWrapper(Object proxy, Method wrapped, Object[] args) {
-            this.proxy = proxy;
-            this.wrapped = wrapped;
-            this.args = args;
-        }
-
-        private Method getCorrespondingSyncMethod() throws Exception {
-            String methodName = wrapped.getName();
-            Class<?>[] parameterTypes = wrapped.getParameterTypes();
-            String syncMethodName = methodName.substring(methodName.indexOf("async_") + "async_".length());
-            return proxy.getClass().getDeclaredMethod(syncMethodName, parameterTypes);
-        }
-
-        public Object invokeSyncMethod() throws Exception {
-            return getCorrespondingSyncMethod().invoke(proxy, args);
-        }
-
-        public AsyncContext startAsync() {
-            return new AsyncContext(this);
+    private void check() {
+        if (started) {
+            throw new IllegalStateException("listener should not be added after context started.");
         }
     }
 }

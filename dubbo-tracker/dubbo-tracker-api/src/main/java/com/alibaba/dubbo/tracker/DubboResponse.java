@@ -1,4 +1,4 @@
-package com.alibaba.dubbo.tracker.dubbo;
+package com.alibaba.dubbo.tracker;
 
 import com.alibaba.dubbo.remoting.message.Response;
 import com.alibaba.dubbo.rpc.RpcResult;
@@ -17,7 +17,7 @@ public class DubboResponse {
     public DubboResponse(Response response) {
         this.response = response;
         if (response.getResult() instanceof RpcResult) {
-            isTraceable = true;
+            isTraceable = result.getAttachment(RpcAttachment.Sampled.getName()) != null;
             result = (RpcResult) response.getResult();
         }
     }
