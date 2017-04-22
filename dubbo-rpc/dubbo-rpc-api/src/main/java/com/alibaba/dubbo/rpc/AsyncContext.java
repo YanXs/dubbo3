@@ -43,7 +43,7 @@ public class AsyncContext<T> {
         return future;
     }
 
-    public void addListener(ListenableFuture future, AsyncListener asyncListener) {
+    public static void addListener(ListenableFuture future, AsyncListener asyncListener) {
         Futures.addCallback(future, asyncListener);
     }
 

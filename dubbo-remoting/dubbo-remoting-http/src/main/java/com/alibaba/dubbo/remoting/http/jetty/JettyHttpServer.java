@@ -74,10 +74,12 @@ public class JettyHttpServer extends AbstractHttpServer {
         servletHolder.setInitOrder(2);
         context.setServletHandler(servletHandler);
 
-        Filter filter = servletFilterBuilder.build(url);
-        if (filter != null) {
-            FilterHolder filterHolder = new FilterHolder(filter);
-            context.addFilter(filterHolder, "/*", Handler.REQUEST);
+        if (servletFilterBuilder != null) {
+            Filter filter = servletFilterBuilder.build(url);
+            if (filter != null) {
+                FilterHolder filterHolder = new FilterHolder(filter);
+                context.addFilter(filterHolder, "/*", Handler.REQUEST);
+            }
         }
         ServletManager.getInstance().addServletContext(url.getPort(), context.getServletContext());
 
