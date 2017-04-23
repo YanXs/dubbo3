@@ -15,7 +15,7 @@ import java.util.concurrent.CountDownLatch;
  */
 public class NotifyClusterInvoker<T> extends AbstractClusterInvoker<T>{
 
-    private static final Logger logger = LoggerFactory.getLogger(BroadcastClusterInvoker.class);
+    private static final Logger logger = LoggerFactory.getLogger(NotifyClusterInvoker.class);
 
     public NotifyClusterInvoker(Directory<T> directory) {
         super(directory);

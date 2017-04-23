@@ -1,5 +1,6 @@
 package com.alibaba.dubbo.rpc;
 
+import com.alibaba.dubbo.common.utils.Assert;
 import com.alibaba.dubbo.common.utils.NamedThreadFactory;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -26,6 +27,7 @@ public class AsyncContext<T> {
     private volatile boolean started;
 
     public AsyncContext(AsyncTarget<T> asyncTarget) {
+        Assert.notNull(asyncTarget, "asyncTarget must not be null");
         this.asyncTarget = asyncTarget;
     }
 
@@ -41,6 +43,10 @@ public class AsyncContext<T> {
         }
         started = true;
         return future;
+    }
+
+    public static <T> ListenableFuture<T> start(Callable<T> callable){
+        return asyncExecutor.submit(callable);
     }
 
     public static void addListener(ListenableFuture future, AsyncListener asyncListener) {
