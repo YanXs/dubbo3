@@ -17,7 +17,7 @@ import java.util.concurrent.Executors;
 public class AsyncContext<T> {
 
     private static final ListeningExecutorService asyncExecutor =
-            MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(16, new NamedThreadFactory("asyncContext", Boolean.TRUE)));
+            MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(32, new NamedThreadFactory("asyncContext", Boolean.TRUE)));
 
     private final AsyncTarget<T> asyncTarget;
 
@@ -54,7 +54,7 @@ public class AsyncContext<T> {
 
     private void check() {
         if (started) {
-            throw new IllegalStateException("listener should not be added after context started.");
+            throw new IllegalStateException("listener should be added before context started.");
         }
     }
 }

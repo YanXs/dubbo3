@@ -25,6 +25,7 @@ import com.alibaba.dubbo.rpc.cluster.Directory;
  *
  * @author william.liangf
  */
+@Deprecated
 public class BroadcastCluster implements Cluster {
 
     public <T> Invoker<T> join(Directory<T> directory) throws RpcException {

@@ -40,7 +40,7 @@
     <!--<dubbo:protocol name="dubbo" serialization="nativejava"/>-->
     <!--<dubbo:protocol name="dubbo" serialization="hessian2"/>-->
     <!--<dubbo:protocol name="dubbo" serialization="fastjson"/>-->
-    <!--<dubbo:protocol name="dubbo" serialization="dubbo"/>-->
+    <dubbo:protocol name="dubbo" port="20884"/>
 
 
     <!--TODO according to the spring convention, we should use something like keep-alive-->
@@ -66,7 +66,7 @@
     <!--<dubbo:protocol name="hessian" port="8890" client="okHttpClient"/>-->
     <!--<dubbo:protocol name="webservice" port="8892"/>-->
 
-    <dubbo:service interface="com.alibaba.dubbo.demo.bid.BidService" ref="bidService" protocol="dubbo" timeout="10000"
+    <dubbo:service interface="com.alibaba.dubbo.demo.bid.BidService" ref="bidService" protocol="dubbo" timeout="10000" cluster="notify"
                    connections="2" group="02"/>
 
     <!-- we add the group property since there's another annotation-configured service impl: com.alibaba.dubbo.demo.user.facade.AnnotationDrivenUserRestServiceImpl -->
