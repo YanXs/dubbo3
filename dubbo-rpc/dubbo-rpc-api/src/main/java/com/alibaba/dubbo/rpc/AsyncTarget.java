@@ -2,7 +2,7 @@ package com.alibaba.dubbo.rpc;
 
 public interface AsyncTarget<T> {
 
-    AsyncContext<T> startAsync();
+    AsyncContext<T> async();
 
     T invoke() throws Exception;
 }

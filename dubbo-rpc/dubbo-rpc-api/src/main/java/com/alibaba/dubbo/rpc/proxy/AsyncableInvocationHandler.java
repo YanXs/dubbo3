@@ -18,8 +18,7 @@ public class AsyncableInvocationHandler extends InvokerInvocationHandler {
             return super.invoke(proxy, method, args);
         } else {
             AsyncTarget asyncTarget = new AsyncMethodWrapper(proxy, method, args);
-            AsyncContext asyncContext = asyncTarget.startAsync();
-            return asyncContext.start();
+            return asyncTarget.async().start();
         }
     }
 
@@ -52,7 +51,7 @@ public class AsyncableInvocationHandler extends InvokerInvocationHandler {
             return proxy.getClass().getDeclaredMethod(syncMethodName, parameterTypes);
         }
 
-        public AsyncContext<Object> startAsync() {
+        public AsyncContext<Object> async() {
             return new AsyncContext<Object>(this);
         }
 
@@ -60,6 +59,5 @@ public class AsyncableInvocationHandler extends InvokerInvocationHandler {
         public Object invoke() throws Exception {
             return getCorrespondingSyncMethod().invoke(proxy, args);
         }
-
     }
 }

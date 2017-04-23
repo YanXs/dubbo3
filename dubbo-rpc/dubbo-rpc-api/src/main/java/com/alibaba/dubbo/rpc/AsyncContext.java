@@ -2,10 +2,7 @@ package com.alibaba.dubbo.rpc;
 
 import com.alibaba.dubbo.common.utils.Assert;
 import com.alibaba.dubbo.common.utils.NamedThreadFactory;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.MoreExecutors;
+import com.google.common.util.concurrent.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +42,19 @@ public class AsyncContext<T> {
         return future;
     }
 
-    public static <T> ListenableFuture<T> start(Callable<T> callable){
+    public ListenableFuture<T> start(AsyncListener<T> singleListener) {
+        ListenableFuture<T> future = asyncExecutor.submit(new Callable<T>() {
+            @Override
+            public T call() throws Exception {
+                return asyncTarget.invoke();
+            }
+        });
+        Futures.addCallback(future, singleListener);
+        started = true;
+        return future;
+    }
+
+    public static <T> ListenableFuture<T> start(Callable<T> callable) {
         return asyncExecutor.submit(callable);
     }
 

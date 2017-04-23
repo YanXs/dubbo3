@@ -13,7 +13,7 @@ import java.util.concurrent.CountDownLatch;
 /**
  * @author Xs
  */
-public class NotifyClusterInvoker<T> extends AbstractClusterInvoker<T>{
+public class NotifyClusterInvoker<T> extends AbstractClusterInvoker<T> {
 
     private static final Logger logger = LoggerFactory.getLogger(NotifyClusterInvoker.class);
 
@@ -32,10 +32,8 @@ public class NotifyClusterInvoker<T> extends AbstractClusterInvoker<T>{
         final CountDownLatch latch = new CountDownLatch(invokers.size());
         AsyncResultProcessor asyncResultProcessor = new AsyncResultProcessor(invokers.size());
         for (final Invoker<T> invoker : invokers) {
-            AsyncInvocation asyncInvocation = new AsyncInvocation(invoker, invocation, latch);
-            AsyncContext<Result> asyncContext = asyncInvocation.startAsync();
-            asyncContext.addListener(asyncInvocation);
-            asyncContext.start();
+            AsyncInvocation<Result> asyncInvocation = new AsyncInvocationImpl(invoker, invocation, latch);
+            asyncInvocation.async().start(asyncInvocation);
             asyncResultProcessor.addAsyncInvocation(asyncInvocation);
         }
         try {
@@ -51,7 +49,7 @@ public class NotifyClusterInvoker<T> extends AbstractClusterInvoker<T>{
     }
 
 
-    private class AsyncInvocation implements AsyncTarget<Result>, AsyncListener<Result> {
+    private class AsyncInvocationImpl implements AsyncInvocation<Result> {
 
         private final Invoker<T> invoker;
 
@@ -63,14 +61,14 @@ public class NotifyClusterInvoker<T> extends AbstractClusterInvoker<T>{
 
         private RpcException exception;
 
-        public AsyncInvocation(Invoker<T> invoker, Invocation invocation, CountDownLatch latch) {
+        public AsyncInvocationImpl(Invoker<T> invoker, Invocation invocation, CountDownLatch latch) {
             this.invoker = invoker;
             this.invocation = invocation;
             this.latch = latch;
         }
 
         @Override
-        public AsyncContext<Result> startAsync() {
+        public AsyncContext<Result> async() {
             return new AsyncContext<Result>(this);
         }
 
@@ -128,13 +126,13 @@ public class NotifyClusterInvoker<T> extends AbstractClusterInvoker<T>{
 
         public void processResult() {
             for (AsyncInvocation invocation : asyncInvocations) {
-                if (invocation.getException() != null) {
-                    exception = invocation.getException();
+                exception = invocation.getException();
+                if (exception != null) {
                     break;
                 }
             }
             if (exception == null) {
-                result = asyncInvocations.get(0).getResult();
+                result = (Result) asyncInvocations.get(0).getResult();
             }
         }
 
