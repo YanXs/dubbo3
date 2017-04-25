@@ -120,7 +120,7 @@ NotifyCluster采用异步模式并行调用invoker，时间复杂度可以接近
 
 <dependency>
     <groupId>net.nightawk</groupId>
-    <artifactId>nightawk-dubbo</artifactId>
+    <artifactId>nightawk-dubbo3</artifactId>
     <version>1.0.0.RELEASE</version>
 </dependency>
 ```
