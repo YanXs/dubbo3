@@ -7,6 +7,8 @@ dubbo3 基于 [dubbox 2.8.4] (https://github.com/dangdangdotcom/dubbox) 修改
 
 * 修改consumer端的异步实现方式，支持guava的ListenableFuture，使用异步调用api更加简单
 
+* 添加NotifyCluster和NotifyClusterInvoker代替BroadcastCluster和BroadcastClusterInvoker实现广播
+
 * 实现基于dubbo、hessian、http协议的分布式服务链路监控和追踪功能，可以将服务链路信息报告给[Zipkin](http://zipkin.io/),Zipkin的用户界面可以浏览全链路每一个服务的延迟
 
 * 修改了ExchangeChannel中同步调用的接口，增加Interceptor接口拦截request记录服务调用信息
@@ -54,6 +56,13 @@ provider配置
 
 #### auto-async自动生成异步接口
 自动生成async interface需要使用[auto-async] (https://github.com/YanXs/auto-async)
+
+### NotifyCluster广播
+dubbo中使用BroadcastCluster实现广播功能，实现方式是顺序调用所有的invoker。这种方式带来的问题是效率低，时间复杂度O(m*n),m代表invoker数量，n代表方法执行时间
+NotifyCluster采用异步模式并行调用invoker，时间复杂度可以接近O(n),当然取决于线程数量和invoker的数量，但是相比于BroadcastCluster线性调用性能高出很多
+
+使用方式与broadcastCluster相同，只需要cluster=notify即可
+具体实现参考NotifyClusterInvoker
 
 
 ### rpcTracker分布式链路追踪
