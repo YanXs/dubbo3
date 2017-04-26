@@ -33,6 +33,7 @@ Futures.addCallback(future, new FutureCallback<Complex>() {
 });
 ```
 dubbo3中异步实现思路是为同步接口生成对应的异步接口，consumer和provider使用生成的接口
+在客户端的代理InvocationHandler中调用同步接口， 具体实现参考AsyncableInvocationHandler
 origin interface：
 ```java
 public interface SimpleService {
@@ -56,7 +57,13 @@ provider配置
 
 #### auto-async自动生成异步接口
 自动生成async interface需要使用[auto-async] (https://github.com/YanXs/auto-async)
-
+```xml
+<dependency>
+    <groupId>net.vakilla</groupId>
+    <artifactId>auto-async</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
 ### NotifyCluster广播
 dubbo中使用BroadcastCluster实现广播功能，实现方式是顺序调用所有的invoker。这种方式带来的问题是效率低，时间复杂度O(m*n),m代表invoker数量，n代表方法执行时间
 NotifyCluster采用异步模式并行调用invoker，时间复杂度可以接近O(n),当然取决于线程数量和invoker的数量，但是相比于BroadcastCluster线性调用性能高出很多

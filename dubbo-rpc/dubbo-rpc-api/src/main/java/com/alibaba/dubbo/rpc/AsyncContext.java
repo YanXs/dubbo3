@@ -7,8 +7,8 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 
@@ -22,7 +22,7 @@ public class AsyncContext<T> {
 
     private final AsyncTarget<T> asyncTarget;
 
-    private final List<AsyncListener> listeners = new ArrayList<AsyncListener>();
+    private final Set<AsyncListener> listeners = new HashSet<AsyncListener>();
 
     private volatile boolean started;
 
@@ -47,10 +47,6 @@ public class AsyncContext<T> {
 
     public static <T> ListenableFuture<T> start(Callable<T> callable) {
         return asyncExecutor.submit(callable);
-    }
-
-    public static void addListener(ListenableFuture future, AsyncListener asyncListener) {
-        Futures.addCallback(future, asyncListener);
     }
 
     public AsyncContext addListener(AsyncListener listener) {
