@@ -3,31 +3,36 @@ package com.alibaba.dubbo.remoting.exchange.support.header;
 
 import com.alibaba.dubbo.remoting.message.Response;
 
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 /**
- * ADD CALLBACK HERE ??
+ * @author Xs.
  */
 public class PendingReply {
 
-    private volatile Long savedReplyTo;
+    private volatile Long messageId;
 
-    private final LinkedBlockingQueue<Response> queue;
+    private final BlockingQueue<Response> queue = new ArrayBlockingQueue<Response>(1);
 
-    public PendingReply(Long savedReplyTo) {
-        this.savedReplyTo = savedReplyTo;
-        this.queue = new LinkedBlockingQueue<Response>();
+    public Long getMessageId() {
+        return messageId;
     }
 
-    public Long getSavedReplyTo() {
-        return savedReplyTo;
+    public void setMessageId(Long messageId) {
+        this.messageId = messageId;
     }
 
-    public void setSavedReplyTo(Long savedReplyTo) {
-        this.savedReplyTo = savedReplyTo;
+    public void reply(Response reply) {
+        this.queue.add(reply);
     }
 
-    public LinkedBlockingQueue<Response> getQueue() {
-        return queue;
+    public Response get(long timeout, TimeUnit unit) throws InterruptedException {
+        return (timeout <= 0) ? queue.take() : queue.poll(timeout, unit);
+    }
+
+    public Response get() throws InterruptedException {
+        return queue.take();
     }
 }

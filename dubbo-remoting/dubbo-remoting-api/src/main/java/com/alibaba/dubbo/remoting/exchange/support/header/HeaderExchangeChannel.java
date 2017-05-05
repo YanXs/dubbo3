@@ -30,8 +30,6 @@ import com.alibaba.dubbo.remoting.transport.Channel;
 import com.alibaba.dubbo.remoting.transport.ChannelHandler;
 
 import java.net.InetSocketAddress;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -45,7 +43,7 @@ final class HeaderExchangeChannel implements ExchangeChannel {
 
     private static final String CHANNEL_KEY = HeaderExchangeChannel.class.getName() + ".CHANNEL";
 
-    public static final ConcurrentHashMap<Long, PendingReply> REPLY_HOLDER = new ConcurrentHashMap<Long, PendingReply>();
+    private final ReplyManager replyManager = ReplyManager.get();
 
     private final Channel channel;
 
@@ -56,6 +54,7 @@ final class HeaderExchangeChannel implements ExchangeChannel {
             throw new IllegalArgumentException("channel == null");
         }
         this.channel = channel;
+        replyManager.initReplyCounter(channel);
     }
 
     static HeaderExchangeChannel getOrAddChannel(Channel ch) {
@@ -110,23 +109,23 @@ final class HeaderExchangeChannel implements ExchangeChannel {
             throw new RemotingException(this.getLocalAddress(), null, "Failed to send request " + request +
                     ", cause: The channel " + this + " is closed!");
         }
-        PendingReply pendingReply = new PendingReply(request.getId());
-        addPendingReply(pendingReply);
+        PendingReply pendingReply = new PendingReply();
+        pendingReply.setMessageId(request.getId());
+        replyManager.addPendingReply(request.getId(), pendingReply, channel);
         long startTimeMs = System.currentTimeMillis();
         try {
             channel.send(request);
         } catch (RemotingException e) {
-            removePendingReply(pendingReply);
+            replyManager.removePendingReply(pendingReply, channel);
             throw e;
         }
-        LinkedBlockingQueue<Response> reply = pendingReply.getQueue();
         Response response = null;
         try {
-            response = (timeout <= 0) ? reply.take() : reply.poll(timeout, TimeUnit.MILLISECONDS);
+            response = pendingReply.get(timeout, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             throw new RemotingException(this, e);
         } finally {
-            removePendingReply(pendingReply);
+            replyManager.removePendingReply(pendingReply, channel);
         }
         // timeout
         if (response == null) {
@@ -142,24 +141,6 @@ final class HeaderExchangeChannel implements ExchangeChannel {
                 + " -> " + channel.getRemoteAddress();
     }
 
-    private static void addPendingReply(PendingReply pendingReply) {
-        REPLY_HOLDER.putIfAbsent(pendingReply.getSavedReplyTo(), pendingReply);
-    }
-
-    private static void removePendingReply(PendingReply pendingReply) {
-        REPLY_HOLDER.remove(pendingReply.getSavedReplyTo());
-    }
-
-    public static void handleResponse(Response response) {
-        PendingReply pendingReply = REPLY_HOLDER.get(response.getId());
-        if (pendingReply == null) {
-            logger.warn("Response received after timeout for " + response);
-            return;
-        }
-        LinkedBlockingQueue<Response> replyHandoff = pendingReply.getQueue();
-        replyHandoff.add(response);
-    }
-
     public boolean isClosed() {
         return closed;
     }
@@ -169,6 +150,8 @@ final class HeaderExchangeChannel implements ExchangeChannel {
             channel.close();
         } catch (Throwable e) {
             logger.warn(e.getMessage(), e);
+        } finally {
+            replyManager.destroyReplyCounter(channel);
         }
     }
 
@@ -192,7 +175,8 @@ final class HeaderExchangeChannel implements ExchangeChannel {
     }
 
     private boolean shouldWait(long start, long timeout) {
-        return (System.currentTimeMillis() - start < timeout) && !REPLY_HOLDER.isEmpty();
+        return System.currentTimeMillis() - start <= timeout &&
+                replyManager.isChannelHoldingReplies(channel);
     }
 
     public InetSocketAddress getLocalAddress() {

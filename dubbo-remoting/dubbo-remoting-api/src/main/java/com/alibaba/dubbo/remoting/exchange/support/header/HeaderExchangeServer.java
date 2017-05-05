@@ -62,6 +62,8 @@ public class HeaderExchangeServer implements ExchangeServer {
 
     private final Server server;
 
+    private final ReplyManager replyManager = ReplyManager.get();
+
     private volatile boolean closed = false;
 
     public HeaderExchangeServer(Server server) {
@@ -86,7 +88,13 @@ public class HeaderExchangeServer implements ExchangeServer {
     }
 
     private boolean isRunning() {
-        return !HeaderExchangeChannel.REPLY_HOLDER.isEmpty();
+        Collection<Channel> channels = getChannels();
+        for (Channel channel : channels) {
+            if (replyManager.isChannelHoldingReplies(channel)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void close() {
@@ -125,7 +133,7 @@ public class HeaderExchangeServer implements ExchangeServer {
                 if (channel.isConnected())
                     channel.send(request, getUrl().getParameter(Constants.CHANNEL_READONLYEVENT_SENT_KEY, true));
             } catch (RemotingException e) {
-                logger.warn("send connot write messge error.", e);
+                logger.warn("send cannot write message error.", e);
             }
         }
     }

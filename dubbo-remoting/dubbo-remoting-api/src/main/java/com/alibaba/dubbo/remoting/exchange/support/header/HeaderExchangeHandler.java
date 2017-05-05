@@ -54,6 +54,8 @@ public class HeaderExchangeHandler implements ChannelHandlerDelegate {
 
     private final ExchangeHandler handler;
 
+    private final ReplyManager replyManager = ReplyManager.get();
+
     public HeaderExchangeHandler(ExchangeHandler handler) {
         if (handler == null) {
             throw new IllegalArgumentException("handler == null");
@@ -94,7 +96,10 @@ public class HeaderExchangeHandler implements ChannelHandlerDelegate {
 
     private void handleResponse(Response response) throws RemotingException {
         if (response != null && !response.isHeartbeat()) {
-            HeaderExchangeChannel.handleResponse(response);
+            PendingReply pendingReply = replyManager.getPendingReply(response.getId());
+            if (pendingReply != null) {
+                pendingReply.reply(response);
+            }
         }
     }
 
