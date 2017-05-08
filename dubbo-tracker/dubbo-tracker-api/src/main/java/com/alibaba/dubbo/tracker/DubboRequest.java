@@ -18,11 +18,15 @@ public class DubboRequest {
 
     private boolean isTraceable;
 
-    public DubboRequest(Request request) {
+    public enum Type {
+        IN, OUT
+    }
+
+    public DubboRequest(Request request, Type type) {
         this.request = request;
         if (request.getData() instanceof RpcInvocation) {
-            isTraceable = getAttachment(RpcAttachment.Sampled.getName()) != null;
             invocation = (RpcInvocation) request.getData();
+            isTraceable = (type == Type.OUT || getAttachment(RpcAttachment.Sampled.getName()) != null);
         }
     }
 

@@ -40,7 +40,7 @@
     <!--<dubbo:protocol name="dubbo" serialization="nativejava"/>-->
     <!--<dubbo:protocol name="dubbo" serialization="hessian2"/>-->
     <!--<dubbo:protocol name="dubbo" serialization="fastjson"/>-->
-    <dubbo:protocol name="dubbo" port="20884"/>
+    <dubbo:protocol name="dubbo" port="20888"/>
 
 
     <!--TODO according to the spring convention, we should use something like keep-alive-->

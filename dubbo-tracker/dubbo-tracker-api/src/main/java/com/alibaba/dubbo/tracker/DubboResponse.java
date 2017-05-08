@@ -10,24 +10,17 @@ public class DubboResponse {
 
     private final Response response;
 
-    private boolean isTraceable;
-
-    private volatile RpcResult result;
+    private RpcResult result;
 
     public DubboResponse(Response response) {
         this.response = response;
         if (response.getResult() instanceof RpcResult) {
-            isTraceable = result.getAttachment(RpcAttachment.Sampled.getName()) != null;
             result = (RpcResult) response.getResult();
         }
     }
 
     public boolean returnOK() {
         return response.getStatus() == Response.OK && !result.hasException();
-    }
-
-    public boolean isTraceable() {
-        return isTraceable;
     }
 
     public String exceptionMessage() {
