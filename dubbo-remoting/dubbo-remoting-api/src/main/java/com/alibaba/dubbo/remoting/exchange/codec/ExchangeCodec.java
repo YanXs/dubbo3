@@ -79,7 +79,6 @@ public class ExchangeCodec extends TelnetCodec {
         if (logger.isTraceEnabled()) {
             logger.trace("the resulting byte size of encoding is " + buffer.readableBytes());
         }
-
     }
 
     public Object decode(Channel channel, ChannelBuffer buffer) throws IOException {

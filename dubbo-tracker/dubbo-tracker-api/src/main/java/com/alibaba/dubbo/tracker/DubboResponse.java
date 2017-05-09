@@ -2,6 +2,7 @@ package com.alibaba.dubbo.tracker;
 
 import com.alibaba.dubbo.remoting.message.Response;
 import com.alibaba.dubbo.rpc.RpcResult;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 /**
  * @author Xs.
@@ -20,7 +21,8 @@ public class DubboResponse {
     }
 
     public boolean returnOK() {
-        return response.getStatus() == Response.OK && !result.hasException();
+        return response.getStatus() == Response.OK
+                && !result.hasException();
     }
 
     public String exceptionMessage() {
@@ -28,9 +30,9 @@ public class DubboResponse {
             return "response OK";
         }
         Throwable throwable = result.getException();
-        if (throwable instanceof NullPointerException) {
-            return "NullPointerException";
+        if (throwable != null) {
+            return ExceptionUtils.getStackTrace(throwable);
         }
-        return throwable.getMessage();
+        return "response " + response.getStatus();
     }
 }
