@@ -67,7 +67,6 @@ public class ForkingClusterInvoker<T> extends AbstractClusterInvoker<T>{
                 }
             }
         }
-        RpcContext.getContext().setInvokers((List)selected);
         final AtomicInteger count = new AtomicInteger();
         final BlockingQueue<Object> ref = new LinkedBlockingQueue<Object>();
         for (final Invoker<T> invoker : selected) {

@@ -415,8 +415,6 @@ public class ConfigTest {
                 } catch (RpcException expected) {
                     assertThat(expected.getMessage(), containsString("Tried 3 times"));
                 }
-
-                assertEquals(3, RpcContext.getContext().getUrls().size());
             } finally {
                 ctx.stop();
                 ctx.close();
@@ -447,8 +445,6 @@ public class ConfigTest {
                 } catch (RpcException expected) {
                     assertThat(expected.getMessage(), containsString("Tried 1 times"));
                 }
-
-                assertEquals(1, RpcContext.getContext().getUrls().size());
             } finally {
                 ctx.stop();
                 ctx.close();
