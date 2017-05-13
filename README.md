@@ -5,7 +5,7 @@ dubbo3 基于 [dubbox 2.8.4] (https://github.com/dangdangdotcom/dubbox) 修改
 
 ## dubbo3修改和增加的功能
 
-* 修改consumer端的异步实现方式，支持guava的ListenableFuture，使用异步调用api更加简单
+* 重新设计实现了consumer端的异步实现方式，支持guava的ListenableFuture，使用异步调用api更加简单
 
 * 添加NotifyCluster和NotifyClusterInvoker代替BroadcastCluster和BroadcastClusterInvoker实现广播
 
@@ -40,7 +40,7 @@ public interface SimpleService {
     Complex getComplex(String id);  
 }
 ```
-async interface:
+async interface:(使用auto-async自动生成)
 ```java
 public interface Unified_SimpleService extends SimpleService {
   ListenableFuture<Complex> async_getComplex(String id);
