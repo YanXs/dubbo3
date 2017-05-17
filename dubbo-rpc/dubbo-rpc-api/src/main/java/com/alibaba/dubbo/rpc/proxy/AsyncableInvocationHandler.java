@@ -1,7 +1,7 @@
 package com.alibaba.dubbo.rpc.proxy;
 
 import com.alibaba.dubbo.rpc.AsyncCommand;
-import com.alibaba.dubbo.rpc.AsyncTarget;
+import com.alibaba.dubbo.rpc.AsyncRunnable;
 import com.alibaba.dubbo.rpc.Invoker;
 
 import java.lang.reflect.Method;
@@ -17,8 +17,8 @@ public class AsyncableInvocationHandler extends InvokerInvocationHandler {
         if (!isAsyncMethod(method)) {
             return super.invoke(proxy, method, args);
         } else {
-            AsyncTarget asyncTarget = new AsyncMethodWrapper(proxy, method, args);
-            return asyncTarget.async().execute();
+            AsyncRunnable asyncRunnable = new AsyncMethodWrapper(proxy, method, args);
+            return asyncRunnable.async().execute();
         }
     }
 
@@ -30,7 +30,7 @@ public class AsyncableInvocationHandler extends InvokerInvocationHandler {
     /**
      * async method wrapper
      */
-    class AsyncMethodWrapper implements AsyncTarget<Object> {
+    class AsyncMethodWrapper implements AsyncRunnable<Object> {
 
         private final Object proxy;
 

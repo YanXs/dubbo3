@@ -1,6 +1,6 @@
 package com.alibaba.dubbo.rpc;
 
-public interface AsyncTarget<T> {
+public interface AsyncRunnable<T> {
 
     AsyncCommand<T> async();
 

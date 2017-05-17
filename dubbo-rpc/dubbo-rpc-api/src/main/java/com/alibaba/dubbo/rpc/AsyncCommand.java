@@ -22,7 +22,7 @@ public class AsyncCommand<T> {
     private static final ListeningExecutorService asyncCommandExecutor =
             MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(32, new NamedThreadFactory("asyncCommand", Boolean.TRUE)));
 
-    private final AsyncTarget<T> asyncTarget;
+    private final AsyncRunnable<T> asyncRunnable;
 
     private final Set<AsyncListener> listeners = new HashSet<AsyncListener>(8);
 
@@ -34,9 +34,9 @@ public class AsyncCommand<T> {
         FINISHED
     }
 
-    public AsyncCommand(AsyncTarget<T> asyncTarget) {
-        Assert.notNull(asyncTarget, "asyncTarget must not be null");
-        this.asyncTarget = asyncTarget;
+    public AsyncCommand(AsyncRunnable<T> asyncRunnable) {
+        Assert.notNull(asyncRunnable, "asyncTarget must not be null");
+        this.asyncRunnable = asyncRunnable;
     }
 
     public ListenableFuture<T> execute() {
@@ -45,7 +45,7 @@ public class AsyncCommand<T> {
             @Override
             public T call() throws Exception {
                 try {
-                    return asyncTarget.run();
+                    return asyncRunnable.run();
                 } finally {
                     state.compareAndSet(State.STARTED, State.FINISHED);
                 }
