@@ -32,10 +32,8 @@ public class NotifyClusterInvoker<T> extends AbstractClusterInvoker<T> {
         AsyncResultProcessor asyncResultProcessor = new AsyncResultProcessor(invokers.size());
         for (final Invoker<T> invoker : invokers) {
             AsyncInvocation<Result> asyncInvocation = new AsyncInvocationImpl(invoker, invocation, latch);
-            asyncInvocation
-                    .async()
-                    .addListener(asyncInvocation)
-                    .start();
+            AsyncCommand<Result> command = asyncInvocation.async();
+            command.addListener(asyncInvocation).execute();
             asyncResultProcessor.addAsyncInvocation(asyncInvocation);
         }
         try {
@@ -70,12 +68,12 @@ public class NotifyClusterInvoker<T> extends AbstractClusterInvoker<T> {
         }
 
         @Override
-        public AsyncContext<Result> async() {
-            return new AsyncContext<Result>(this);
+        public AsyncCommand<Result> async() {
+            return new AsyncCommand<Result>(this);
         }
 
         @Override
-        public Result invoke() throws Exception {
+        public Result run() throws Exception {
             return doInvoke(invoker, invocation);
         }
 
