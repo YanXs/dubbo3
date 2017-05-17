@@ -5,7 +5,7 @@ dubbo3 基于 [dubbox 2.8.4] (https://github.com/dangdangdotcom/dubbox) 修改
 
 ## dubbo3修改和增加的功能
 
-* 修改consumer端的异步实现方式，支持guava的ListenableFuture，使用异步调用api更加简单
+* 重新设计实现了consumer端的异步实现方式，支持guava的ListenableFuture，使用异步调用api更加简单
 
 * 添加NotifyCluster和NotifyClusterInvoker代替BroadcastCluster和BroadcastClusterInvoker实现广播
 
@@ -33,14 +33,14 @@ Futures.addCallback(future, new FutureCallback<Complex>() {
 });
 ```
 dubbo3中异步实现思路是为同步接口生成对应的异步接口，consumer和provider使用生成的接口
-在客户端的代理InvocationHandler中调用同步接口， 具体实现参考AsyncableInvocationHandler
-origin interface：
+在客户端的代理InvocationHandler中调用同步接口， 具体实现参考AsyncableInvocationHandler  
+origin interface:  
 ```java
 public interface SimpleService {
     Complex getComplex(String id);  
 }
 ```
-async interface:
+async interface:(使用auto-async自动生成)
 ```java
 public interface Unified_SimpleService extends SimpleService {
   ListenableFuture<Complex> async_getComplex(String id);
@@ -109,30 +109,30 @@ NotifyCluster采用异步模式并行调用invoker，时间复杂度可以接近
 ## 依赖
 
 服务链路追踪主要基于Zipkin的 [brave] (https://github.com/openzipkin/brave)
-链路追踪功能分离到另一个项目 [nightawk] (https://github.com/YanXs/nighthawk)
+链路追踪功能参考另一个项目 [nightawk] (https://github.com/YanXs/nighthawk)
 项目中需要引用
 
 ```xml
 <dependency>
     <groupId>com.alibaba</groupId>
     <artifactId>dubbo</artifactId>
-    <version>3.0.0</version>
+    <version>3.0.1</version>
 </dependency>
 
 <dependency>
-    <groupId>net.nightawk</groupId>
+    <groupId>io.vakilla.nightawk</groupId>
     <artifactId>nightawk-core</artifactId>
     <version>1.0.0.RELEASE</version>
 </dependency>
 
 <dependency>
-    <groupId>net.nightawk</groupId>
+    <groupId>io.vakilla.nightawk</groupId>
     <artifactId>nightawk-dubbo3</artifactId>
     <version>1.0.0.RELEASE</version>
 </dependency>
 ```
 
-以上依赖需要自己使用maven编译打包
+以上依赖需要自己使用maven编译打包(以后会提交到maven中央库)
 
 
 

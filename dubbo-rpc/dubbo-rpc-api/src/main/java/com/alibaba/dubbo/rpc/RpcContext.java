@@ -15,13 +15,12 @@
  */
 package com.alibaba.dubbo.rpc;
 
-import com.alibaba.dubbo.common.Constants;
 import com.alibaba.dubbo.common.URL;
 import com.alibaba.dubbo.common.utils.NetUtils;
 
 import java.net.InetSocketAddress;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Thread local context. (API, ThreadLocal, ThreadSafe)
@@ -42,6 +41,7 @@ public class RpcContext {
             return new RpcContext();
         }
     };
+
     /**
      * get context.
      *
@@ -59,8 +59,6 @@ public class RpcContext {
     public static void removeContext() {
         LOCAL.remove();
     }
-
-    private List<URL> urls;
 
     private URL url;
 
@@ -134,13 +132,6 @@ public class RpcContext {
         this.response = response;
     }
 
-    public List<URL> getUrls() {
-        return urls == null && url != null ? (List<URL>) Collections.singletonList(url) : urls;
-    }
-
-    public void setUrls(List<URL> urls) {
-        this.urls = urls;
-    }
 
     public URL getUrl() {
         return url;
@@ -448,17 +439,6 @@ public class RpcContext {
         return values.get(key);
     }
 
-    public RpcContext setInvokers(List<Invoker<?>> invokers) {
-        if (invokers != null && invokers.size() > 0) {
-            List<URL> urls = new ArrayList<URL>(invokers.size());
-            for (Invoker<?> invoker : invokers) {
-                urls.add(invoker.getUrl());
-            }
-            setUrls(urls);
-        }
-        return this;
-    }
-
     public RpcContext setInvoker(Invoker<?> invoker) {
         if (invoker != null) {
             setUrl(invoker.getUrl());
@@ -474,5 +454,4 @@ public class RpcContext {
         }
         return this;
     }
-
 }
