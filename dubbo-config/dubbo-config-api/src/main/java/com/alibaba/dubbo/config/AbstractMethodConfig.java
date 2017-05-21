@@ -40,6 +40,8 @@ public abstract class AbstractMethodConfig extends AbstractConfig {
     // 最大并发调用
     protected Integer actives;
 
+    protected Integer threads;
+
     // 负载均衡
     protected String loadbalance;
 
@@ -103,6 +105,14 @@ public abstract class AbstractMethodConfig extends AbstractConfig {
 
     public void setActives(Integer actives) {
         this.actives = actives;
+    }
+
+    public Integer getThreads() {
+        return threads;
+    }
+
+    public void setThreads(Integer threads) {
+        this.threads = threads;
     }
 
     public Boolean getSent() {

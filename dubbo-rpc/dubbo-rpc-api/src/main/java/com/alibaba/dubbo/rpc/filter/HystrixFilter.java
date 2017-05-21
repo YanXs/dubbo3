@@ -6,6 +6,8 @@ import com.alibaba.dubbo.rpc.*;
 import com.netflix.hystrix.*;
 
 /**
+ * for test now
+ *
  * @author Xs
  */
 @Activate(group = Constants.CONSUMER, value = "threads")
