@@ -72,7 +72,7 @@ public class ListenerInvokerWrapper<T> implements Invoker<T> {
 
     @Override
     public String toString() {
-        return getInterface() + " -> " + getUrl() == null ? " " : getUrl().toString();
+        return getUrl().toString();
     }
 
     public void destroy() {

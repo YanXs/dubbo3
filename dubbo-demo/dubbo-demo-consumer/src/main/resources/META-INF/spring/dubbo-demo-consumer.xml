@@ -14,7 +14,7 @@
     <!--uncomment this if you want to test dubbo's monitor-->
     <!--<dubbo:monitor protocol="registry"/>-->
 
-    <dubbo:reference id="bidService" interface="com.alibaba.dubbo.demo.bid.BidService" group="02" check="false" cluster="notify" actives="5">
+    <dubbo:reference id="bidService" interface="com.alibaba.dubbo.demo.bid.BidService" group="02" check="false" actives="5">
     </dubbo:reference>
 
     <!--<dubbo:reference id="anotherUserRestService" interface="com.alibaba.dubbo.demo.user.facade.AnotherUserRestService"/>-->
