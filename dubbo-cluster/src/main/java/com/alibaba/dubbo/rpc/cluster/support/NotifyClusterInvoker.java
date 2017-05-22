@@ -37,9 +37,9 @@ public class NotifyClusterInvoker<T> extends AbstractClusterInvoker<T> {
         AsyncResultProcessor asyncResultProcessor = new AsyncResultProcessor(invokers.size());
         for (final Invoker<T> invoker : invokers) {
             AsyncInvocationCommand command = new AsyncInvocationCommand(invoker, invocation);
-            AsyncInvocation asyncInvocation = new AsyncInvocation(latch);
-            command.addListener(asyncInvocation).queue();
-            asyncResultProcessor.addAsyncInvocation(asyncInvocation);
+            InvokerListener invokerListener = new InvokerListener(latch);
+            command.addListener(invokerListener).queue();
+            asyncResultProcessor.addAsyncInvocation(invokerListener);
         }
         try {
             latch.await();
@@ -71,7 +71,7 @@ public class NotifyClusterInvoker<T> extends AbstractClusterInvoker<T> {
         }
     }
 
-    private class AsyncInvocation implements AsyncListener<Result>{
+    private class InvokerListener implements AsyncListener<Result>{
 
         private final CountDownLatch latch;
 
@@ -79,7 +79,7 @@ public class NotifyClusterInvoker<T> extends AbstractClusterInvoker<T> {
 
         private RpcException exception;
 
-        private AsyncInvocation(CountDownLatch latch) {
+        private InvokerListener(CountDownLatch latch) {
             this.latch = latch;
         }
 
@@ -117,29 +117,29 @@ public class NotifyClusterInvoker<T> extends AbstractClusterInvoker<T> {
 
     private class AsyncResultProcessor {
 
-        private final List<AsyncInvocation> asyncInvocation;
+        private final List<InvokerListener> invokerListener;
 
         private RpcException exception;
 
         private Result result;
 
         public AsyncResultProcessor(int size) {
-            asyncInvocation = new ArrayList<AsyncInvocation>(size);
+            invokerListener = new ArrayList<InvokerListener>(size);
         }
 
-        public void addAsyncInvocation(AsyncInvocation asyncInvocation) {
-            this.asyncInvocation.add(asyncInvocation);
+        public void addAsyncInvocation(InvokerListener invokerListener) {
+            this.invokerListener.add(invokerListener);
         }
 
         public void processResult() {
-            for (AsyncInvocation invocation : asyncInvocation) {
+            for (InvokerListener invocation : invokerListener) {
                 exception = invocation.getException();
                 if (exception != null) {
                     break;
                 }
             }
             if (exception == null) {
-                result = asyncInvocation.get(0).getResult();
+                result = invokerListener.get(0).getResult();
             }
         }
 
