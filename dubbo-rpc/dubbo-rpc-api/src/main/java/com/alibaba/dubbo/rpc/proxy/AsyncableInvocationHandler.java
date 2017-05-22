@@ -1,8 +1,7 @@
 package com.alibaba.dubbo.rpc.proxy;
 
-import com.alibaba.dubbo.rpc.AsyncCommand;
-import com.alibaba.dubbo.rpc.AsyncRunnable;
 import com.alibaba.dubbo.rpc.Invoker;
+import com.alibaba.dubbo.rpc.async.AsyncCommand;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.Future;
@@ -17,8 +16,8 @@ public class AsyncableInvocationHandler extends InvokerInvocationHandler {
         if (!isAsyncMethod(method)) {
             return super.invoke(proxy, method, args);
         } else {
-            AsyncRunnable asyncRunnable = new AsyncMethodWrapper(proxy, method, args);
-            return asyncRunnable.async().execute();
+            AsyncMethodCommand command = new AsyncMethodCommand(proxy, method, args);
+            return command.execute();
         }
     }
 
@@ -30,7 +29,7 @@ public class AsyncableInvocationHandler extends InvokerInvocationHandler {
     /**
      * async method wrapper
      */
-    class AsyncMethodWrapper implements AsyncRunnable<Object> {
+    class AsyncMethodCommand extends AsyncCommand<Object> {
 
         private final Object proxy;
 
@@ -38,7 +37,7 @@ public class AsyncableInvocationHandler extends InvokerInvocationHandler {
 
         private final Object[] args;
 
-        public AsyncMethodWrapper(Object proxy, Method wrapped, Object[] args) {
+        public AsyncMethodCommand(Object proxy, Method wrapped, Object[] args) {
             this.proxy = proxy;
             this.wrapped = wrapped;
             this.args = args;
@@ -49,10 +48,6 @@ public class AsyncableInvocationHandler extends InvokerInvocationHandler {
             Class<?>[] parameterTypes = wrapped.getParameterTypes();
             String syncMethodName = methodName.substring(methodName.indexOf("async_") + "async_".length());
             return proxy.getClass().getDeclaredMethod(syncMethodName, parameterTypes);
-        }
-
-        public AsyncCommand<Object> async() {
-            return new AsyncCommand<Object>(this);
         }
 
         @Override

@@ -2,7 +2,12 @@ package com.alibaba.dubbo.rpc.cluster.support;
 
 import com.alibaba.dubbo.common.logger.Logger;
 import com.alibaba.dubbo.common.logger.LoggerFactory;
-import com.alibaba.dubbo.rpc.*;
+import com.alibaba.dubbo.rpc.Invocation;
+import com.alibaba.dubbo.rpc.Invoker;
+import com.alibaba.dubbo.rpc.Result;
+import com.alibaba.dubbo.rpc.RpcException;
+import com.alibaba.dubbo.rpc.async.AsyncListener;
+import com.alibaba.dubbo.rpc.async.ListenableAsyncCommand;
 import com.alibaba.dubbo.rpc.cluster.Directory;
 import com.alibaba.dubbo.rpc.cluster.LoadBalance;
 
@@ -31,9 +36,9 @@ public class NotifyClusterInvoker<T> extends AbstractClusterInvoker<T> {
         final CountDownLatch latch = new CountDownLatch(invokers.size());
         AsyncResultProcessor asyncResultProcessor = new AsyncResultProcessor(invokers.size());
         for (final Invoker<T> invoker : invokers) {
-            AsyncInvocation<Result> asyncInvocation = new AsyncInvocationImpl(invoker, invocation, latch);
-            AsyncCommand<Result> command = asyncInvocation.async();
-            command.addListener(asyncInvocation).execute();
+            AsyncInvocationCommand command = new AsyncInvocationCommand(invoker, invocation);
+            AsyncInvocation asyncInvocation = new AsyncInvocation(latch);
+            command.addListener(asyncInvocation).queue();
             asyncResultProcessor.addAsyncInvocation(asyncInvocation);
         }
         try {
@@ -49,11 +54,24 @@ public class NotifyClusterInvoker<T> extends AbstractClusterInvoker<T> {
     }
 
 
-    private class AsyncInvocationImpl implements AsyncInvocation<Result> {
+    private class AsyncInvocationCommand extends ListenableAsyncCommand<Result> {
 
         private final Invoker<T> invoker;
 
         private final Invocation invocation;
+
+        public AsyncInvocationCommand(Invoker<T> invoker, Invocation invocation) {
+            this.invoker = invoker;
+            this.invocation = invocation;
+        }
+
+        @Override
+        public Result run() throws Exception {
+            return doInvoke(invoker, invocation);
+        }
+    }
+
+    private class AsyncInvocation implements AsyncListener<Result>{
 
         private final CountDownLatch latch;
 
@@ -61,20 +79,8 @@ public class NotifyClusterInvoker<T> extends AbstractClusterInvoker<T> {
 
         private RpcException exception;
 
-        public AsyncInvocationImpl(Invoker<T> invoker, Invocation invocation, CountDownLatch latch) {
-            this.invoker = invoker;
-            this.invocation = invocation;
+        private AsyncInvocation(CountDownLatch latch) {
             this.latch = latch;
-        }
-
-        @Override
-        public AsyncCommand<Result> async() {
-            return new AsyncCommand<Result>(this);
-        }
-
-        @Override
-        public Result run() throws Exception {
-            return doInvoke(invoker, invocation);
         }
 
         @Override
@@ -106,33 +112,34 @@ public class NotifyClusterInvoker<T> extends AbstractClusterInvoker<T> {
         public Result getResult() {
             return reVal;
         }
+
     }
 
     private class AsyncResultProcessor {
 
-        private final List<AsyncInvocation> asyncInvocations;
+        private final List<AsyncInvocation> asyncInvocation;
 
         private RpcException exception;
 
         private Result result;
 
         public AsyncResultProcessor(int size) {
-            asyncInvocations = new ArrayList<AsyncInvocation>(size);
+            asyncInvocation = new ArrayList<AsyncInvocation>(size);
         }
 
         public void addAsyncInvocation(AsyncInvocation asyncInvocation) {
-            asyncInvocations.add(asyncInvocation);
+            this.asyncInvocation.add(asyncInvocation);
         }
 
         public void processResult() {
-            for (AsyncInvocation invocation : asyncInvocations) {
+            for (AsyncInvocation invocation : asyncInvocation) {
                 exception = invocation.getException();
                 if (exception != null) {
                     break;
                 }
             }
             if (exception == null) {
-                result = (Result) asyncInvocations.get(0).getResult();
+                result = asyncInvocation.get(0).getResult();
             }
         }
 

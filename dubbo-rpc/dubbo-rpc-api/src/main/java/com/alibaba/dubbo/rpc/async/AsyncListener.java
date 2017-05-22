@@ -1,4 +1,4 @@
-package com.alibaba.dubbo.rpc;
+package com.alibaba.dubbo.rpc.async;
 
 import com.google.common.util.concurrent.FutureCallback;
 

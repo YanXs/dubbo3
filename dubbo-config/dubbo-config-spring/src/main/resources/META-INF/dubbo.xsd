@@ -30,11 +30,6 @@
                 <xsd:documentation><![CDATA[ The max active requests. ]]></xsd:documentation>
             </xsd:annotation>
         </xsd:attribute>
-        <xsd:attribute name="threads" type="xsd:string" use="optional">
-            <xsd:annotation>
-                <xsd:documentation><![CDATA[ The max threads for reference. ]]></xsd:documentation>
-            </xsd:annotation>
-        </xsd:attribute>
         <xsd:attribute name="connections" type="xsd:string" use="optional">
             <xsd:annotation>
                 <xsd:documentation>
