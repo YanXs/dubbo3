@@ -16,8 +16,8 @@ public class AsyncableInvocationHandler extends InvokerInvocationHandler {
         if (!isAsyncMethod(method)) {
             return super.invoke(proxy, method, args);
         } else {
-            AsyncMethodCommand command = new AsyncMethodCommand(proxy, method, args);
-            return command.execute();
+            AsyncCommand command = new AsyncMethodCommand(proxy, method, args);
+            return command.queue();
         }
     }
 

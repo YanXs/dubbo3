@@ -6,7 +6,7 @@ import com.alibaba.dubbo.rpc.Invocation;
 import com.alibaba.dubbo.rpc.Invoker;
 import com.alibaba.dubbo.rpc.Result;
 import com.alibaba.dubbo.rpc.RpcException;
-import com.alibaba.dubbo.rpc.async.AsyncListener;
+import com.alibaba.dubbo.rpc.async.CommandListener;
 import com.alibaba.dubbo.rpc.async.ListenableAsyncCommand;
 import com.alibaba.dubbo.rpc.cluster.Directory;
 import com.alibaba.dubbo.rpc.cluster.LoadBalance;
@@ -36,9 +36,9 @@ public class NotifyClusterInvoker<T> extends AbstractClusterInvoker<T> {
         final CountDownLatch latch = new CountDownLatch(invokers.size());
         AsyncResultProcessor asyncResultProcessor = new AsyncResultProcessor(invokers.size());
         for (final Invoker<T> invoker : invokers) {
-            AsyncInvocationCommand command = new AsyncInvocationCommand(invoker, invocation);
+            ListenableAsyncCommand<Result> command = new AsyncInvocationCommand(invoker, invocation);
             InvokerListener invokerListener = new InvokerListener(latch);
-            command.addListener(invokerListener).queue();
+            command.addListener(invokerListener).submit();
             asyncResultProcessor.addAsyncInvocation(invokerListener);
         }
         try {
@@ -52,7 +52,6 @@ public class NotifyClusterInvoker<T> extends AbstractClusterInvoker<T> {
         }
         return asyncResultProcessor.getResult();
     }
-
 
     private class AsyncInvocationCommand extends ListenableAsyncCommand<Result> {
 
@@ -71,7 +70,7 @@ public class NotifyClusterInvoker<T> extends AbstractClusterInvoker<T> {
         }
     }
 
-    private class InvokerListener implements AsyncListener<Result>{
+    private class InvokerListener implements CommandListener<Result> {
 
         private final CountDownLatch latch;
 
@@ -112,7 +111,6 @@ public class NotifyClusterInvoker<T> extends AbstractClusterInvoker<T> {
         public Result getResult() {
             return reVal;
         }
-
     }
 
     private class AsyncResultProcessor {
@@ -131,7 +129,7 @@ public class NotifyClusterInvoker<T> extends AbstractClusterInvoker<T> {
             this.invokerListener.add(invokerListener);
         }
 
-        public void processResult() {
+        void processResult() {
             for (InvokerListener invocation : invokerListener) {
                 exception = invocation.getException();
                 if (exception != null) {
@@ -150,6 +148,7 @@ public class NotifyClusterInvoker<T> extends AbstractClusterInvoker<T> {
         public RpcException getException() {
             return exception;
         }
+
     }
 
     private Result doInvoke(Invoker<T> invoker, Invocation invocation) {
@@ -169,4 +168,5 @@ public class NotifyClusterInvoker<T> extends AbstractClusterInvoker<T> {
         }
         return result;
     }
+
 }

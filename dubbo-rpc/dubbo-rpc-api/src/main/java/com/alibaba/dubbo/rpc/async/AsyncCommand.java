@@ -1,6 +1,7 @@
 package com.alibaba.dubbo.rpc.async;
 
 import com.alibaba.dubbo.common.utils.NamedThreadFactory;
+import com.alibaba.dubbo.rpc.RpcException;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
@@ -15,27 +16,17 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public abstract class AsyncCommand<T> {
 
-    protected static final ListeningExecutorService asyncCommandExecutor =
+    private static final ListeningExecutorService asyncCommandExecutor =
             MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(32, new NamedThreadFactory("asyncCommand", Boolean.TRUE)));
 
     protected final AtomicReference<State> state = new AtomicReference<State>(State.LATENT);
 
     protected enum State {
-        LATENT,
-        STARTED,
-        FINISHED
+        LATENT, STARTED, FINISHED
     }
 
-    public ListenableFuture<T> execute() {
+    public ListenableFuture<T> queue() {
         checkState();
-        return submit();
-    }
-
-    protected void checkState(){
-        Preconditions.checkState(state.compareAndSet(State.LATENT, State.STARTED), "command could be execute more than once");
-    }
-
-    protected ListenableFuture<T> submit() {
         return asyncCommandExecutor.submit(new Callable<T>() {
             @Override
             public T call() throws Exception {
@@ -46,6 +37,18 @@ public abstract class AsyncCommand<T> {
                 }
             }
         });
+    }
+
+    public T execute() {
+        try {
+            return queue().get();
+        } catch (Exception e) {
+            throw new RpcException(e);
+        }
+    }
+
+    protected void checkState() {
+        Preconditions.checkState(state.compareAndSet(State.LATENT, State.STARTED), "command could not be executed more than once");
     }
 
     public abstract T run() throws Exception;
