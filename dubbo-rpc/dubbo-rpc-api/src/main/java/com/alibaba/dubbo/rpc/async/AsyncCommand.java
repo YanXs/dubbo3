@@ -1,14 +1,10 @@
 package com.alibaba.dubbo.rpc.async;
 
-import com.alibaba.dubbo.common.utils.NamedThreadFactory;
 import com.alibaba.dubbo.rpc.RpcException;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.MoreExecutors;
 
 import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -16,8 +12,14 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public abstract class AsyncCommand<T> {
 
-    private static final ListeningExecutorService asyncCommandExecutor =
-            MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(32, new NamedThreadFactory("asyncCommand", Boolean.TRUE)));
+
+    public static final String COMMON_KEY = "common-command";
+
+    public static final int COMMON_CORE_SIZE = 64;
+
+    public static final int UNKNOWN_CORE_SIZE = 10;
+
+    private final CommandExecutor<T> commandExecutor;
 
     protected final AtomicReference<State> state = new AtomicReference<State>(State.LATENT);
 
@@ -25,9 +27,25 @@ public abstract class AsyncCommand<T> {
         LATENT, STARTED, FINISHED
     }
 
+    public AsyncCommand() {
+        this(COMMON_KEY, COMMON_CORE_SIZE);
+    }
+
+    public AsyncCommand(String key) {
+        this(key, UNKNOWN_CORE_SIZE);
+    }
+
+    public AsyncCommand(String key, int coreSize) {
+        commandExecutor = initExecutor(key, coreSize);
+    }
+
+    private CommandExecutor<T> initExecutor(String key, int coreSize) {
+        return CommandExecutorFactory.getCommandExecutor(key, coreSize);
+    }
+
     public ListenableFuture<T> queue() {
         checkState();
-        return asyncCommandExecutor.submit(new Callable<T>() {
+        return commandExecutor.executeCommand(new Callable<T>() {
             @Override
             public T call() throws Exception {
                 try {
@@ -41,7 +59,7 @@ public abstract class AsyncCommand<T> {
 
     public T execute() {
         try {
-            return queue().get();
+            return (T) queue().get();
         } catch (Exception e) {
             throw new RpcException(e);
         }
