@@ -59,7 +59,7 @@ public abstract class AsyncCommand<T> {
 
     public T execute() {
         try {
-            return (T) queue().get();
+            return queue().get();
         } catch (Exception e) {
             throw new RpcException(e);
         }

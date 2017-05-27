@@ -104,5 +104,4 @@ public class ProtocolFilterWrapper implements Protocol {
         }
         return last;
     }
-    
 }
