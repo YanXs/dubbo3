@@ -15,7 +15,8 @@ public class CommandExecutorFactory {
     private static final Map<String, CommandExecutor> threadPools = new ConcurrentHashMap<String, CommandExecutor>();
 
     @SuppressWarnings("unchecked")
-    public static <T> CommandExecutor<T> getCommandExecutor(String key, int coreSize) {
+    public <T> CommandExecutor<T> getCommandExecutor(String key, int coreSize) {
+
         CommandExecutor<T> previouslyCached = threadPools.get(key);
         if (previouslyCached != null) {
             return previouslyCached;
@@ -35,7 +36,7 @@ public class CommandExecutorFactory {
         return Holder.INSTANCE;
     }
 
-    public static class Holder {
+    private static class Holder {
         public static CommandExecutorFactory INSTANCE = new CommandExecutorFactory();
     }
 }

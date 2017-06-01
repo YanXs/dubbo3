@@ -4,7 +4,6 @@ import com.alibaba.dubbo.rpc.RpcException;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ListenableFuture;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -20,6 +19,8 @@ public abstract class AsyncCommand<T> {
     public static final int UNKNOWN_CORE_SIZE = 10;
 
     private final CommandExecutor<T> commandExecutor;
+
+    private final CommandExecutorFactory factory = CommandExecutorFactory.getInstance();
 
     protected final AtomicReference<State> state = new AtomicReference<State>(State.LATENT);
 
@@ -40,21 +41,12 @@ public abstract class AsyncCommand<T> {
     }
 
     private CommandExecutor<T> initExecutor(String key, int coreSize) {
-        return CommandExecutorFactory.getCommandExecutor(key, coreSize);
+        return factory.getCommandExecutor(key, coreSize);
     }
 
     public ListenableFuture<T> queue() {
         checkState();
-        return commandExecutor.executeCommand(new Callable<T>() {
-            @Override
-            public T call() throws Exception {
-                try {
-                    return run();
-                } finally {
-                    state.compareAndSet(State.STARTED, State.FINISHED);
-                }
-            }
-        });
+        return commandExecutor.execute(this);
     }
 
     public T execute() {

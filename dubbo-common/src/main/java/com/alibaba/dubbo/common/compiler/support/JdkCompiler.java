@@ -103,8 +103,8 @@ public class JdkCompiler extends AbstractCompiler {
         javaFileManager.putFileForInput(StandardLocation.SOURCE_PATH, packageName, 
                                         className + ClassUtils.JAVA_EXTENSION, javaFileObject);
         Boolean result = compiler.getTask(null, javaFileManager, diagnosticCollector, options, 
-                                          null, Arrays.asList(new JavaFileObject[]{javaFileObject})).call();
-        if (result == null || ! result.booleanValue()) {
+                                          null, Collections.singletonList(javaFileObject)).call();
+        if (result == null || !result) {
             throw new IllegalStateException("Compilation failed. class: " + name + ", diagnostics: " + diagnosticCollector);
         }
         return classLoader.loadClass(name);

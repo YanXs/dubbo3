@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * JavaassistRpcProxyFactory
+ * JdkProxyFactory
  *
  * @author william.liangf
  */
@@ -43,7 +43,7 @@ public class JdkProxyFactory extends AbstractProxyFactory {
         return new CachedProxyInvoker<T>(proxy, type, url);
     }
 
-    static class CachedProxyInvoker<T> extends AbstractProxyInvoker<T> {
+    private static class CachedProxyInvoker<T> extends AbstractProxyInvoker<T> {
 
         static Map<String, Method> cachedMethods = new ConcurrentHashMap<String, Method>(128);
 
