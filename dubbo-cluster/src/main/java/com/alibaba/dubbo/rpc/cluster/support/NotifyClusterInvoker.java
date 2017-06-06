@@ -32,14 +32,14 @@ public class NotifyClusterInvoker<T> extends AbstractClusterInvoker<T> {
         return doInvokeAsync(invocation, invokers);
     }
 
-    private Result doInvokeAsync(final Invocation invocation, final List<Invoker<T>> invokers) {
-        final CountDownLatch latch = new CountDownLatch(invokers.size());
+    private Result doInvokeAsync(final Invocation invocation, List<Invoker<T>> invokers) {
+        CountDownLatch latch = new CountDownLatch(invokers.size());
         AsyncResultProcessor asyncResultProcessor = new AsyncResultProcessor(invokers.size());
         for (final Invoker<T> invoker : invokers) {
             ListenableAsyncCommand<Result> command = new AsyncInvocationCommand(invoker, invocation);
-            InvokerListener invokerListener = new InvokerListener(latch);
-            command.addListener(invokerListener).submit();
-            asyncResultProcessor.addAsyncInvocation(invokerListener);
+            AsyncResult result = new AsyncResult(latch);
+            command.addListener(result).submit();
+            asyncResultProcessor.addAsyncResult(result);
         }
         try {
             latch.await();
@@ -70,7 +70,7 @@ public class NotifyClusterInvoker<T> extends AbstractClusterInvoker<T> {
         }
     }
 
-    private class InvokerListener implements CommandListener<Result> {
+    private class AsyncResult implements CommandListener<Result> {
 
         private final CountDownLatch latch;
 
@@ -78,7 +78,7 @@ public class NotifyClusterInvoker<T> extends AbstractClusterInvoker<T> {
 
         private RpcException exception;
 
-        private InvokerListener(CountDownLatch latch) {
+        private AsyncResult(CountDownLatch latch) {
             this.latch = latch;
         }
 
@@ -115,29 +115,29 @@ public class NotifyClusterInvoker<T> extends AbstractClusterInvoker<T> {
 
     private class AsyncResultProcessor {
 
-        private final List<InvokerListener> invokerListener;
+        private final List<AsyncResult> asyncResult;
 
         private RpcException exception;
 
         private Result result;
 
         public AsyncResultProcessor(int size) {
-            invokerListener = new ArrayList<InvokerListener>(size);
+            asyncResult = new ArrayList<AsyncResult>(size);
         }
 
-        public void addAsyncInvocation(InvokerListener invokerListener) {
-            this.invokerListener.add(invokerListener);
+        public void addAsyncResult(AsyncResult asyncResult) {
+            this.asyncResult.add(asyncResult);
         }
 
         void processResult() {
-            for (InvokerListener invocation : invokerListener) {
+            for (AsyncResult invocation : asyncResult) {
                 exception = invocation.getException();
                 if (exception != null) {
                     break;
                 }
             }
             if (exception == null) {
-                result = invokerListener.get(0).getResult();
+                result = asyncResult.get(0).getResult();
             }
         }
 
@@ -148,7 +148,6 @@ public class NotifyClusterInvoker<T> extends AbstractClusterInvoker<T> {
         public RpcException getException() {
             return exception;
         }
-
     }
 
     private Result doInvoke(Invoker<T> invoker, Invocation invocation) {
@@ -168,5 +167,4 @@ public class NotifyClusterInvoker<T> extends AbstractClusterInvoker<T> {
         }
         return result;
     }
-
 }

@@ -16,6 +16,7 @@
 package com.alibaba.dubbo.rpc.proxy.jdk;
 
 import com.alibaba.dubbo.common.URL;
+import com.alibaba.dubbo.common.utils.MethodCache;
 import com.alibaba.dubbo.rpc.Invoker;
 import com.alibaba.dubbo.rpc.proxy.AbstractProxyFactory;
 import com.alibaba.dubbo.rpc.proxy.AbstractProxyInvoker;
@@ -43,9 +44,9 @@ public class JdkProxyFactory extends AbstractProxyFactory {
         return new CachedProxyInvoker<T>(proxy, type, url);
     }
 
-    private static class CachedProxyInvoker<T> extends AbstractProxyInvoker<T> {
+    static class CachedProxyInvoker<T> extends AbstractProxyInvoker<T> {
 
-        static Map<String, Method> cachedMethods = new ConcurrentHashMap<String, Method>(128);
+        private final static MethodCache methodCache = MethodCache.newCache();
 
         public CachedProxyInvoker(T proxy, Class<T> type, URL url) {
             super(proxy, type, url);
@@ -53,29 +54,7 @@ public class JdkProxyFactory extends AbstractProxyFactory {
 
         @Override
         protected Object doInvoke(T proxy, String methodName, Class<?>[] parameterTypes, Object[] arguments) throws Throwable {
-            String methodKey = methodKey(methodName, parameterTypes);
-            Method previouslyCached = cachedMethods.get(methodKey);
-            if (previouslyCached != null) {
-                return previouslyCached;
-            }
-            synchronized (CachedProxyInvoker.class) {
-                if (!cachedMethods.containsKey(methodKey)) {
-                    Method method = proxy.getClass().getDeclaredMethod(methodName, parameterTypes);
-                    cachedMethods.put(methodKey, method);
-                }
-            }
-            return cachedMethods.get(methodKey).invoke(proxy, arguments);
-        }
-
-
-        private String methodKey(String methodName, Class<?>[] parameterTypes) {
-            StringBuilder builder = new StringBuilder(methodName);
-            if (parameterTypes != null && parameterTypes.length > 0) {
-                for (Class<?> clz : parameterTypes) {
-                    builder.append(clz.getName());
-                }
-            }
-            return builder.toString();
+            return methodCache.get(proxy, methodName, parameterTypes);
         }
     }
 }
