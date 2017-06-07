@@ -1,12 +1,13 @@
 package com.alibaba.dubbo.common.utils;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class MethodCache {
 
-    private final Map<String, Method> cachedMethods = new ConcurrentHashMap<String, Method>(32);
+    private final Map<Integer, Method> cachedMethods = new ConcurrentHashMap<Integer, Method>(32);
 
     private final Object lock = new Object();
 
@@ -17,18 +18,16 @@ public class MethodCache {
         return new MethodCache();
     }
 
-    private String methodKey(String methodName, Class<?>[] parameterTypes) {
-        StringBuilder builder = new StringBuilder(methodName);
-        if (parameterTypes != null && parameterTypes.length > 0) {
-            for (Class<?> clz : parameterTypes) {
-                builder.append(clz.getName());
-            }
-        }
-        return builder.toString();
+    private Integer methodKey(Object object, String methodName, Class<?>[] parameterTypes) {
+        return methodName.hashCode() + Arrays.hashCode(parameterTypes) + object.hashCode();
     }
 
     public Method get(Object object, String methodName, Class<?>[] parameterTypes) throws Exception {
-        String methodKey = methodKey(methodName, parameterTypes);
+        Assert.notNull(object, "object must not be null!");
+        if (StringUtils.isEmpty(methodName)) {
+            throw new IllegalArgumentException("methodName must not be null or empty");
+        }
+        Integer methodKey = methodKey(object, methodName, parameterTypes);
         Method previouslyCached = cachedMethods.get(methodKey);
         if (previouslyCached != null) {
             return previouslyCached;

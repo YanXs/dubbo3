@@ -2,6 +2,7 @@ package com.alibaba.dubbo.rpc.proxy;
 
 import com.alibaba.dubbo.common.utils.MethodCache;
 import com.alibaba.dubbo.rpc.Invoker;
+import com.alibaba.dubbo.rpc.RpcException;
 import com.alibaba.dubbo.rpc.async.AsyncCommand;
 
 import java.lang.reflect.Method;
@@ -9,13 +10,15 @@ import java.util.concurrent.Future;
 
 public class AsyncableInvocationHandler extends InvokerInvocationHandler {
 
+    private static final MethodCache methodCache = MethodCache.newCache();
+
     public AsyncableInvocationHandler(Invoker<?> handler) {
         super(handler);
     }
 
-    public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         if (!isAsyncMethod(method)) {
-            return super.invoke(proxy, method, args);
+            return invokeSuper(proxy, method, args);
         } else {
             AsyncCommand command = new AsyncMethodCommand(proxy, method, args);
             return command.queue();
@@ -30,32 +33,38 @@ public class AsyncableInvocationHandler extends InvokerInvocationHandler {
     /**
      * async method wrapper
      */
-    static class AsyncMethodCommand extends AsyncCommand<Object> {
-
-        private static final MethodCache methodCache = MethodCache.newCache();
+    class AsyncMethodCommand extends AsyncCommand<Object> {
 
         private final Object proxy;
 
-        private final Method wrapped;
+        private final Method asyncMethod;
 
         private final Object[] args;
 
-        public AsyncMethodCommand(Object proxy, Method wrapped, Object[] args) {
+        public AsyncMethodCommand(Object proxy, Method asyncMethod, Object[] args) {
             this.proxy = proxy;
-            this.wrapped = wrapped;
+            this.asyncMethod = asyncMethod;
             this.args = args;
         }
 
         private Method getCorrespondingSyncMethod() throws Exception {
-            String methodName = wrapped.getName();
-            Class<?>[] parameterTypes = wrapped.getParameterTypes();
+            String methodName = asyncMethod.getName();
+            Class<?>[] parameterTypes = asyncMethod.getParameterTypes();
             String syncMethodName = methodName.substring(methodName.indexOf("async_") + "async_".length());
-            return methodCache.get(wrapped, syncMethodName, parameterTypes);
+            return methodCache.get(proxy, syncMethodName, parameterTypes);
         }
 
         @Override
         public Object run() throws Exception {
-            return getCorrespondingSyncMethod().invoke(proxy, args);
+            return AsyncableInvocationHandler.this.invokeSuper(proxy, getCorrespondingSyncMethod(), args);
+        }
+    }
+
+    private Object invokeSuper(Object proxy, Method method, Object[] args) {
+        try {
+            return super.invoke(proxy, method, args);
+        } catch (Throwable e) {
+            throw new RpcException(e.getMessage(), e);
         }
     }
 }

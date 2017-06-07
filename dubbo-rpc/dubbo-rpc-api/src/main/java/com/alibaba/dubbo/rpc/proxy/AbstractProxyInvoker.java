@@ -80,5 +80,4 @@ public abstract class AbstractProxyInvoker<T> implements Invoker<T> {
         return getUrl().toString();
     }
 
-
 }
