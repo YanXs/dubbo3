@@ -18,23 +18,23 @@ public class MethodCache {
         return new MethodCache();
     }
 
-    private Integer methodKey(Object object, String methodName, Class<?>[] parameterTypes) {
-        return methodName.hashCode() + Arrays.hashCode(parameterTypes) + object.hashCode();
+    private Integer methodKey(Class<?> targetClass, String methodName, Class<?>[] parameterTypes) {
+        return methodName.hashCode() + Arrays.hashCode(parameterTypes) + targetClass.hashCode();
     }
 
-    public Method get(Object object, String methodName, Class<?>[] parameterTypes) throws Exception {
-        Assert.notNull(object, "object must not be null!");
+    public Method get(Class<?> targetClass, String methodName, Class<?>[] parameterTypes) throws Exception {
+        Assert.notNull(targetClass, "object must not be null!");
         if (StringUtils.isEmpty(methodName)) {
             throw new IllegalArgumentException("methodName must not be null or empty");
         }
-        Integer methodKey = methodKey(object, methodName, parameterTypes);
+        Integer methodKey = methodKey(targetClass, methodName, parameterTypes);
         Method previouslyCached = cachedMethods.get(methodKey);
         if (previouslyCached != null) {
             return previouslyCached;
         }
         synchronized (lock) {
             if (!cachedMethods.containsKey(methodKey)) {
-                Method method = object.getClass().getDeclaredMethod(methodName, parameterTypes);
+                Method method = targetClass.getDeclaredMethod(methodName, parameterTypes);
                 cachedMethods.put(methodKey, method);
             }
         }

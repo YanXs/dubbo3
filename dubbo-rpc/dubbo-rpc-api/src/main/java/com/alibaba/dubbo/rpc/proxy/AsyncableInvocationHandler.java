@@ -51,7 +51,7 @@ public class AsyncableInvocationHandler extends InvokerInvocationHandler {
             String methodName = asyncMethod.getName();
             Class<?>[] parameterTypes = asyncMethod.getParameterTypes();
             String syncMethodName = methodName.substring(methodName.indexOf("async_") + "async_".length());
-            return methodCache.get(proxy, syncMethodName, parameterTypes);
+            return methodCache.get(proxy.getClass(), syncMethodName, parameterTypes);
         }
 
         @Override

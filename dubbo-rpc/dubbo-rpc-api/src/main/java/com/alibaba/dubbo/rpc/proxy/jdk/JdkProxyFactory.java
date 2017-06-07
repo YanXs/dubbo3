@@ -54,7 +54,7 @@ public class JdkProxyFactory extends AbstractProxyFactory {
 
         @Override
         protected Object doInvoke(T proxy, String methodName, Class<?>[] parameterTypes, Object[] arguments) throws Throwable {
-            return methodCache.get(proxy, methodName, parameterTypes);
+            return methodCache.get(proxy.getClass(), methodName, parameterTypes);
         }
     }
 }
